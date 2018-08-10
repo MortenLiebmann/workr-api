@@ -1,6 +1,6 @@
 ﻿Imports Npgsql
 
-Public Class Hotel
+Public Class WorkrServer
     Private WithEvents Controller As HttpController
     Public Event jr(ByVal json As String)
     Public Sub Start()

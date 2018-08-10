@@ -115,11 +115,5 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Hotel\Hotel.vbproj">
-      <Project>{707C36F5-7CC0-45D9-A6AE-7910CA968709}</Project>
-      <Name>Hotel</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

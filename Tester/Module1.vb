@@ -4,7 +4,7 @@ Imports Hotel
 Imports Npgsql
 
 Module Module1
-    Private WithEvents h As New Hotel.Hotel
+    Private WithEvents h As New Hotel.WorkrServer
     Sub Main()
         'Dim x As New NpgsqlConnection()
         'x.ConnectionString = "Server=127.0.0.1;User Id=postgres;" &
