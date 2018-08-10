@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Hotel.Booking" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAgBCAAAACBAAAAEBQCAACAAAAIAAAAAAEABAAAAAg=</HashCode>
+      <FileName>Booking.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hotel.Charge" Collapsed="true">
+    <Position X="2.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAiJBAgAAAgBAggEBCAAAAAAAAAAAAAERAQAABAAAA=</HashCode>
+      <FileName>Charge.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hotel.DbToBooking">
+    <Position X="2.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAAgAQAAAAAAAAACBAAAAAAAAAAAAA=</HashCode>
+      <FileName>DbToBooking.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hotel.DbToCharge">
+    <Position X="7.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAAgAQAAAAAAAAACBAAAAAAAAAAAAA=</HashCode>
+      <FileName>DbToCharge.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hotel.DbToGuest">
+    <Position X="9.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAAgAQAAAAAAAAACBAAAAAAAAAAAAA=</HashCode>
+      <FileName>DbToGuest.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hotel.DbToItem(Of T)">
+    <Position X="11.5" Y="5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>CAAAICAARAABCAIAgIQAAAAIAAEACBAIAhCAAAAiAgg=</HashCode>
+      <FileName>DbToItem.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hotel.DbToReservation">
+    <Position X="0.5" Y="4.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAAgAQAAAAAAAAACBAAAAAAAAAAAAA=</HashCode>
+      <FileName>DbToReservation.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hotel.DbToRoom">
+    <Position X="5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAAgAQAAAAAAAAACBAAAAAAAAAAAAA=</HashCode>
+      <FileName>DbToRoom.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hotel.Guest" Collapsed="true">
+    <Position X="5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIABEAEAAAABICsgBAAQIAAAAIQIEACAAAABCAIACg=</HashCode>
+      <FileName>Guest.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hotel.Hotel" Collapsed="true">
+    <Position X="12" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAASAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Hotel.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hotel.HttpController" Collapsed="true">
+    <Position X="13.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAADAAAAAAAEAAAAAAAAAAAAAAEACAAAAAEAAAAIA=</HashCode>
+      <FileName>HttpController.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hotel.Item" Collapsed="true">
+    <Position X="5" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAABQgAAAAAgAAQgAAAQAAAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Item.vb</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Hotel.Reservation" Collapsed="true">
+    <Position X="7.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAgAAABAAgABAAAAAAJAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Reservation.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hotel.Room" Collapsed="true">
+    <Position X="9.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAABABAAAAxGAAAACAAAABAAAAAAAARBAAAAA=</HashCode>
+      <FileName>Room.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hotel.My.MySettings" Collapsed="true">
+    <Position X="12" Y="1.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAEAAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Module Name="Hotel.Helper" Collapsed="true">
+    <Position X="12" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAABBAAAAAAAAAAAAACAAAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>Helper.vb</FileName>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="Hotel.My.Resources.Resources" Collapsed="true">
+    <Position X="12" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABEAAAAQAAAAAAAAAAAAAAAIA=</HashCode>
+    </TypeIdentifier>
+  </Module>
+  <Module Name="Hotel.My.MySettingsProperty" Collapsed="true">
+    <Position X="13.75" Y="2.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Module>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
