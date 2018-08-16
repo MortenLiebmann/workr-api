@@ -18,21 +18,21 @@ Public Class Guest
     Private m_TempRoom As Room = New Room
     Private m_IsCheckedIn As Boolean
 
-    <JsonConstructor>
-    Public Sub New(iD As Guid, gender As Integer, firstName As String, lastName As String, fullName As String, company As String, address As String, zIP As String, city As String, country As String, room As Room, isCheckedIn As Boolean)
-        Me.ID = iD
-        Me.Gender = gender
-        Me.FirstName = firstName
-        Me.LastName = lastName
-        Me.FullName = fullName
-        Me.Company = company
-        Me.Address = address
-        Me.ZIP = zIP
-        Me.City = city
-        Me.Country = country
-        Me.Room = room
-        Me.IsCheckedIn = isCheckedIn
-    End Sub
+    '<JsonConstructor>
+    'Public Sub New(iD As Guid, gender As Integer, firstName As String, lastName As String, fullName As String, company As String, address As String, zIP As String, city As String, country As String, room As Room, isCheckedIn As Boolean)
+    '    Me.ID = iD
+    '    Me.Gender = gender
+    '    Me.FirstName = firstName
+    '    Me.LastName = lastName
+    '    Me.FullName = fullName
+    '    Me.Company = company
+    '    Me.Address = address
+    '    Me.ZIP = zIP
+    '    Me.City = city
+    '    Me.Country = country
+    '    Me.Room = room
+    '    Me.IsCheckedIn = isCheckedIn
+    'End Sub
 
     Public Sub New(iD As Guid, gender As Integer, firstName As String, lastName As String, fullName As String, company As String, address As String, zIP As String, city As String, country As String, roomID As Guid, isCheckedIn As Boolean)
         Me.ID = iD
@@ -134,19 +134,19 @@ Public Class Guest
         End Set
     End Property
 
-    Public Property Room As Room
-        Get
-            Dim r = Map("room").FindByID(m_RoomID.ToString)
-            If Not r = Nothing Then Return r
-            Return New Room()
-        End Get
-        Set(value As Room)
-            If value IsNot Nothing Then
-                m_RoomID = value.ID
-                m_TempRoom = value
-            End If
-        End Set
-    End Property
+    'Public Property Room As Room
+    '    Get
+    '        Dim r = Map("room").FindByID(m_RoomID.ToString)
+    '        If Not r = Nothing Then Return r
+    '        Return New Room()
+    '    End Get
+    '    Set(value As Room)
+    '        If value IsNot Nothing Then
+    '            m_RoomID = value.ID
+    '            m_TempRoom = value
+    '        End If
+    '    End Set
+    'End Property
 
     Public Property IsCheckedIn As Boolean
         Get

@@ -18,13 +18,13 @@ Public Class Reservation
         Me.m_RoomID = roomID
     End Sub
 
-    <JsonConstructor>
-    Public Sub New(iD As Guid, startTime As Date, endTime As Date, room As Room)
-        Me.ID = iD
-        Me.StartTime = startTime
-        Me.EndTime = endTime
-        Me.Room = room
-    End Sub
+    '<JsonConstructor>
+    'Public Sub New(iD As Guid, startTime As Date, endTime As Date, room As Room)
+    '    Me.ID = iD
+    '    Me.StartTime = startTime
+    '    Me.EndTime = endTime
+    '    Me.Room = room
+    'End Sub
 
     Public Sub New()
         MyBase.New()
@@ -48,21 +48,21 @@ Public Class Reservation
         End Set
     End Property
 
-    Public Property Room As Room
-        Get
-            Dim r = Map("room").FindByID(m_RoomID.ToString)
-            If Not r = Nothing Then Return r
-            Return m_TempRoom
-        End Get
-        Set(value As Room)
-            If Not value = Nothing Then
-                m_RoomID = value.ID
-                m_TempRoom = value
-            Else
-                m_TempRoom = New Room
-            End If
-        End Set
-    End Property
+    'Public Property Room As Room
+    '    Get
+    '        Dim r = Map("room").FindByID(m_RoomID.ToString)
+    '        If Not r = Nothing Then Return r
+    '        Return m_TempRoom
+    '    End Get
+    '    Set(value As Room)
+    '        If Not value = Nothing Then
+    '            m_RoomID = value.ID
+    '            m_TempRoom = value
+    '        Else
+    '            m_TempRoom = New Room
+    '        End If
+    '    End Set
+    'End Property
 
     Public Overrides Function AsSqlString(ByVal withID As Boolean) As String
         Return IIf(withID, "'" & ID.ToString & "',", "") &

@@ -1,24 +1,27 @@
-﻿Imports System.Reflection
+﻿Imports System.Data.Entity
+Imports System.Reflection
 Imports System.Runtime.CompilerServices
 Imports Newtonsoft.Json
+Imports WorkrServer
 
 ''' <summary>
 ''' Static class helper
 ''' </summary>
 Module Helper
-    Private m_Map As New Dictionary(Of String, Object)
+    Private m_DB As New WorkrDB
+    Private m_Map As New Dictionary(Of String, UserTable)
     Private m_JSONSettings As New JsonSerializerSettings() With {.MissingMemberHandling = MissingMemberHandling.Ignore,
-        .DateFormatString = "yyyyMMddHHmmss"}
+        .DateFormatString = "yyyy-MM-ddTHH:mm:ssZ"}
 
     ''' <summary>
     ''' Dictionary of DbToItem objects and a string key. The key is used in the URL of HTTP requests.
     ''' </summary>
     ''' <returns></returns>
-    Public Property Map As Dictionary(Of String, Object)
+    Public Property Map As Dictionary(Of String, UserTable)
         Get
             Return m_Map
         End Get
-        Set(value As Dictionary(Of String, Object))
+        Set(value As Dictionary(Of String, UserTable))
             m_Map = value
         End Set
     End Property
@@ -29,6 +32,15 @@ Module Helper
         End Get
         Set(value As JsonSerializerSettings)
             m_JSONSettings = value
+        End Set
+    End Property
+
+    Public Property DB As WorkrDB
+        Get
+            Return m_DB
+        End Get
+        Set(value As WorkrDB)
+            m_DB = value
         End Set
     End Property
 

@@ -2,9 +2,10 @@
 Imports System.Net
 Imports Hotel
 Imports Npgsql
+Imports WorkrServer
 
 Module Module1
-    Private WithEvents h As New Hotel.WorkrServer
+    Private WithEvents workr As New WorkrServer.WorkrServer
     Sub Main()
         'Dim x As New NpgsqlConnection()
         'x.ConnectionString = "Server=127.0.0.1;User Id=postgres;" &
@@ -21,7 +22,7 @@ Module Module1
 
         'Dim webClient As New WebClient
         'Dim params As New Specialized.NameValueCollection()
-        h.Start()
+        workr.Start()
         Console.ReadLine()
         'params.Add("p1", "value1")
         'webClient.UploadValues("http://127.0.0.1:9877/test", "POST", params)
@@ -31,7 +32,7 @@ Module Module1
 
     End Sub
 
-    Sub lol(ByVal json As String) Handles h.jr
+    Sub lol(ByVal json As String) Handles workr.jr
         Console.WriteLine(json)
     End Sub
 

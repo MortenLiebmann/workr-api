@@ -15,18 +15,18 @@ Public Class Charge
     Private m_PriceTotal As Double
     Private m_Description As String
 
-    <JsonConstructor>
-    Public Sub New(iD As Guid, type As Integer, room As Room, chargeTime As Date, units As Integer, priceNet As Double, priceVat As Double, priceTotal As Double, description As String)
-        Me.ID = iD
-        Me.Type = type
-        Me.Room = room
-        Me.ChargeTime = chargeTime
-        Me.Units = units
-        Me.PriceNet = priceNet
-        Me.PriceVat = priceVat
-        Me.PriceTotal = priceTotal
-        Me.Description = description
-    End Sub
+    '<JsonConstructor>
+    'Public Sub New(iD As Guid, type As Integer, room As Room, chargeTime As Date, units As Integer, priceNet As Double, priceVat As Double, priceTotal As Double, description As String)
+    '    Me.ID = iD
+    '    Me.Type = type
+    '    Me.Room = room
+    '    Me.ChargeTime = chargeTime
+    '    Me.Units = units
+    '    Me.PriceNet = priceNet
+    '    Me.PriceVat = priceVat
+    '    Me.PriceTotal = priceTotal
+    '    Me.Description = description
+    'End Sub
 
     Public Sub New(iD As Guid, type As Integer, roomID As Guid, chargeTime As Date, units As Integer, priceNet As Double, priceVat As Double, priceTotal As Double, description As String)
         Me.ID = iD
@@ -53,21 +53,21 @@ Public Class Charge
         End Set
     End Property
 
-    Public Property Room As Room
-        Get
-            Dim r = Map("room").FindByID(m_RoomID.ToString)
-            If Not r = Nothing Then Return r
-            Return m_TempRoom
-        End Get
-        Set(value As Room)
-            If Not value = Nothing Then
-                m_RoomID = value.ID
-                m_TempRoom = value
-            Else
-                m_TempRoom = New Room
-            End If
-        End Set
-    End Property
+    'Public Property Room As Room
+    '    Get
+    '        Dim r = Map("room").FindByID(m_RoomID.ToString)
+    '        If Not r = Nothing Then Return r
+    '        Return m_TempRoom
+    '    End Get
+    '    Set(value As Room)
+    '        If Not value = Nothing Then
+    '            m_RoomID = value.ID
+    '            m_TempRoom = value
+    '        Else
+    '            m_TempRoom = New Room
+    '        End If
+    '    End Set
+    'End Property
 
     Public Property ChargeTime As Date
         Get
