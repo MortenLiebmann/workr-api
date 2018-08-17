@@ -44,6 +44,7 @@ Public Class HttpController
                     context = Listener.GetContext
                     request = context.Request
                     response = context.Response
+                    RaiseEvent JsonRecieved(request.Url.AbsolutePath)
                     path = request.Url.AbsolutePath.Split({"/"}, StringSplitOptions.RemoveEmptyEntries)
                     postData = New StreamReader(request.InputStream, request.ContentEncoding).ReadToEnd
                     RaiseEvent JsonRecieved(postData)
