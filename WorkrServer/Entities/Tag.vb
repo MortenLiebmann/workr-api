@@ -1,12 +1,11 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
 
-<Table("postimages")>
-Public Class PostImage
+<Table("tags")>
+Public Class Tag
     Inherits Entity
     <Key>
     Public Overrides Property ID As Guid
-    Public Property PostID As Guid
-    Public Property Path As String
-    Public Property Description As String
+    Public Property Name As String
+    Public Property TagFlags As Int64
 End Class

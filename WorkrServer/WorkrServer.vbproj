@@ -111,6 +111,8 @@
     <Compile Include="Entities\Post.vb" />
     <Compile Include="Entities\PostImage.vb" />
     <Compile Include="Entities\Rating.vb" />
+    <Compile Include="Entities\Tag.vb" />
+    <Compile Include="Entities\TagReference.vb" />
     <Compile Include="Entities\User.vb" />
     <Compile Include="Entities\WorkrDB.vb" />
     <Compile Include="Entities\Table.vb" />

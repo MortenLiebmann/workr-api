@@ -10,13 +10,13 @@ Public Class HttpController
     Private Listener As HttpListener
     Private ListenThread As Thread
 
-    Public Sub New(ByVal baseUrl As String, ByRef Map As Dictionary(Of String, UserTable))
+    Public Sub New(ByVal baseUrl As String, ByRef Map As Dictionary(Of String, Object))
         Helper.Map = Map
         Listener = New HttpListener()
         Listener.Prefixes.Add(baseUrl)
     End Sub
 
-    Public Sub New(ByVal baseURLs As String(), ByRef Map As Dictionary(Of String, UserTable))
+    Public Sub New(ByVal baseURLs As String(), ByRef Map As Dictionary(Of String, Object))
         Helper.Map = Map
         Listener = New HttpListener()
         For Each url As String In baseURLs
@@ -62,18 +62,18 @@ Public Class HttpController
     Private Function NavigateMap(ByVal path As String(), ByVal method As String, Optional ByVal postData As String = "") As String
         Dim response = Nothing
 
-        'Select Case method
-        '    Case "GET"
-        '        response = Map(path(0)).GetAll()
-        '    Case "POST"
-        '        response = Map(path(0)).Search(postData)
-        '    Case "PUT"
-        '        response = Map(path(0)).Put(postData)
-        '    Case "DELETE"
-        '        Map(path(0)).Delete(path(1))
-        '    Case "PATCH"
-        '        Map(path(0)).Modify(postData)
-        'End Select
+        Select Case method
+            Case "GET"
+                response = Map(path(0)).GetAll()
+            Case "POST"
+                response = Map(path(0)).Search(postData)
+            Case "PUT"
+                response = Map(path(0)).Put(postData)
+            Case "DELETE"
+                Map(path(0)).Delete(path(1))
+                'Case "PATCH"
+                '    Map(path(0)).Modify(postData)
+        End Select
 
         Return JsonConvert.SerializeObject(response, JSONSettings)
     End Function

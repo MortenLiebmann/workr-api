@@ -9,7 +9,7 @@ Imports WorkrServer
 ''' </summary>
 Module Helper
     Private m_DB As New WorkrDB
-    Private m_Map As New Dictionary(Of String, UserTable)
+    Private m_Map As New Dictionary(Of String, Object)
     Private m_JSONSettings As New JsonSerializerSettings() With {.MissingMemberHandling = MissingMemberHandling.Ignore,
         .DateFormatString = "yyyy-MM-ddTHH:mm:ssZ"}
 
@@ -17,11 +17,11 @@ Module Helper
     ''' Dictionary of DbToItem objects and a string key. The key is used in the URL of HTTP requests.
     ''' </summary>
     ''' <returns></returns>
-    Public Property Map As Dictionary(Of String, UserTable)
+    Public Property Map As Dictionary(Of String, Object)
         Get
             Return m_Map
         End Get
-        Set(value As Dictionary(Of String, UserTable))
+        Set(value As Dictionary(Of String, Object))
             m_Map = value
         End Set
     End Property

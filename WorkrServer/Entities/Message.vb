@@ -3,8 +3,9 @@ Imports System.ComponentModel.DataAnnotations.Schema
 
 <Table("messages")>
 Public Class Message
+    Inherits Entity
     <Key>
-    Public Property ID As Guid
+    Public Overrides Property ID As Guid
     Public Property ChatID As Guid
     Public Property SentByUserID As Guid
     Public Property CreatedDate As DateTime

@@ -5,7 +5,7 @@ Imports System.ComponentModel.DataAnnotations.Schema
 Public Class Post
     Inherits Entity
     <Key>
-    Public Property ID As Guid
+    Public Overrides Property ID As Guid
     Public Property CreatedByUserID As Guid
     Public Property CreatedDate As DateTime
     Public Property Title As String
