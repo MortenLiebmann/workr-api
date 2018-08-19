@@ -19,6 +19,6 @@ Public Class User
     Public Property AccountFlags As Int64?
 
     Public Overrides Function Expand() As Object
-        Throw New NotImplementedException()
+        Return Me
     End Function
 End Class

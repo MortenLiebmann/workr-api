@@ -42,12 +42,12 @@ Public Class Table(Of T As Entity)
         Dim result As T() = (From e As T In DbSet.AsNoTracking
                              Select e).ToArray
 
-        Dim expandedResult As New List(Of Object)
-        For Each u As T In result
-            expandedResult.Add(u.Expand)
+        Dim resultExpanded As New List(Of Object)
+        For Each e As T In result
+            resultExpanded.Add(e.Expand)
         Next
 
-        Return expandedResult.ToArray
+        Return resultExpanded.ToArray
     End Function
 
     Public Overloads Function GetByIDExpand(id As String) As Object
@@ -56,13 +56,6 @@ Public Class Table(Of T As Entity)
                            Where e.ID = userID
                            Select e).First
         Return result.Expand
-    End Function
-
-    Public Overloads Function Put(e As T) As T
-        e.ID = Guid.NewGuid
-        Dim result As T = DbSet.Add(e)
-        DB.SaveChanges()
-        Return result
     End Function
 
     Public Overloads Function Put(json As String) As T
@@ -82,17 +75,30 @@ Public Class Table(Of T As Entity)
         Return True
     End Function
 
-    Public Function Search(json As String) As T()
+    Public Overloads Function Search(json As String, expand As Boolean) As Object()
         Dim jsonEntity As T = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
+        If expand Then Return SearchExpand(jsonEntity)
+        Return Search(jsonEntity)
+    End Function
 
+    Public Overloads Function Search(jsonEntity As T) As T()
         Dim selector As Func(Of T, Boolean) = Function(e)
                                                   For Each prop As PropertyInfo In Properties
-                                                      If Not CompareEntitys(jsonEntity, e, prop) Then Return False
+                                                      If Not CompareEntityProperty(jsonEntity, e, prop) Then Return False
                                                   Next
                                                   Return True
                                               End Function
         Dim result As T() = DbSet.Where(selector).ToArray
         Return result
+    End Function
+
+    Public Function SearchExpand(jsonEntity As T) As Object()
+        Dim result As T() = Search(jsonEntity)
+        Dim resultExpanded As New List(Of Object)
+        For Each e As T In result
+            resultExpanded.Add(e.Expand)
+        Next
+        Return resultExpanded.ToArray
     End Function
 
     Public Function Patch(id As String, json As String) As T
@@ -111,8 +117,13 @@ Public Class Table(Of T As Entity)
         Return dbEntity
     End Function
 
-    Private Function CompareEntitys(jsonEntity As T, dbEntity As T, prop As PropertyInfo) As Boolean
+    Private Function CompareEntityProperty(jsonEntity As T, dbEntity As T, prop As PropertyInfo) As Boolean
         If prop.GetValue(jsonEntity) Is Nothing Then Return True
+        If prop.PropertyType Is GetType(DateTime) Then
+            Dim t1 As UInt64 = Math.Round(CDate(prop.GetValue(jsonEntity)).Ticks / TimeSpan.TicksPerSecond, 0) * TimeSpan.TicksPerSecond
+            Dim t2 As UInt64 = Math.Round(CDate(prop.GetValue(dbEntity)).Ticks / TimeSpan.TicksPerSecond, 0) * TimeSpan.TicksPerSecond
+            Return t1 = t2
+        End If
         Return prop.GetValue(jsonEntity) = prop.GetValue(dbEntity)
     End Function
 End Class

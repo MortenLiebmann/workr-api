@@ -10,6 +10,19 @@ Public Class TagReference
     Public Property PostID As Guid?
 
     Public Overrides Function Expand() As Object
-        Throw New NotImplementedException()
+        Return New With {.TagReference = Me, Tag(), Post()
+        }
+    End Function
+
+    Public Function Tag() As Tag
+        Return (From e As Tag In DB.Tags
+                Where e.ID = Me.TagID
+                Select e).First
+    End Function
+
+    Public Function Post() As Post
+        Return (From e As Post In DB.Posts
+                Where e.ID = Me.PostID
+                Select e).First
     End Function
 End Class

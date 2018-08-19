@@ -15,6 +15,25 @@ Public Class Rating
     Public Property Text As String
 
     Public Overrides Function Expand() As Object
-        Throw New NotImplementedException()
+        Return New With {.Rating = Me, User(), RatedByUser(), Post()
+        }
+    End Function
+
+    Public Function User() As User
+        Return (From e As User In DB.Users
+                Where e.ID = Me.UserID
+                Select e).First
+    End Function
+
+    Public Function RatedByUser() As User
+        Return (From e As User In DB.Users
+                Where e.ID = Me.RatedByUserID
+                Select e).First
+    End Function
+
+    Public Function Post() As Post
+        Return (From e As Post In DB.Posts
+                Where e.ID = Me.PostID
+                Select e).First
     End Function
 End Class

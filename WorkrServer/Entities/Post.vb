@@ -25,6 +25,5 @@ Public Class Post
         Return (From e As User In DB.Users
                 Where e.ID = Me.CreatedByUserID
                 Select e).First
-
     End Function
 End Class

@@ -11,6 +11,13 @@ Public Class PostImage
     Public Property Description As String
 
     Public Overrides Function Expand() As Object
-        Throw New NotImplementedException()
+        Return New With {.PostImage = Me, Post()
+        }
+    End Function
+
+    Public Function Post() As Post
+        Return (From e As Post In DB.Posts
+                Where e.ID = Me.PostID
+                Select e).First
     End Function
 End Class

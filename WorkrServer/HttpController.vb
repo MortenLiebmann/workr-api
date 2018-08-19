@@ -58,6 +58,9 @@ Public Class HttpController
                 Catch ex As IndexOutOfRangeException
                     response.StatusCode = 405
                     SendResponse(response, ex.Message)
+                Catch ex As InvalidOperationException
+                    response.StatusCode = 404
+                    SendResponse(response, "ID not found.")
                 Catch ex As Exception
                     response.StatusCode = 500
                     SendResponse(response, ex.Message)

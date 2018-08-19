@@ -12,6 +12,26 @@ Public Class Chat
     Public Property ChatParty2UserID As Guid?
 
     Public Overrides Function Expand() As Object
-        Throw New NotImplementedException()
+        Return New With {.Chat = Me, Post(), ChatParty1User(), ChatParty2User()
+        }
+    End Function
+
+    Public Function Post() As Post
+        Return (From e As Post In DB.Posts
+                Where e.ID = Me.PostID
+                Select e).First
+
+    End Function
+
+    Public Function ChatParty1User() As User
+        Return (From e As User In DB.Users
+                Where e.ID = Me.ChatParty1UserID
+                Select e).First
+    End Function
+
+    Public Function ChatParty2User() As User
+        Return (From e As User In DB.Users
+                Where e.ID = Me.ChatParty2UserID
+                Select e).First
     End Function
 End Class
