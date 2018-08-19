@@ -5,7 +5,7 @@ Imports Newtonsoft.Json
 Imports WorkrServer
 
 ''' <summary>
-''' Static class helper
+''' Static helper class.
 ''' </summary>
 Module Helper
     Private m_DB As New WorkrDB
@@ -14,7 +14,7 @@ Module Helper
         .DateFormatString = "yyyy-MM-ddTHH:mm:ssZ"}
 
     ''' <summary>
-    ''' Dictionary of DbToItem objects and a string key. The key is used in the URL of HTTP requests.
+    ''' Dictionary of Table objects and a string key. The key is used in the URL of HTTP requests.
     ''' </summary>
     ''' <returns></returns>
     Public Property Map As Dictionary(Of String, Object)
@@ -49,7 +49,7 @@ Module Helper
     ''' </summary>
     ''' <param name="subset"></param>
     ''' <param name="superset"></param>
-    ''' <returns></returns>
+    ''' <returns>Boolean</returns>
     Public Function IsSubsetOf(ByVal subset As Object(), ByVal superset As Object()) As Boolean
         Dim supersetList As List(Of Object) = superset.ToList
         Dim subsetList As List(Of Object) = subset.ToList

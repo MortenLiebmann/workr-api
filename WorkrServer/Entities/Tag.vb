@@ -5,7 +5,11 @@ Imports System.ComponentModel.DataAnnotations.Schema
 Public Class Tag
     Inherits Entity
     <Key>
-    Public Overrides Property ID As Guid
+    Public Overrides Property ID As Guid?
     Public Property Name As String
-    Public Property TagFlags As Int64
+    Public Property TagFlags As Int64?
+
+    Public Overrides Function Expand() As Object
+        Throw New NotImplementedException()
+    End Function
 End Class

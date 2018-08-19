@@ -6,7 +6,7 @@ Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
 
 Public Class HttpController
-    Public Event JsonRecieved(ByVal json As String)
+    Public Event OnRequest(ByVal msg As String)
     Private Listener As HttpListener
     Private ListenThread As Thread
 
@@ -33,7 +33,7 @@ Public Class HttpController
     Private Sub Listen()
         Dim context As HttpListenerContext
         Dim request As HttpListenerRequest
-        Dim response As HttpListenerResponse
+        Dim response As HttpListenerResponse = Nothing
         Dim path As String()
         Dim postData As String
         Dim responseString As String
@@ -44,12 +44,20 @@ Public Class HttpController
                     context = Listener.GetContext
                     request = context.Request
                     response = context.Response
-                    RaiseEvent JsonRecieved(request.Url.AbsolutePath)
                     path = request.Url.AbsolutePath.Split({"/"}, StringSplitOptions.RemoveEmptyEntries)
                     postData = New StreamReader(request.InputStream, request.ContentEncoding).ReadToEnd
-                    RaiseEvent JsonRecieved(postData)
-                    responseString = NavigateMap(path, request.HttpMethod, postData)
+                    RaiseEvent OnRequest(String.Format("{0} - {1}" & vbCrLf & vbCrLf & "{2}",
+                                                       Now().ToShortTimeString,
+                                                       request.Url.AbsoluteUri,
+                                                       postData))
+                    responseString = NavigateMap(path, request.HttpMethod, request.Url.Query, postData)
                     SendResponse(response, responseString)
+                Catch ex As KeyNotFoundException
+                    response.StatusCode = 404
+                    SendResponse(response, ex.Message)
+                Catch ex As IndexOutOfRangeException
+                    response.StatusCode = 405
+                    SendResponse(response, ex.Message)
                 Catch ex As Exception
                     response.StatusCode = 500
                     SendResponse(response, ex.Message)
@@ -60,33 +68,38 @@ Public Class HttpController
         End While
     End Sub
 
-    Private Function NavigateMap(ByVal path As String(), ByVal method As String, Optional ByVal postData As String = "") As String
+    Private Function NavigateMap(path As String(), method As String, Optional query As String = "", Optional data As String = "") As String
         Dim response = Nothing
 
         Select Case method
             Case "GET"
-                response = Map(path(0)).GetAll()
+                If path.Length > 1 Then response = Map(path(0)).GetByID(path(1), EvalQuery(query)) : Exit Select
+                response = Map(path(0)).GetAll(EvalQuery(query))
             Case "POST"
-                response = Map(path(0)).Search(postData)
+                response = Map(path(0)).Search(data)
             Case "PUT"
-                response = Map(path(0)).Put(postData)
+                response = Map(path(0)).Put(data)
             Case "DELETE"
-                Map(path(0)).Delete(path(1))
-                'Case "PATCH"
-                '    Map(path(0)).Modify(postData)
+                response = Map(path(0)).Delete(path(1))
+            Case "PATCH"
+                response = Map(path(0)).Patch(path(1), data)
         End Select
 
         Return JsonConvert.SerializeObject(response, JSONSettings)
     End Function
 
-    Private Sub SendResponse(ByRef response As HttpListenerResponse, ByVal json As String)
-        Dim responseBytes As Byte() = Text.Encoding.UTF8.GetBytes(json)
+    Private Sub SendResponse(ByRef response As HttpListenerResponse, ByVal data As String)
+        Dim responseBytes As Byte() = Text.Encoding.UTF8.GetBytes(data)
         response.ContentType = "application/json"
         response.ContentLength64 = responseBytes.Length
         response.OutputStream.Write(responseBytes, 0, responseBytes.Length)
         response.Close()
     End Sub
 
+    Private Function EvalQuery(query As String) As Boolean
+        If query.Contains("expand=true") Then Return True
+        Return False
+    End Function
 End Class
 
 

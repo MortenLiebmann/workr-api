@@ -10,25 +10,62 @@ Public Class Table(Of T As Entity)
         Me.DbSet = dbset
     End Sub
 
-    Public ReadOnly Property Properties As PropertyInfo()
+    Private ReadOnly Property Properties As PropertyInfo()
         Get
             Return GetType(T).GetProperties()
         End Get
     End Property
 
-    Public Overridable Function GetAll() As T()
-        Return (From e As T In DbSet
+    Public Overloads Function GetAll() As T()
+        Return (From e As T In DbSet.AsNoTracking
                 Select e).ToArray
     End Function
 
-    Public Overridable Function Put(e As T) As T
+    Public Overloads Function GetAll(expand As Boolean) As Object()
+        If expand Then Return GetAllExpand()
+        Return GetAll()
+    End Function
+
+    Public Overloads Function GetByID(id As String, expand As Boolean) As Object
+        If expand Then Return GetByIDExpand(id)
+        Return GetByID(id)
+    End Function
+
+    Public Overloads Function GetByID(id As String) As T
+        Dim userID As Guid = Guid.Parse(id)
+        Return (From e As T In DbSet.AsNoTracking
+                Where e.ID = userID
+                Select e).First
+    End Function
+
+    Public Overloads Function GetAllExpand() As Object()
+        Dim result As T() = (From e As T In DbSet.AsNoTracking
+                             Select e).ToArray
+
+        Dim expandedResult As New List(Of Object)
+        For Each u As T In result
+            expandedResult.Add(u.Expand)
+        Next
+
+        Return expandedResult.ToArray
+    End Function
+
+    Public Overloads Function GetByIDExpand(id As String) As Object
+        Dim userID As Guid = Guid.Parse(id)
+        Dim result As T = (From e As T In DbSet.AsNoTracking
+                           Where e.ID = userID
+                           Select e).First
+        Return result.Expand
+    End Function
+
+    Public Overloads Function Put(e As T) As T
         e.ID = Guid.NewGuid
         Dim result As T = DbSet.Add(e)
         DB.SaveChanges()
         Return result
     End Function
 
-    Public Overridable Function Put(json As String) As T
+    Public Overloads Function Put(json As String) As T
         Dim jsonEntity As T = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
         jsonEntity.ID = Guid.NewGuid
         Dim result As T = DbSet.Add(jsonEntity)
@@ -36,33 +73,21 @@ Public Class Table(Of T As Entity)
         Return result
     End Function
 
-    Public Overridable Sub Delete(e As T)
-        DbSet.Remove(e)
-        DB.SaveChanges()
-    End Sub
-
-    Public Overridable Sub Delete(id As String)
+    Public Function Delete(id As String) As Boolean
+        Dim userID As Guid = Guid.Parse(id)
         DbSet.Remove((From e As T In DbSet
-                      Where e.ID.ToString = id
+                      Where e.ID = userID
                       Select e).First)
         DB.SaveChanges()
-    End Sub
+        Return True
+    End Function
 
-    Public Overridable Sub Delete(id As Guid)
-        DbSet.Remove(From e As T In DbSet
-                     Where e.ID = id
-                     Select e)
-        DB.SaveChanges()
-    End Sub
-
-    Public Overridable Function Search(json As String) As T()
+    Public Function Search(json As String) As T()
         Dim jsonEntity As T = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
 
         Dim selector As Func(Of T, Boolean) = Function(e)
                                                   For Each prop As PropertyInfo In Properties
-                                                      If prop.GetValue(jsonEntity) IsNot Nothing Then
-                                                          If Not CompareEntitys(jsonEntity, e, prop) Then Return False
-                                                      End If
+                                                      If Not CompareEntitys(jsonEntity, e, prop) Then Return False
                                                   Next
                                                   Return True
                                               End Function
@@ -70,13 +95,23 @@ Public Class Table(Of T As Entity)
         Return result
     End Function
 
-    Public Overridable Function Patch(json As String) As T
+    Public Function Patch(id As String, json As String) As T
         Dim jsonEntity As T = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
+        Dim userID As Guid = Guid.Parse(id)
+        Dim dbEntity As T = (From e As T In DbSet
+                             Where e.ID = userID
+                             Select e).First
 
+        For Each prop As PropertyInfo In Properties
+            If prop.GetValue(jsonEntity) Is Nothing Then Continue For
+            prop.SetValue(dbEntity, prop.GetValue(jsonEntity))
+        Next
+
+        DB.SaveChanges()
+        Return dbEntity
     End Function
 
     Private Function CompareEntitys(jsonEntity As T, dbEntity As T, prop As PropertyInfo) As Boolean
-        If prop.Name.EndsWith("ID") AndAlso (jsonEntity.ID = Guid.Empty) Then Return True
         If prop.GetValue(jsonEntity) Is Nothing Then Return True
         Return prop.GetValue(jsonEntity) = prop.GetValue(dbEntity)
     End Function

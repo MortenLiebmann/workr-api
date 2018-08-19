@@ -7,7 +7,7 @@ Imports WorkrServer
 Public Class User
     Inherits Entity
     <Key>
-    Public Overrides Property ID As Guid
+    Public Overrides Property ID As Guid?
     Public Property Name As String
     Public Property Email As String
     Public Property PasswordHash As String
@@ -16,5 +16,9 @@ Public Class User
     Public Property Business As String
     Public Property Phone As String
     Public Property Company As String
-    Public Property AccountFlags As Int64
+    Public Property AccountFlags As Int64?
+
+    Public Overrides Function Expand() As Object
+        Throw New NotImplementedException()
+    End Function
 End Class

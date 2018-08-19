@@ -5,9 +5,13 @@ Imports System.ComponentModel.DataAnnotations.Schema
 Public Class Chat
     Inherits Entity
     <Key>
-    Public Overrides Property ID As Guid
-    Public Property PostID As Guid
+    Public Overrides Property ID As Guid?
+    Public Property PostID As Guid?
     Public Property CreatedDate As DateTime
-    Public Property ChatParty1UserID As Guid
-    Public Property ChatParty2UserID As Guid
+    Public Property ChatParty1UserID As Guid?
+    Public Property ChatParty2UserID As Guid?
+
+    Public Overrides Function Expand() As Object
+        Throw New NotImplementedException()
+    End Function
 End Class
