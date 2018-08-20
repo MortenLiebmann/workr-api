@@ -9,7 +9,7 @@ Public Class Tag
     Public Property Name As String
     Public Property TagFlags As Int64?
 
-    Public Overrides Function Expand() As Object
-        Return Me
-    End Function
+    'Public Overrides Function Expand() As Object
+    '    Return Me
+    'End Function
 End Class

@@ -21,41 +21,11 @@ Public Class Table(Of T As Entity)
                 Select e).ToArray
     End Function
 
-    Public Overloads Function GetAll(expand As Boolean) As Object()
-        If expand Then Return GetAllExpand()
-        Return GetAll()
-    End Function
-
-    Public Overloads Function GetByID(id As String, expand As Boolean) As Object
-        If expand Then Return GetByIDExpand(id)
-        Return GetByID(id)
-    End Function
-
     Public Overloads Function GetByID(id As String) As T
         Dim userID As Guid = Guid.Parse(id)
         Return (From e As T In DbSet.AsNoTracking
                 Where e.ID = userID
                 Select e).First
-    End Function
-
-    Public Overloads Function GetAllExpand() As Object()
-        Dim result As T() = (From e As T In DbSet.AsNoTracking
-                             Select e).ToArray
-
-        Dim resultExpanded As New List(Of Object)
-        For Each e As T In result
-            resultExpanded.Add(e.Expand)
-        Next
-
-        Return resultExpanded.ToArray
-    End Function
-
-    Public Overloads Function GetByIDExpand(id As String) As Object
-        Dim userID As Guid = Guid.Parse(id)
-        Dim result As T = (From e As T In DbSet.AsNoTracking
-                           Where e.ID = userID
-                           Select e).First
-        Return result.Expand
     End Function
 
     Public Overloads Function Put(json As String) As T
@@ -75,12 +45,6 @@ Public Class Table(Of T As Entity)
         Return True
     End Function
 
-    Public Overloads Function Search(json As String, expand As Boolean) As Object()
-        Dim jsonEntity As T = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
-        If expand Then Return SearchExpand(jsonEntity)
-        Return Search(jsonEntity)
-    End Function
-
     Public Overloads Function Search(jsonEntity As T) As T()
         Dim selector As Func(Of T, Boolean) = Function(e)
                                                   For Each prop As PropertyInfo In Properties
@@ -88,17 +52,11 @@ Public Class Table(Of T As Entity)
                                                   Next
                                                   Return True
                                               End Function
-        Dim result As T() = DbSet.Where(selector).ToArray
-        Return result
+        Return DbSet.Where(selector).ToArray
     End Function
 
-    Public Function SearchExpand(jsonEntity As T) As Object()
-        Dim result As T() = Search(jsonEntity)
-        Dim resultExpanded As New List(Of Object)
-        For Each e As T In result
-            resultExpanded.Add(e.Expand)
-        Next
-        Return resultExpanded.ToArray
+    Public Overloads Function Search(jsonEntity As String) As T()
+        Return Search(JsonConvert.DeserializeObject(Of T)(jsonEntity, JSONSettings))
     End Function
 
     Public Function Patch(id As String, json As String) As T

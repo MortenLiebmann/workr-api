@@ -7,31 +7,39 @@ Public Class Chat
     <Key>
     Public Overrides Property ID As Guid?
     Public Property PostID As Guid?
-    Public Property CreatedDate As DateTime
+    Public Property CreatedDate As DateTime?
     Public Property ChatParty1UserID As Guid?
     Public Property ChatParty2UserID As Guid?
 
-    Public Overrides Function Expand() As Object
-        Return New With {.Chat = Me, Post(), ChatParty1User(), ChatParty2User()
-        }
-    End Function
+    'Public Overrides Function Expand() As Object
+    '    Return New With {.Chat = Me, Post(), ChatParty1User(), ChatParty2User()
+    '    }
+    'End Function
 
-    Public Function Post() As Post
-        Return (From e As Post In DB.Posts
-                Where e.ID = Me.PostID
-                Select e).First
+    Public ReadOnly Property Post() As Post
+        Get
+            If Me.PostID Is Nothing Then Return Nothing
+            Return (From e As Post In DB.Posts
+                    Where e.ID = Me.PostID
+                    Select e).First
+        End Get
+    End Property
 
-    End Function
+    Public ReadOnly Property ChatParty1User() As User
+        Get
+            If Me.ChatParty1UserID Is Nothing Then Return Nothing
+            Return (From e As User In DB.Users
+                    Where e.ID = Me.ChatParty1UserID
+                    Select e).First
+        End Get
+    End Property
 
-    Public Function ChatParty1User() As User
-        Return (From e As User In DB.Users
-                Where e.ID = Me.ChatParty1UserID
-                Select e).First
-    End Function
-
-    Public Function ChatParty2User() As User
-        Return (From e As User In DB.Users
-                Where e.ID = Me.ChatParty2UserID
-                Select e).First
-    End Function
+    Public ReadOnly Property ChatParty2User() As User
+        Get
+            If Me.ChatParty2UserID Is Nothing Then Return Nothing
+            Return (From e As User In DB.Users
+                    Where e.ID = Me.ChatParty2UserID
+                    Select e).First
+        End Get
+    End Property
 End Class

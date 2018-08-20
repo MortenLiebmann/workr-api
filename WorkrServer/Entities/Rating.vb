@@ -10,30 +10,39 @@ Public Class Rating
     Public Property UserID As Guid?
     Public Property RatedByUserID As Guid?
     Public Property PostID As Guid?
-    Public Property CreatedDate As DateTime
+    Public Property CreatedDate As DateTime?
     Public Property Score As Int16
     Public Property Text As String
 
-    Public Overrides Function Expand() As Object
-        Return New With {.Rating = Me, User(), RatedByUser(), Post()
-        }
-    End Function
+    'Public Overrides Function Expand() As Object
+    '    Return New With {.Rating = Me, User(), RatedByUser(), Post()
+    '    }
+    'End Function
 
-    Public Function User() As User
-        Return (From e As User In DB.Users
-                Where e.ID = Me.UserID
-                Select e).First
-    End Function
+    Public ReadOnly Property User() As User
+        Get
+            If Me.UserID Is Nothing Then Return Nothing
+            Return (From e As User In DB.Users
+                    Where e.ID = Me.UserID
+                    Select e).First
+        End Get
+    End Property
 
-    Public Function RatedByUser() As User
-        Return (From e As User In DB.Users
-                Where e.ID = Me.RatedByUserID
-                Select e).First
-    End Function
+    Public ReadOnly Property RatedByUser() As User
+        Get
+            If Me.RatedByUserID Is Nothing Then Return Nothing
+            Return (From e As User In DB.Users
+                    Where e.ID = Me.RatedByUserID
+                    Select e).First
+        End Get
+    End Property
 
-    Public Function Post() As Post
-        Return (From e As Post In DB.Posts
-                Where e.ID = Me.PostID
-                Select e).First
-    End Function
+    Public ReadOnly Property Post() As Post
+        Get
+            If Me.PostID Is Nothing Then Return Nothing
+            Return (From e As Post In DB.Posts
+                    Where e.ID = Me.PostID
+                    Select e).First
+        End Get
+    End Property
 End Class

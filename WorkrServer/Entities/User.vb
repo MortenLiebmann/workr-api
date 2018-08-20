@@ -18,7 +18,7 @@ Public Class User
     Public Property Company As String
     Public Property AccountFlags As Int64?
 
-    Public Overrides Function Expand() As Object
-        Return Me
-    End Function
+    'Public Overrides Function Expand() As Object
+    '    Return Me
+    'End Function
 End Class

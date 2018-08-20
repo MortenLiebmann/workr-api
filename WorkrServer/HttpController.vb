@@ -1,6 +1,7 @@
 ﻿Imports System.Data.Entity
 Imports System.IO
 Imports System.Net
+Imports System.Text
 Imports System.Threading
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
@@ -35,7 +36,7 @@ Public Class HttpController
         Dim request As HttpListenerRequest
         Dim response As HttpListenerResponse = Nothing
         Dim path As String()
-        Dim postData As String
+        Dim data As String = Nothing
         Dim responseString As String
 
         While True
@@ -45,12 +46,22 @@ Public Class HttpController
                     request = context.Request
                     response = context.Response
                     path = request.Url.AbsolutePath.Split({"/"}, StringSplitOptions.RemoveEmptyEntries)
-                    postData = New StreamReader(request.InputStream, request.ContentEncoding).ReadToEnd
-                    RaiseEvent OnRequest(String.Format("{0} - {1}" & vbCrLf & vbCrLf & "{2}",
+
+                    If context.Request.ContentType.StartsWith("multipart/form-data") Then
+                        SaveFile(context.Request.ContentEncoding, GetBoundary(context.Request.ContentType), context.Request.InputStream)
+                        data = ""
+                        responseString = "200 OK"
+                    Else
+                        data = New StreamReader(request.InputStream, request.ContentEncoding).ReadToEnd
+                        responseString = NavigateMap(path, request.HttpMethod, data)
+                    End If
+
+                    RaiseEvent OnRequest(String.Format("{0} - {1} : {2}" & vbCrLf & "{3}" & vbCrLf & vbCrLf & "{4}",
                                                        Now().ToShortTimeString,
+                                                       context.Request.HttpMethod,
                                                        request.Url.AbsoluteUri,
-                                                       postData))
-                    responseString = NavigateMap(path, request.HttpMethod, request.Url.Query, postData)
+                                                       context.Request.ContentType.Split(";")(0),
+                                                       data))
                     SendResponse(response, responseString)
                 Catch ex As KeyNotFoundException
                     response.StatusCode = 404
@@ -65,19 +76,21 @@ Public Class HttpController
                     response.StatusCode = 500
                     SendResponse(response, ex.Message)
                 End Try
+
+
             End While
             Thread.Sleep(3000)
             Listener.Start()
         End While
     End Sub
 
-    Private Function NavigateMap(path As String(), method As String, Optional query As String = "", Optional data As String = "") As String
+    Private Function NavigateMap(path As String(), method As String, Optional data As String = "") As String
         Dim response = Nothing
 
         Select Case method
             Case "GET"
-                If path.Length > 1 Then response = Map(path(0)).GetByID(path(1), EvalQuery(query)) : Exit Select
-                response = Map(path(0)).GetAll(EvalQuery(query))
+                If path.Length > 1 Then response = Map(path(0)).GetByID(path(1)) : Exit Select
+                response = Map(path(0)).GetAll()
             Case "POST"
                 response = Map(path(0)).Search(data)
             Case "PUT"
@@ -92,17 +105,12 @@ Public Class HttpController
     End Function
 
     Private Sub SendResponse(ByRef response As HttpListenerResponse, ByVal data As String)
-        Dim responseBytes As Byte() = Text.Encoding.UTF8.GetBytes(data)
+        Dim responseBytes As Byte() = Encoding.UTF8.GetBytes(data)
         response.ContentType = "application/json"
         response.ContentLength64 = responseBytes.Length
         response.OutputStream.Write(responseBytes, 0, responseBytes.Length)
         response.Close()
     End Sub
-
-    Private Function EvalQuery(query As String) As Boolean
-        If query.Contains("expand=true") Then Return True
-        Return False
-    End Function
 End Class
 
 
