@@ -46,22 +46,16 @@ Public Class HttpController
                     request = context.Request
                     response = context.Response
                     path = request.Url.AbsolutePath.Split({"/"}, StringSplitOptions.RemoveEmptyEntries)
-
-                    If context.Request.ContentType.StartsWith("multipart/form-data") Then
-                        SaveFile(context.Request.ContentEncoding, GetBoundary(context.Request.ContentType), context.Request.InputStream)
-                        data = ""
-                        responseString = "200 OK"
-                    Else
-                        data = New StreamReader(request.InputStream, request.ContentEncoding).ReadToEnd
-                        responseString = NavigateMap(path, request.HttpMethod, data)
-                    End If
+                    ProcessInput(request.ContentEncoding, request.InputStream, request.ContentType, data)
+                    responseString = NavigateMap(context, data)
 
                     RaiseEvent OnRequest(String.Format("{0} - {1} : {2}" & vbCrLf & "{3}" & vbCrLf & vbCrLf & "{4}",
                                                        Now().ToShortTimeString,
-                                                       context.Request.HttpMethod,
+                                                       request.HttpMethod,
                                                        request.Url.AbsoluteUri,
-                                                       context.Request.ContentType.Split(";")(0),
+                                                       CStr(request.ContentType),
                                                        data))
+
                     SendResponse(response, responseString)
                 Catch ex As KeyNotFoundException
                     response.StatusCode = 404
@@ -76,22 +70,21 @@ Public Class HttpController
                     response.StatusCode = 500
                     SendResponse(response, ex.Message)
                 End Try
-
-
             End While
             Thread.Sleep(3000)
             Listener.Start()
         End While
     End Sub
 
-    Private Function NavigateMap(path As String(), method As String, Optional data As String = "") As String
+    Private Function NavigateMap(ByRef context As HttpListenerContext, Optional data As String = "") As String
         Dim response = Nothing
-
-        Select Case method
+        Dim path = context.Request.Url.AbsolutePath.Split({"/"}, StringSplitOptions.RemoveEmptyEntries)
+        Select Case context.Request.HttpMethod
             Case "GET"
                 If path.Length > 1 Then response = Map(path(0)).GetByID(path(1)) : Exit Select
                 response = Map(path(0)).GetAll()
             Case "POST"
+                If path.Length > 1 Then response = Map(path(0)).GetByID(path(1)) : Exit Select
                 response = Map(path(0)).Search(data)
             Case "PUT"
                 response = Map(path(0)).Put(data)

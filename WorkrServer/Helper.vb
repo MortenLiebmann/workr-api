@@ -70,7 +70,14 @@ Module Helper
         Return True
     End Function
 
-    Public Sub SaveFile(enc As Encoding, boundary As String, input As Stream)
+    Public Sub ProcessInput(enc As Encoding, input As Stream, contentType As String, Optional ByRef outData As String = "")
+        Dim boundary As String = GetBoundary(contentType)
+        If boundary = "" Then
+            Using streamReader As New StreamReader(input)
+                outData = streamReader.ReadToEnd()
+                Exit Sub
+            End Using
+        End If
         Dim boundaryBytes As Byte() = enc.GetBytes(boundary)
         Dim boundaryLen As Int32 = boundaryBytes.Length
 
@@ -135,7 +142,13 @@ Module Helper
     End Sub
 
     Public Function GetBoundary(contentType As String) As String
-        Return "--" & contentType.Split(";")(1).Split("=")(1)
+        Try
+            If CStr(contentType).StartsWith("multipart/form-data") Then
+                Return "--" & contentType.Split(";")(1).Split("=")(1)
+            End If
+        Catch ex As Exception
+        End Try
+        Return ""
     End Function
 
     Public Function IndexOf(buffer As Byte(), len As Int32, boundaryBytes As Byte()) As Int32
