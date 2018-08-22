@@ -30,9 +30,17 @@ Public MustInherit Class Entity
     Public Class IdNotFoundException
         Inherits Exception
 
+        Private m_id As String = ""
+
+
+        Public Sub New(id As String)
+            m_id = id
+        End Sub
+
         Public Overrides ReadOnly Property Message As String
             Get
-                Return "ID was not found."
+                Return String.Format("ID '{0}' was not found.", m_id)
+                Return "ID was not found.2"
             End Get
         End Property
     End Class
@@ -42,7 +50,17 @@ Public MustInherit Class Entity
 
         Public Overrides ReadOnly Property Message As String
             Get
-                Return "File uploading is not allowed for this entity."
+                Return "File uploading is not allowed for this resource."
+            End Get
+        End Property
+    End Class
+
+    Public Class FileNotFoundException
+        Inherits Exception
+
+        Public Overrides ReadOnly Property Message As String
+            Get
+                Return "Requested file was not found."
             End Get
         End Property
     End Class

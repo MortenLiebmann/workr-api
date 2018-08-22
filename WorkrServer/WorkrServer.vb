@@ -6,8 +6,6 @@ Public Class WorkrServer
     Private WithEvents Controller As HttpController
 
     Public Sub Start()
-        CreatePostImagesFolder()
-
         Dim map As New Dictionary(Of String, Object) From {
             {"users", New Table(Of User)(DB.Users)},
             {"posts", New Table(Of Post)(DB.Posts)},
@@ -27,9 +25,5 @@ Public Class WorkrServer
         Console.WriteLine("--------------------------------------------------------------------------")
         Console.WriteLine(data)
         Console.WriteLine("--------------------------------------------------------------------------")
-    End Sub
-
-    Private Sub CreatePostImagesFolder()
-        If Not IO.Directory.Exists(Environment.CurrentDirectory & "\postimages") Then MkDir(Environment.CurrentDirectory & "\postimages")
     End Sub
 End Class

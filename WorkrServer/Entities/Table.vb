@@ -17,16 +17,26 @@ Public Class Table(Of T As Entity)
         End Get
     End Property
 
+    Private ReadOnly Property TableEntity As T
+        Get
+            Return GetType(T).GetConstructor(New Type() {}).Invoke(New Object() {})
+        End Get
+    End Property
+
     Public Overloads Function GetAll() As T()
         Return (From e As T In DbSet.AsNoTracking
                 Select e).ToArray
     End Function
 
     Public Overloads Function GetByID(id As String) As T
-        Dim userID As Guid = Guid.Parse(id)
-        Return (From e As T In DbSet.AsNoTracking
-                Where e.ID = userID
-                Select e).First
+        Try
+            Dim userID As Guid = Guid.Parse(id)
+            Return (From e As T In DbSet.AsNoTracking
+                    Where e.ID = userID
+                    Select e).First
+        Catch ex As InvalidOperationException
+            Throw New Entity.IdNotFoundException(id)
+        End Try
     End Function
 
     Public Overloads Function Put(json As String) As T
@@ -76,9 +86,9 @@ Public Class Table(Of T As Entity)
         Return dbEntity
     End Function
 
-    Public Function SaveFile(file As MemoryStream, associatedEntity As String) As T
+    Public Function PutFile(file As MemoryStream, associatedEntity As String) As T
         Dim dbEntity As T
-        Dim fileEntity As T = GetType(T).GetConstructor(New Type() {}).Invoke(New Object() {})
+        Dim fileEntity As T = TableEntity
         fileEntity = fileEntity.CreateFileAssociatedEntity(New With {.associatedEntityID = Guid.Parse(associatedEntity)})
         dbEntity = fileEntity.OnFileUpload(fileEntity)
 
@@ -102,6 +112,26 @@ Public Class Table(Of T As Entity)
         file.Close()
         fileSaver.Close()
         Return dbEntity
+    End Function
+
+    Public Function View(associatedEntityID As String, id As String) As MemoryStream
+        Dim fileStream As New MemoryStream
+
+        Dim path As String = String.Format(
+                "{0}\{1}\{2}\{3}.png",
+                Environment.CurrentDirectory,
+                TableEntity.TableName,
+                associatedEntityID,
+                id)
+        Try
+            Dim fileReader As New FileStream(path,
+                                 FileMode.Open,
+                                 FileAccess.Read)
+            fileReader.CopyTo(fileStream)
+            Return fileStream
+        Catch ex As DirectoryNotFoundException
+            Throw New Entity.FileNotFoundException
+        End Try
     End Function
 
     Private Sub MakeUploadFolder(folderName As String)

@@ -79,10 +79,9 @@ Module Helper
                 Exit Sub
             End Using
         End If
+        outFile = New MemoryStream()
         Dim boundaryBytes As Byte() = enc.GetBytes(boundary)
         Dim boundaryLen As Int32 = boundaryBytes.Length
-        outFile = New MemoryStream()
-        'Using outFile As MemoryStream = New MemoryStream() 'New FileStream("postimages\" & Guid.NewGuid.ToString & ".png", FileMode.Create, FileAccess.Write)
         Dim buffer As Byte() = New Byte(1023) {}
         Dim len As Int32 = input.Read(buffer, 0, 1024)
         Dim startPos As Int32 = -1
@@ -139,7 +138,6 @@ Module Helper
                 len = input.Read(buffer, boundaryLen, 1024 - boundaryLen) + boundaryLen
             End If
         End While
-        'End Using
     End Sub
 
     Public Function GetBoundary(contentType As String) As String

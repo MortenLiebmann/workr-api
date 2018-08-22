@@ -55,7 +55,7 @@ Public Class PostImage
             DB.SaveChanges()
             Return dbPostImage
         Catch ex As Data.Entity.Infrastructure.DbUpdateException
-            Throw New IdNotFoundException()
+            Throw New IdNotFoundException(params.ID.ToString)
         Catch ex As Exception
             Throw New OnFileUploadException
         End Try
