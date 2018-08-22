@@ -94,6 +94,7 @@ Public Class Table(Of T As Entity)
             path,
             FileMode.Create,
             FileAccess.Write)
+
         file.Position = 0
         file.CopyTo(fileSaver)
         file.Close()
