@@ -70,75 +70,76 @@ Module Helper
         Return True
     End Function
 
-    Public Sub ProcessInput(enc As Encoding, input As Stream, contentType As String, Optional ByRef outData As String = "")
+    Public Sub ProcessInput(enc As Encoding, input As Stream, contentType As String, Optional ByRef outStringDate As String = "", Optional ByRef outFile As MemoryStream = Nothing)
         Dim boundary As String = GetBoundary(contentType)
         If boundary = "" Then
             Using streamReader As New StreamReader(input)
-                outData = streamReader.ReadToEnd()
+                outStringDate = streamReader.ReadToEnd()
+                outFile = Nothing
                 Exit Sub
             End Using
         End If
         Dim boundaryBytes As Byte() = enc.GetBytes(boundary)
         Dim boundaryLen As Int32 = boundaryBytes.Length
+        outFile = New MemoryStream()
+        'Using outFile As MemoryStream = New MemoryStream() 'New FileStream("postimages\" & Guid.NewGuid.ToString & ".png", FileMode.Create, FileAccess.Write)
+        Dim buffer As Byte() = New Byte(1023) {}
+        Dim len As Int32 = input.Read(buffer, 0, 1024)
+        Dim startPos As Int32 = -1
 
-        Using output As FileStream = New FileStream("postimages\" & Guid.NewGuid.ToString & ".png", FileMode.Create, FileAccess.Write)
-            Dim buffer As Byte() = New Byte(1023) {}
-            Dim len As Int32 = input.Read(buffer, 0, 1024)
-            Dim startPos As Int32 = -1
+        While True
+
+            If len = 0 Then
+                Throw New Exception("Start Boundaray Not Found")
+            End If
+
+            startPos = IndexOf(buffer, len, boundaryBytes)
+
+            If startPos >= 0 Then
+                Exit While
+            Else
+                Array.Copy(buffer, len - boundaryLen, buffer, 0, boundaryLen)
+                len = input.Read(buffer, boundaryLen, 1024 - boundaryLen)
+            End If
+        End While
+
+        For i As Int32 = 0 To 4 - 1
 
             While True
 
                 If len = 0 Then
-                    Throw New Exception("Start Boundaray Not Found")
+                    Throw New Exception("Preamble not Found.")
                 End If
 
-                startPos = IndexOf(buffer, len, boundaryBytes)
+                startPos = Array.IndexOf(buffer, enc.GetBytes(vbLf)(0), startPos)
 
                 If startPos >= 0 Then
+                    startPos += 1
                     Exit While
                 Else
-                    Array.Copy(buffer, len - boundaryLen, buffer, 0, boundaryLen)
-                    len = input.Read(buffer, boundaryLen, 1024 - boundaryLen)
+                    len = input.Read(buffer, 0, 1024)
                 End If
             End While
+        Next
 
-            For i As Int32 = 0 To 4 - 1
+        Array.Copy(buffer, startPos, buffer, 0, len - startPos)
+        len = len - startPos
 
-                While True
+        While True
+            Dim endPos As Int32 = IndexOf(buffer, len, boundaryBytes)
 
-                    If len = 0 Then
-                        Throw New Exception("Preamble not Found.")
-                    End If
-
-                    startPos = Array.IndexOf(buffer, enc.GetBytes(vbLf)(0), startPos)
-
-                    If startPos >= 0 Then
-                        startPos += 1
-                        Exit While
-                    Else
-                        len = input.Read(buffer, 0, 1024)
-                    End If
-                End While
-            Next
-
-            Array.Copy(buffer, startPos, buffer, 0, len - startPos)
-            len = len - startPos
-
-            While True
-                Dim endPos As Int32 = IndexOf(buffer, len, boundaryBytes)
-
-                If endPos >= 0 Then
-                    If endPos > 0 Then output.Write(buffer, 0, endPos - 2)
-                    Exit While
-                ElseIf len <= boundaryLen Then
-                    Throw New Exception("End Boundaray Not Found")
-                Else
-                    output.Write(buffer, 0, len - boundaryLen)
-                    Array.Copy(buffer, len - boundaryLen, buffer, 0, boundaryLen)
-                    len = input.Read(buffer, boundaryLen, 1024 - boundaryLen) + boundaryLen
-                End If
-            End While
-        End Using
+            If endPos >= 0 Then
+                If endPos > 0 Then outFile.Write(buffer, 0, endPos - 2)
+                Exit While
+            ElseIf len <= boundaryLen Then
+                Throw New Exception("End Boundaray Not Found")
+            Else
+                outFile.Write(buffer, 0, len - boundaryLen)
+                Array.Copy(buffer, len - boundaryLen, buffer, 0, boundaryLen)
+                len = input.Read(buffer, boundaryLen, 1024 - boundaryLen) + boundaryLen
+            End If
+        End While
+        'End Using
     End Sub
 
     Public Function GetBoundary(contentType As String) As String

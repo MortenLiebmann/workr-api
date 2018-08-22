@@ -6,6 +6,7 @@ Imports System.Reflection
 <Table("posts")>
 Public Class Post
     Inherits Entity
+
     <Key>
     Public Overrides Property ID As Guid?
     Public Property CreatedByUserID As Guid?
@@ -16,11 +17,6 @@ Public Class Post
     Public Property JobEndDate As DateTime?
     Public Property PostFlags As Int64?
 
-    'Public Overrides Function Expand() As Object
-    '    Return New With {.Post = Me, CreatedByUser()
-    '    }
-    'End Function
-
     Public ReadOnly Property CreatedByUser() As User
         Get
             If Me.CreatedByUserID Is Nothing Then Return Nothing
@@ -29,4 +25,24 @@ Public Class Post
                     Select e).First
         End Get
     End Property
+
+    Public Overrides ReadOnly Property FileUploadAllowed As Boolean
+        Get
+            Return False
+        End Get
+    End Property
+
+    Public Overrides ReadOnly Property TableName As String
+        Get
+            Return "posts"
+        End Get
+    End Property
+
+    Public Overrides Function OnFileUpload(Optional params As Object = Nothing) As Object
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overrides Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
+        Throw New NotImplementedException()
+    End Function
 End Class

@@ -4,15 +4,11 @@ Imports System.ComponentModel.DataAnnotations.Schema
 <Table("tagreferences")>
 Public Class TagReference
     Inherits Entity
+
     <Key>
     Public Overrides Property ID As Guid?
     Public Property TagID As Guid?
     Public Property PostID As Guid?
-
-    'Public Overrides Function Expand() As Object
-    '    Return New With {.TagReference = Me, Tag(), Post()
-    '    }
-    'End Function
 
     Public ReadOnly Property Tag() As Tag
         Get
@@ -31,4 +27,24 @@ Public Class TagReference
                     Select e).First
         End Get
     End Property
+
+    Public Overrides ReadOnly Property FileUploadAllowed As Boolean
+        Get
+            Return False
+        End Get
+    End Property
+
+    Public Overrides ReadOnly Property TableName As String
+        Get
+            Return "tagreferences"
+        End Get
+    End Property
+
+    Public Overrides Function OnFileUpload(Optional params As Object = Nothing) As Object
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overrides Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
+        Throw New NotImplementedException()
+    End Function
 End Class

@@ -4,6 +4,7 @@ Imports System.ComponentModel.DataAnnotations.Schema
 <Table("messages")>
 Public Class Message
     Inherits Entity
+
     <Key>
     Public Overrides Property ID As Guid?
     Public Property ChatID As Guid?
@@ -35,4 +36,24 @@ Public Class Message
                     Select e).First
         End Get
     End Property
+
+    Public Overrides ReadOnly Property FileUploadAllowed As Boolean
+        Get
+            Return False
+        End Get
+    End Property
+
+    Public Overrides ReadOnly Property TableName As String
+        Get
+            Return "messages"
+        End Get
+    End Property
+
+    Public Overrides Function OnFileUpload(Optional params As Object = Nothing) As Object
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overrides Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
+        Throw New NotImplementedException()
+    End Function
 End Class

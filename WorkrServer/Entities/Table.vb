@@ -1,4 +1,5 @@
 ﻿Imports System.Data.Entity
+Imports System.IO
 Imports System.Reflection
 Imports Newtonsoft.Json
 Imports WorkrServer
@@ -73,6 +74,31 @@ Public Class Table(Of T As Entity)
 
         DB.SaveChanges()
         Return dbEntity
+    End Function
+
+    Public Function SaveFile(file As MemoryStream, associatedEntity As String) As T
+        Dim fileEntity As T = GetType(T).GetConstructor(New Type() {}).Invoke(New Object() {})
+
+
+        fileEntity = fileEntity.CreateFileAssociatedEntity(New With {.associatedEntityID = Guid.Parse(associatedEntity)})
+        Dim path As String = String.Format(
+                "\{0}\{1}{2}.png",
+                fileEntity.TableName,
+                associatedEntity,
+                fileEntity.ID.ToString)
+        path = Environment.CurrentDirectory & "/postimages/" & fileEntity.ID.ToString & ".png"
+        'If Not subFolderName = "" Then subFolderName = String.Format("\{0}\", subFolderName.Replace("\", ""))
+        'fileEntity = fileEntity.CreateFileAssociatedEntity(Data)
+
+        Dim fileSaver As New FileStream(
+            path,
+            FileMode.Create,
+            FileAccess.Write)
+        file.Position = 0
+        file.CopyTo(fileSaver)
+        file.Close()
+        fileSaver.Close()
+        Return fileEntity.OnFileUpload(fileEntity)
     End Function
 
     Private Function CompareEntityProperty(jsonEntity As T, dbEntity As T, prop As PropertyInfo) As Boolean

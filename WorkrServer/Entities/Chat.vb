@@ -4,17 +4,13 @@ Imports System.ComponentModel.DataAnnotations.Schema
 <Table("chats")>
 Public Class Chat
     Inherits Entity
+
     <Key>
     Public Overrides Property ID As Guid?
     Public Property PostID As Guid?
     Public Property CreatedDate As DateTime?
     Public Property ChatParty1UserID As Guid?
     Public Property ChatParty2UserID As Guid?
-
-    'Public Overrides Function Expand() As Object
-    '    Return New With {.Chat = Me, Post(), ChatParty1User(), ChatParty2User()
-    '    }
-    'End Function
 
     Public ReadOnly Property Post() As Post
         Get
@@ -42,4 +38,24 @@ Public Class Chat
                     Select e).First
         End Get
     End Property
+
+    Public Overrides ReadOnly Property FileUploadAllowed As Boolean
+        Get
+            Return False
+        End Get
+    End Property
+
+    Public Overrides ReadOnly Property TableName As String
+        Get
+            Return "chats"
+        End Get
+    End Property
+
+    Public Overrides Function OnFileUpload(Optional params As Object = Nothing) As Object
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overrides Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
+        Throw New NotImplementedException()
+    End Function
 End Class

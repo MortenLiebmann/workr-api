@@ -37,6 +37,7 @@ Public Class HttpController
         Dim response As HttpListenerResponse = Nothing
         Dim path As String()
         Dim data As String = Nothing
+        Dim file As MemoryStream = Nothing
         Dim responseString As String
 
         While True
@@ -46,8 +47,8 @@ Public Class HttpController
                     request = context.Request
                     response = context.Response
                     path = request.Url.AbsolutePath.Split({"/"}, StringSplitOptions.RemoveEmptyEntries)
-                    ProcessInput(request.ContentEncoding, request.InputStream, request.ContentType, data)
-                    responseString = NavigateMap(context, data)
+                    ProcessInput(request.ContentEncoding, request.InputStream, request.ContentType, data, file)
+                    responseString = NavigateMap(context, data, file)
 
                     RaiseEvent OnRequest(String.Format("{0} - {1} : {2}" & vbCrLf & "{3}" & vbCrLf & vbCrLf & "{4}",
                                                        Now().ToShortTimeString,
@@ -76,7 +77,7 @@ Public Class HttpController
         End While
     End Sub
 
-    Private Function NavigateMap(ByRef context As HttpListenerContext, Optional data As String = "") As String
+    Private Function NavigateMap(ByRef context As HttpListenerContext, data As String, file As MemoryStream) As String
         Dim response = Nothing
         Dim path = context.Request.Url.AbsolutePath.Split({"/"}, StringSplitOptions.RemoveEmptyEntries)
         Select Case context.Request.HttpMethod
@@ -84,6 +85,7 @@ Public Class HttpController
                 If path.Length > 1 Then response = Map(path(0)).GetByID(path(1)) : Exit Select
                 response = Map(path(0)).GetAll()
             Case "POST"
+                If file IsNot Nothing Then response = Map(path(0)).SaveFile(file, path(1)) : Exit Select
                 If path.Length > 1 Then response = Map(path(0)).GetByID(path(1)) : Exit Select
                 response = Map(path(0)).Search(data)
             Case "PUT"

@@ -5,6 +5,7 @@ Imports System.Data.Entity
 <Table("ratings")>
 Public Class Rating
     Inherits Entity
+
     <Key>
     Public Overrides Property ID As Guid?
     Public Property UserID As Guid?
@@ -13,11 +14,6 @@ Public Class Rating
     Public Property CreatedDate As DateTime?
     Public Property Score As Int16
     Public Property Text As String
-
-    'Public Overrides Function Expand() As Object
-    '    Return New With {.Rating = Me, User(), RatedByUser(), Post()
-    '    }
-    'End Function
 
     Public ReadOnly Property User() As User
         Get
@@ -45,4 +41,24 @@ Public Class Rating
                     Select e).First
         End Get
     End Property
+
+    Public Overrides ReadOnly Property FileUploadAllowed As Boolean
+        Get
+            Return False
+        End Get
+    End Property
+
+    Public Overrides ReadOnly Property TableName As String
+        Get
+            Return "ratings"
+        End Get
+    End Property
+
+    Public Overrides Function OnFileUpload(Optional params As Object = Nothing) As Object
+        Throw New NotImplementedException()
+    End Function
+
+    Public Overrides Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
+        Throw New NotImplementedException()
+    End Function
 End Class
