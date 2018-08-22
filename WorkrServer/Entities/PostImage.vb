@@ -1,5 +1,6 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
+Imports Newtonsoft.Json
 
 <Table("postimages")>
 Public Class PostImage
@@ -8,7 +9,6 @@ Public Class PostImage
     <Key>
     Public Overrides Property ID As Guid?
     Public Property PostID As Guid?
-    Public Property Path As String
 
     Public ReadOnly Property Post() As Post
         Get
@@ -35,11 +35,11 @@ Public Class PostImage
         If params Is Nothing Then Throw New Exception("params is nothing")
         Return CreateFileAssociatedPostImage(params.associatedEntityID)
     End Function
+
     Private Function CreateFileAssociatedPostImage(postID As Guid) As PostImage
         Return New PostImage With {
             .ID = Guid.NewGuid,
-            .PostID = postID,
-            .Path = ""}
+            .PostID = postID}
     End Function
 
     ''' <summary>
@@ -54,31 +54,10 @@ Public Class PostImage
             Dim dbPostImage As PostImage = DB.PostImages.Add(postImage)
             DB.SaveChanges()
             Return dbPostImage
+        Catch ex As Data.Entity.Infrastructure.DbUpdateException
+            Throw New IdNotFoundException()
         Catch ex As Exception
-            If params.GetType.GetProperty("Path") IsNot Nothing Then
-                If IO.File.Exists(params.Path) Then IO.File.Delete(params.Path)
-            End If
             Throw New OnFileUploadException
         End Try
-        Return Nothing
     End Function
-
-    Public Class OnFileUploadException
-        Inherits Exception
-
-        Public Overrides ReadOnly Property Message As String
-            Get
-                Return "An error occurred uploading a file."
-            End Get
-        End Property
-    End Class
-    Public Class FileUploadNotAllowedException
-        Inherits Exception
-
-        Public Overrides ReadOnly Property Message As String
-            Get
-                Return "File uploading is not allowed for this entity."
-            End Get
-        End Property
-    End Class
 End Class

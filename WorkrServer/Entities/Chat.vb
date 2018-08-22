@@ -1,5 +1,6 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
+Imports Newtonsoft.Json
 
 <Table("chats")>
 Public Class Chat

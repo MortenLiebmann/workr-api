@@ -1,6 +1,7 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
 Imports System.Data.Entity
+Imports Newtonsoft.Json
 
 <Table("ratings")>
 Public Class Rating

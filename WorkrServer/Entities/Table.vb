@@ -77,18 +77,20 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Function SaveFile(file As MemoryStream, associatedEntity As String) As T
+        Dim dbEntity As T
         Dim fileEntity As T = GetType(T).GetConstructor(New Type() {}).Invoke(New Object() {})
-
-
         fileEntity = fileEntity.CreateFileAssociatedEntity(New With {.associatedEntityID = Guid.Parse(associatedEntity)})
+        dbEntity = fileEntity.OnFileUpload(fileEntity)
+
         Dim path As String = String.Format(
-                "\{0}\{1}{2}.png",
+                "{0}\{1}\{2}\{3}.png",
+                Environment.CurrentDirectory,
                 fileEntity.TableName,
                 associatedEntity,
                 fileEntity.ID.ToString)
-        path = Environment.CurrentDirectory & "/postimages/" & fileEntity.ID.ToString & ".png"
-        'If Not subFolderName = "" Then subFolderName = String.Format("\{0}\", subFolderName.Replace("\", ""))
-        'fileEntity = fileEntity.CreateFileAssociatedEntity(Data)
+
+        MakeUploadFolder(fileEntity.TableName)
+        MakeUploadFolder(fileEntity.TableName & "\" & associatedEntity)
 
         Dim fileSaver As New FileStream(
             path,
@@ -99,8 +101,12 @@ Public Class Table(Of T As Entity)
         file.CopyTo(fileSaver)
         file.Close()
         fileSaver.Close()
-        Return fileEntity.OnFileUpload(fileEntity)
+        Return dbEntity
     End Function
+
+    Private Sub MakeUploadFolder(folderName As String)
+        If Not Directory.Exists(Environment.CurrentDirectory & "\" & folderName) Then MkDir(Environment.CurrentDirectory & "\" & folderName)
+    End Sub
 
     Private Function CompareEntityProperty(jsonEntity As T, dbEntity As T, prop As PropertyInfo) As Boolean
         If prop.GetValue(jsonEntity) Is Nothing Then Return True

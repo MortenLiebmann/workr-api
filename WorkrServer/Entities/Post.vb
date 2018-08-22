@@ -2,6 +2,7 @@
 Imports System.ComponentModel.DataAnnotations.Schema
 Imports System.Data.Entity
 Imports System.Reflection
+Imports Newtonsoft.Json
 
 <Table("posts")>
 Public Class Post

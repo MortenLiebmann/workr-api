@@ -5,6 +5,7 @@ Imports System.Text
 Imports System.Threading
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
+Imports WorkrServer.Entity
 
 Public Class HttpController
     Public Event OnRequest(ByVal msg As String)
@@ -60,16 +61,19 @@ Public Class HttpController
                     SendResponse(response, responseString)
                 Catch ex As KeyNotFoundException
                     response.StatusCode = 404
-                    SendResponse(response, ex.Message)
+                    SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
                 Catch ex As IndexOutOfRangeException
                     response.StatusCode = 405
-                    SendResponse(response, ex.Message)
+                    SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
                 Catch ex As InvalidOperationException
-                    response.StatusCode = 404
+                    response.StatusCode = 400
                     SendResponse(response, "ID not found.")
+                Catch ex As IdNotFoundException
+                    response.StatusCode = 400
+                    SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
                 Catch ex As Exception
                     response.StatusCode = 500
-                    SendResponse(response, ex.Message)
+                    SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
                 End Try
             End While
             Thread.Sleep(3000)
@@ -106,6 +110,10 @@ Public Class HttpController
         response.OutputStream.Write(responseBytes, 0, responseBytes.Length)
         response.Close()
     End Sub
+
+    Private Function ErrorResponse(errorCode As Integer, errorMessage As String) As String
+        Return String.Format("{{ ""ErrorCode"" : {0}, ""ErrorMessage"" : ""{1}"" }}", errorCode, errorMessage)
+    End Function
 End Class
 
 

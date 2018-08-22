@@ -1,5 +1,6 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
+Imports Newtonsoft.Json
 
 <Table("messages")>
 Public Class Message
@@ -13,11 +14,6 @@ Public Class Message
     Public Property UpdatedDate As DateTime?
     Public Property Text As String
     Public Property MessageFlags As Int64?
-
-    'Public Overrides Function Expand() As Object
-    '    Return New With {.Message = Me, Chat(), SentByUser()
-    '    }
-    'End Function
 
     Public ReadOnly Property Chat() As Chat
         Get
