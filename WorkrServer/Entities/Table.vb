@@ -35,7 +35,7 @@ Public Class Table(Of T As Entity)
                     Where e.ID = userID
                     Select e).First
         Catch ex As InvalidOperationException
-            Throw New Entity.IdNotFoundException(id)
+            Throw New Entity.IdNotFoundException(id, TableEntity.TableName)
         End Try
     End Function
 
@@ -124,6 +124,7 @@ Public Class Table(Of T As Entity)
                 associatedEntityID,
                 id)
         Try
+            'fix
             Dim fileReader As New FileStream(path,
                                  FileMode.Open,
                                  FileAccess.Read)

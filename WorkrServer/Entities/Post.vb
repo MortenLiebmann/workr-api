@@ -18,12 +18,34 @@ Public Class Post
     Public Property JobEndDate As DateTime?
     Public Property PostFlags As Int64?
 
-    Public ReadOnly Property CreatedByUser() As User
+    Public ReadOnly Property CreatedByUser As User
         Get
-            If Me.CreatedByUserID Is Nothing Then Return Nothing
-            Return (From e As User In DB.Users
-                    Where e.ID = Me.CreatedByUserID
-                    Select e).First
+            Try
+                If Me.CreatedByUserID Is Nothing Then Return Nothing
+                Return (From e As User In DB.Users
+                        Where e.ID = Me.CreatedByUserID
+                        Select e).First
+            Catch ex As InvalidOperationException
+                Throw New IdNotFoundException(Me.CreatedByUserID.ToString, "users")
+            End Try
+        End Get
+    End Property
+
+    Public ReadOnly Property PostImageIDs As Guid?()
+        Get
+            Return (From e As PostImage In DB.PostImages
+                    Where e.PostID = Me.ID
+                    Select e.ID).ToArray
+        End Get
+    End Property
+
+    Public ReadOnly Property PostTags As Tag()
+        Get
+            Return (From t As Tag In DB.Tags
+                    Join tr As TagReference In DB.TagReferences
+                    On tr.TagID Equals t.ID
+                    Where tr.PostID = Me.ID
+                    Select t).ToArray
         End Get
     End Property
 

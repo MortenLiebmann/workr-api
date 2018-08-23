@@ -15,19 +15,27 @@ Public Class Chat
 
     Public ReadOnly Property Post() As Post
         Get
-            If Me.PostID Is Nothing Then Return Nothing
-            Return (From e As Post In DB.Posts
-                    Where e.ID = Me.PostID
-                    Select e).First
+            Try
+                If Me.PostID Is Nothing Then Return Nothing
+                Return (From e As Post In DB.Posts
+                        Where e.ID = Me.PostID
+                        Select e).First
+            Catch ex As InvalidOperationException
+                Throw New IdNotFoundException(Me.PostID.ToString, "posts")
+            End Try
         End Get
     End Property
 
     Public ReadOnly Property ChatParty1User() As User
         Get
-            If Me.ChatParty1UserID Is Nothing Then Return Nothing
-            Return (From e As User In DB.Users
-                    Where e.ID = Me.ChatParty1UserID
-                    Select e).First
+            Try
+                If Me.ChatParty1UserID Is Nothing Then Return Nothing
+                Return (From e As User In DB.Users
+                        Where e.ID = Me.ChatParty1UserID
+                        Select e).First
+            Catch ex As InvalidOperationException
+                Throw New IdNotFoundException(Me.ChatParty1UserID.ToString, "users")
+            End Try
         End Get
     End Property
 

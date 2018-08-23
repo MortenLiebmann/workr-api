@@ -18,10 +18,14 @@ Public Class Rating
 
     Public ReadOnly Property User() As User
         Get
-            If Me.UserID Is Nothing Then Return Nothing
-            Return (From e As User In DB.Users
-                    Where e.ID = Me.UserID
-                    Select e).First
+            Try
+                If Me.UserID Is Nothing Then Return Nothing
+                Return (From e As User In DB.Users
+                        Where e.ID = Me.UserID
+                        Select e).First
+            Catch ex As InvalidOperationException
+                Throw New IdNotFoundException(Me.UserID.ToString, "users")
+            End Try
         End Get
     End Property
 

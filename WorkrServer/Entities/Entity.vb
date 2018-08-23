@@ -30,16 +30,17 @@ Public MustInherit Class Entity
     Public Class IdNotFoundException
         Inherits Exception
 
-        Private m_id As String = ""
+        Private m_ID As String = ""
+        Private m_TableName
 
-
-        Public Sub New(id As String)
-            m_id = id
+        Public Sub New(id As String, tableName As String)
+            m_ID = id
+            m_TableName = tableName
         End Sub
 
         Public Overrides ReadOnly Property Message As String
             Get
-                Return String.Format("ID '{0}' was not found.", m_id)
+                Return String.Format("ID '{0}' was not found in resource '{1}'.", m_ID, m_TableName)
                 Return "ID was not found.2"
             End Get
         End Property

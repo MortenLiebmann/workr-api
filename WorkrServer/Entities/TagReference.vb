@@ -20,14 +20,14 @@ Public Class TagReference
         End Get
     End Property
 
-    Public ReadOnly Property Post() As Post
-        Get
-            If Me.PostID Is Nothing Then Return Nothing
-            Return (From e As Post In DB.Posts
-                    Where e.ID = Me.PostID
-                    Select e).First
-        End Get
-    End Property
+    'Public ReadOnly Property Post() As Post
+    '    Get
+    '        If Me.PostID Is Nothing Then Return Nothing
+    '        Return (From e As Post In DB.Posts
+    '                Where e.ID = Me.PostID
+    '                Select e).First
+    '    End Get
+    'End Property
 
     Public Overrides ReadOnly Property FileUploadAllowed As Boolean
         Get

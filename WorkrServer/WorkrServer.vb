@@ -17,7 +17,7 @@ Public Class WorkrServer
             {"tagreferences", New Table(Of TagReference)(DB.TagReferences)}
         }
 
-        Controller = New HttpController({"http://127.0.0.1:9877/", "http://skurk.info:9877/"}, map)
+        Controller = New HttpController({"http://127.0.0.1:9877/", "http://192.168.1.88:9877/"}, map)
         Controller.StartListening()
     End Sub
 

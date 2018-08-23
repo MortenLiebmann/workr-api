@@ -64,7 +64,7 @@ Public Class HttpController
                         SendResponse(response, responseData.ToString)
                     End If
                 Catch ex As Exception
-                    HandleRequestExceptions(response, ex, path)
+                    HandleRequestException(response, ex, path)
                 End Try
             End While
             Thread.Sleep(3000)
@@ -78,6 +78,10 @@ Public Class HttpController
         Try
             Select Case context.Request.HttpMethod
                 Case "GET"
+                    If context.Request.Url.Query = "?file" OrElse
+                        GetContentType(context.Request.ContentType).StartsWith("image/") Then
+                        Return Map(path(0)).View(path(1), path(2))
+                    End If
                     If path.Length > 1 Then response = Map(path(0)).GetByID(path(1)) : Exit Select
                     response = Map(path(0)).GetAll()
                 Case "POST"
@@ -101,11 +105,16 @@ Public Class HttpController
     End Function
 
     Private Overloads Sub SendResponse(ByRef response As HttpListenerResponse, ByVal data As String)
-        Dim responseBytes As Byte() = Encoding.UTF8.GetBytes(data)
-        response.ContentType = "application/json"
-        response.ContentLength64 = responseBytes.Length
-        response.OutputStream.Write(responseBytes, 0, responseBytes.Length)
-        response.Close()
+        Try
+            Dim responseBytes As Byte() = Encoding.UTF8.GetBytes(data)
+            response.ContentType = "application/json"
+            response.ContentLength64 = responseBytes.Length
+            response.OutputStream.Write(responseBytes, 0, responseBytes.Length)
+            response.Close()
+        Catch ex As Exception
+            response.StatusCode = 500
+            SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
+        End Try
     End Sub
 
     Private Overloads Sub SendResponse(ByRef response As HttpListenerResponse, ByVal data As MemoryStream)
@@ -122,7 +131,13 @@ Public Class HttpController
         Return String.Format("{{ ""ErrorCode"" : {0}, ""ErrorMessage"" : ""{1}"" }}", errorCode, errorMessage)
     End Function
 
-    Private Sub HandleRequestExceptions(ByRef response As HttpListenerResponse, ex As Exception, path As String())
+    Private Function GetContentType(contentType As String) As String
+        If contentType Is Nothing Then Return ""
+        Return contentType.Split(";")(0)
+    End Function
+
+
+    Private Sub HandleRequestException(ByRef response As HttpListenerResponse, ex As Exception, path As String())
         Select Case ex.GetType
             Case GetType(NoResourceGivenException)
                 response.StatusCode = 400
@@ -148,6 +163,9 @@ Public Class HttpController
             Case GetType(Exception)
                 response.StatusCode = 500
                 SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
+            Case Else
+                response.StatusCode = 500
+                SendResponse(response, ErrorResponse(response.StatusCode, "Unknown Error."))
         End Select
     End Sub
 
