@@ -48,10 +48,11 @@ Public Class HttpController
                     request = context.Request
                     response = context.Response
                     path = request.Url.AbsolutePath.Split({"/"}, StringSplitOptions.RemoveEmptyEntries)
+                    If request.ContentLength64 > 5000000 Then Throw New ContentLengthSizeLimitExceededException
                     If path.Length < 1 Then Throw New NoResourceGivenException
                     ProcessInput(request.ContentEncoding, request.InputStream, request.ContentType, data, file)
                     responseData = NavigateMap(context, data, file)
-
+                    Console.WriteLine(request.ContentLength64)
                     RaiseEvent OnRequest(String.Format("{0} - {1} : {2}" & vbCrLf & "{3}" & vbCrLf & vbCrLf & "{4}",
                                                        Now().ToShortTimeString,
                                                        request.HttpMethod,
@@ -139,6 +140,9 @@ Public Class HttpController
 
     Private Sub HandleRequestException(ByRef response As HttpListenerResponse, ex As Exception, path As String())
         Select Case ex.GetType
+            Case GetType(ContentLengthSizeLimitExceededException)
+                response.StatusCode = 413
+                SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
             Case GetType(NoResourceGivenException)
                 response.StatusCode = 400
                 SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
@@ -168,6 +172,16 @@ Public Class HttpController
                 SendResponse(response, ErrorResponse(response.StatusCode, "Unknown Error."))
         End Select
     End Sub
+
+    Public Class ContentLengthSizeLimitExceededException
+        Inherits Exception
+
+        Public Overrides ReadOnly Property Message As String
+            Get
+                Return "Request content was bigger than 5MB."
+            End Get
+        End Property
+    End Class
 
     Public Class NoResourceGivenException
         Inherits Exception
