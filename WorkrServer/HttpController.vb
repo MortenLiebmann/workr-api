@@ -48,11 +48,10 @@ Public Class HttpController
                     request = context.Request
                     response = context.Response
                     path = request.Url.AbsolutePath.Split({"/"}, StringSplitOptions.RemoveEmptyEntries)
-                    If request.ContentLength64 > 5000000 Then Throw New ContentLengthSizeLimitExceededException
+                    If request.ContentLength64 > 5000000 Then Throw New ContentSizeLimitExceededException
                     If path.Length < 1 Then Throw New NoResourceGivenException
                     ProcessInput(request.ContentEncoding, request.InputStream, request.ContentType, data, file)
                     responseData = NavigateMap(context, data, file)
-                    Console.WriteLine(request.ContentLength64)
                     RaiseEvent OnRequest(String.Format("{0} - {1} : {2}" & vbCrLf & "{3}" & vbCrLf & vbCrLf & "{4}",
                                                        Now().ToShortTimeString,
                                                        request.HttpMethod,
@@ -140,7 +139,7 @@ Public Class HttpController
 
     Private Sub HandleRequestException(ByRef response As HttpListenerResponse, ex As Exception, path As String())
         Select Case ex.GetType
-            Case GetType(ContentLengthSizeLimitExceededException)
+            Case GetType(ContentSizeLimitExceededException)
                 response.StatusCode = 413
                 SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
             Case GetType(NoResourceGivenException)
@@ -173,7 +172,7 @@ Public Class HttpController
         End Select
     End Sub
 
-    Public Class ContentLengthSizeLimitExceededException
+    Public Class ContentSizeLimitExceededException
         Inherits Exception
 
         Public Overrides ReadOnly Property Message As String
