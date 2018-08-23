@@ -32,7 +32,7 @@ Public Class Rating
     Public ReadOnly Property RatedByUser() As User
         Get
             If Me.RatedByUserID Is Nothing Then Return Nothing
-            Return (From e As User In DB.Users
+            Return (From e As User In DB.Users.AsNoTracking
                     Where e.ID = Me.RatedByUserID
                     Select e).First
         End Get
@@ -41,7 +41,7 @@ Public Class Rating
     Public ReadOnly Property Post() As Post
         Get
             If Me.PostID Is Nothing Then Return Nothing
-            Return (From e As Post In DB.Posts
+            Return (From e As Post In DB.Posts.AsNoTracking
                     Where e.ID = Me.PostID
                     Select e).First
         End Get

@@ -17,7 +17,7 @@ Public Class Chat
         Get
             Try
                 If Me.PostID Is Nothing Then Return Nothing
-                Return (From e As Post In DB.Posts
+                Return (From e As Post In DB.Posts.AsNoTracking
                         Where e.ID = Me.PostID
                         Select e).First
             Catch ex As InvalidOperationException
@@ -30,7 +30,7 @@ Public Class Chat
         Get
             Try
                 If Me.ChatParty1UserID Is Nothing Then Return Nothing
-                Return (From e As User In DB.Users
+                Return (From e As User In DB.Users.AsNoTracking
                         Where e.ID = Me.ChatParty1UserID
                         Select e).First
             Catch ex As InvalidOperationException
@@ -42,7 +42,7 @@ Public Class Chat
     Public ReadOnly Property ChatParty2User() As User
         Get
             If Me.ChatParty2UserID Is Nothing Then Return Nothing
-            Return (From e As User In DB.Users
+            Return (From e As User In DB.Users.AsNoTracking
                     Where e.ID = Me.ChatParty2UserID
                     Select e).First
         End Get

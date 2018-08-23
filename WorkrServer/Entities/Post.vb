@@ -22,7 +22,7 @@ Public Class Post
         Get
             Try
                 If Me.CreatedByUserID Is Nothing Then Return Nothing
-                Return (From e As User In DB.Users
+                Return (From e As User In DB.Users.AsNoTracking
                         Where e.ID = Me.CreatedByUserID
                         Select e).First
             Catch ex As InvalidOperationException
@@ -33,7 +33,7 @@ Public Class Post
 
     Public ReadOnly Property PostImageIDs As Guid?()
         Get
-            Return (From e As PostImage In DB.PostImages
+            Return (From e As PostImage In DB.PostImages.AsNoTracking
                     Where e.PostID = Me.ID
                     Select e.ID).ToArray
         End Get
@@ -41,8 +41,8 @@ Public Class Post
 
     Public ReadOnly Property PostTags As Tag()
         Get
-            Return (From t As Tag In DB.Tags
-                    Join tr As TagReference In DB.TagReferences
+            Return (From t As Tag In DB.Tags.AsNoTracking
+                    Join tr As TagReference In DB.TagReferences.AsNoTracking
                     On tr.TagID Equals t.ID
                     Where tr.PostID = Me.ID
                     Select t).ToArray

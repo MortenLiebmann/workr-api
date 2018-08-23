@@ -18,7 +18,7 @@ Public Class Message
     Public ReadOnly Property Chat() As Chat
         Get
             If Me.ChatID Is Nothing Then Return Nothing
-            Return (From e As Chat In DB.Chats
+            Return (From e As Chat In DB.Chats.AsNoTracking
                     Where e.ID = Me.ChatID
                     Select e).First
         End Get
@@ -27,7 +27,7 @@ Public Class Message
     Public ReadOnly Property SentByUser() As User
         Get
             If Me.SentByUserID Is Nothing Then Return Nothing
-            Return (From e As User In DB.Users
+            Return (From e As User In DB.Users.AsNoTracking
                     Where e.ID = Me.SentByUserID
                     Select e).First
         End Get

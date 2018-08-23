@@ -40,20 +40,31 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Overloads Function Put(json As String) As T
-        Dim jsonEntity As T = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
-        jsonEntity.ID = Guid.NewGuid
-        Dim result As T = DbSet.Add(jsonEntity)
-        DB.SaveChanges()
-        Return result
+        Dim jsonEntity As T = Nothing
+        Try
+            jsonEntity = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
+            jsonEntity.ID = Guid.NewGuid
+            Dim result As T = DbSet.Add(jsonEntity)
+            DB.SaveChanges()
+            Return result
+        Catch ex As Exception
+            DB.DiscardTrackedEntityByID(jsonEntity.ID)
+            Throw ex
+        End Try
     End Function
 
     Public Function Delete(id As String) As Boolean
-        Dim userID As Guid = Guid.Parse(id)
-        DbSet.Remove((From e As T In DbSet
-                      Where e.ID = userID
-                      Select e).First)
-        DB.SaveChanges()
-        Return True
+        Try
+            Dim userID As Guid = Guid.Parse(id)
+            DbSet.Remove((From e As T In DbSet
+                          Where e.ID = userID
+                          Select e).First)
+            DB.SaveChanges()
+            Return True
+        Catch ex As Exception
+            DB.DiscardTrackedEntityByID(Guid.Parse(id))
+            Throw ex
+        End Try
     End Function
 
     Public Overloads Function Search(jsonEntity As T) As T()
@@ -71,19 +82,24 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Function Patch(id As String, json As String) As T
-        Dim jsonEntity As T = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
-        Dim userID As Guid = Guid.Parse(id)
-        Dim dbEntity As T = (From e As T In DbSet
-                             Where e.ID = userID
-                             Select e).First
+        Try
+            Dim jsonEntity As T = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
+            Dim userID As Guid = Guid.Parse(id)
+            Dim dbEntity As T = (From e As T In DbSet
+                                 Where e.ID = userID
+                                 Select e).First
 
-        For Each prop As PropertyInfo In Properties
-            If prop.GetValue(jsonEntity) Is Nothing Then Continue For
-            prop.SetValue(dbEntity, prop.GetValue(jsonEntity))
-        Next
+            For Each prop As PropertyInfo In Properties
+                If prop.GetValue(jsonEntity) Is Nothing Then Continue For
+                prop.SetValue(dbEntity, prop.GetValue(jsonEntity))
+            Next
 
-        DB.SaveChanges()
-        Return dbEntity
+            DB.SaveChanges()
+            Return dbEntity
+        Catch ex As Exception
+            DB.DiscardTrackedEntityByID(Guid.Parse(id))
+        Throw ex
+        End Try
     End Function
 
     Public Function PutFile(file As MemoryStream, associatedEntity As String) As T
@@ -124,7 +140,6 @@ Public Class Table(Of T As Entity)
                 associatedEntityID,
                 id)
         Try
-            'fix
             Dim fileReader As New FileStream(path,
                                  FileMode.Open,
                                  FileAccess.Read)

@@ -15,7 +15,7 @@ Public Class PostImage
         Get
             Try
                 If Me.PostID Is Nothing Then Return Nothing
-                Return (From e As Post In DB.Posts
+                Return (From e As Post In DB.Posts.AsNoTracking
                         Where e.ID = Me.PostID
                         Select e).First
             Catch ex As InvalidOperationException
@@ -57,12 +57,14 @@ Public Class PostImage
         Try
             If Not FileUploadAllowed Then Throw New FileUploadNotAllowedException
             postImage = DirectCast(params, PostImage)
-            Dim dbPostImage As PostImage = DB.PostImages.Add(PostImage)
+            Dim dbPostImage As PostImage = DB.PostImages.Add(postImage)
             DB.SaveChanges()
             Return dbPostImage
         Catch ex As Data.Entity.Infrastructure.DbUpdateException
-            Throw New IdNotFoundException(postImage.PostID.ToString, postImage.Post.TableName)
+            DB.DiscardTrackedEntityByID(params.ID)
+            Throw New IdNotFoundException(postImage.PostID.ToString, "posts")
         Catch ex As Exception
+            DB.DiscardTrackedEntityByID(params.ID)
             Throw New OnFileUploadException
         End Try
     End Function

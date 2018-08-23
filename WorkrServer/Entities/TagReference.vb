@@ -14,7 +14,7 @@ Public Class TagReference
     Public ReadOnly Property Tag() As Tag
         Get
             If Me.TagID Is Nothing Then Return Nothing
-            Return (From e As Tag In DB.Tags
+            Return (From e As Tag In DB.Tags.AsNoTracking
                     Where e.ID = Me.TagID
                     Select e).First
         End Get

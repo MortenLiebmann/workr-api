@@ -1,4 +1,5 @@
 ﻿Imports System.Data.Entity
+Imports System.Data.Entity.Infrastructure
 
 Public Class WorkrDB
     Inherits DbContext
@@ -9,6 +10,13 @@ Public Class WorkrDB
 
     Protected Overrides Sub OnModelCreating(modelBuilder As DbModelBuilder)
         modelBuilder.HasDefaultSchema("public")
+    End Sub
+
+    Public Sub DiscardTrackedEntityByID(id As Guid)
+        Try
+            Me.ChangeTracker.Entries.Where(Function(e) e.Entity.ID = id).First.State = EntityState.Detached
+        Catch ex As Exception
+        End Try
     End Sub
 
     Public Property Users As DbSet(Of User)
