@@ -130,6 +130,8 @@ Public Class Table(Of T As Entity)
                                  FileAccess.Read)
             fileReader.CopyTo(fileStream)
             Return fileStream
+        Catch ex As IO.FileNotFoundException
+            Throw New Entity.FileNotFoundException
         Catch ex As DirectoryNotFoundException
             Throw New Entity.FileNotFoundException
         End Try
