@@ -2,32 +2,14 @@
 Imports System.ComponentModel.DataAnnotations.Schema
 Imports Newtonsoft.Json
 
-<Table("tagreferences")>
-Public Class TagReference
+<Table("posttags")>
+Public Class PostTag
     Inherits Entity
 
     <Key>
     Public Overrides Property ID As Guid?
-    Public Property TagID As Guid?
-    Public Property PostID As Guid?
-
-    Public ReadOnly Property Tag() As Tag
-        Get
-            If Me.TagID Is Nothing Then Return Nothing
-            Return (From e As Tag In DB.Tags.AsNoTracking
-                    Where e.ID = Me.TagID
-                    Select e).First
-        End Get
-    End Property
-
-    'Public ReadOnly Property Post() As Post
-    '    Get
-    '        If Me.PostID Is Nothing Then Return Nothing
-    '        Return (From e As Post In DB.Posts
-    '                Where e.ID = Me.PostID
-    '                Select e).First
-    '    End Get
-    'End Property
+    Public Property Name As String
+    Public Property PostTagFlags As Int64?
 
     Public Overrides ReadOnly Property FileUploadAllowed As Boolean
         Get
@@ -37,7 +19,7 @@ Public Class TagReference
 
     Public Overrides ReadOnly Property TableName As String
         Get
-            Return "tagreferences"
+            Return "posttags"
         End Get
     End Property
 

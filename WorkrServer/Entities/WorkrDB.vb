@@ -25,7 +25,8 @@ Public Class WorkrDB
     Public Property Chats As DbSet(Of Chat)
     Public Property Messages As DbSet(Of Message)
     Public Property Ratings As DbSet(Of Rating)
-    Public Property Tags As DbSet(Of Tag)
-    Public Property TagReferences As DbSet(Of TagReference)
+    Public Property PostTags As DbSet(Of PostTag)
+    Public Property PostTagReferences As DbSet(Of PostTagReferences)
+    Public Property PostBids As DbSet(Of PostBid)
 End Class
 

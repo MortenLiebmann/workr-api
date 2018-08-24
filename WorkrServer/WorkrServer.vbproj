@@ -68,6 +68,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.1\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
@@ -78,6 +79,7 @@
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -100,10 +102,11 @@
     <Compile Include="Entities\Entity.vb" />
     <Compile Include="Entities\Message.vb" />
     <Compile Include="Entities\Post.vb" />
+    <Compile Include="Entities\PostBid.vb" />
     <Compile Include="Entities\PostImage.vb" />
     <Compile Include="Entities\Rating.vb" />
-    <Compile Include="Entities\Tag.vb" />
-    <Compile Include="Entities\TagReference.vb" />
+    <Compile Include="Entities\PostTag.vb" />
+    <Compile Include="Entities\PostTagReferences.vb" />
     <Compile Include="Entities\User.vb" />
     <Compile Include="Entities\WorkrDB.vb" />
     <Compile Include="Entities\Table.vb" />

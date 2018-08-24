@@ -38,15 +38,18 @@ Public Class Post
                     Select e.ID).ToArray
         End Get
     End Property
-
-    Public ReadOnly Property PostTags As Tag()
+    Public test As PostTag()
+    Public Property PostTags As PostTag()
         Get
-            Return (From t As Tag In DB.Tags.AsNoTracking
-                    Join tr As TagReference In DB.TagReferences.AsNoTracking
-                    On tr.TagID Equals t.ID
+            Return (From t As PostTag In DB.PostTags.AsNoTracking
+                    Join tr As PostTagReferences In DB.PostTagReferences.AsNoTracking
+                    On tr.PostTagID Equals t.ID
                     Where tr.PostID = Me.ID
                     Select t).ToArray
         End Get
+        Set(value As PostTag())
+            test = value
+        End Set
     End Property
 
     Public Overrides ReadOnly Property FileUploadAllowed As Boolean

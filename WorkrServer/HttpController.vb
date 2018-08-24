@@ -33,43 +33,55 @@ Public Class HttpController
     End Sub
 
     Private Sub Listen()
-        Dim context As HttpListenerContext
-        Dim request As HttpListenerRequest
-        Dim response As HttpListenerResponse = Nothing
-        Dim path As String() = {}
-        Dim data As String = Nothing
-        Dim file As MemoryStream = Nothing
-        Dim responseData As Object
+        Try
+            Dim context As HttpListenerContext
+            Dim request As HttpListenerRequest
+            Dim response As HttpListenerResponse = Nothing
+            Dim path As String() = {}
+            Dim data As String = Nothing
+            Dim file As MemoryStream = Nothing
+            Dim responseData As Object
 
-        While True
-            While Listener.IsListening
-                Try
-                    context = Listener.GetContext
-                    request = context.Request
-                    response = context.Response
-                    path = request.Url.AbsolutePath.Split({"/"}, StringSplitOptions.RemoveEmptyEntries)
-                    If request.ContentLength64 > 5000000 Then Throw New ContentSizeLimitExceededException
-                    If path.Length < 1 Then Throw New NoResourceGivenException
-                    ProcessInput(request.ContentEncoding, request.InputStream, request.ContentType, data, file)
-                    responseData = NavigateMap(context, data, file)
-                    RaiseEvent OnRequest(String.Format("{0} - {1} : {2}" & vbCrLf & "{3}" & vbCrLf & vbCrLf & "{4}",
-                                                       Now().ToShortTimeString,
-                                                       request.HttpMethod,
-                                                       request.Url.AbsoluteUri,
-                                                       CStr(request.ContentType),
-                                                       data))
-                    If responseData.GetType = GetType(MemoryStream) Then
-                        SendResponse(response, DirectCast(responseData, MemoryStream))
-                    Else
-                        SendResponse(response, responseData.ToString)
-                    End If
-                Catch ex As Exception
-                    HandleRequestException(response, ex, path)
-                End Try
+            While True
+                Console.WriteLine("MAIN LOOP")
+                While Listener.IsListening
+                    Console.WriteLine("HELLO?")
+                    Try
+                        path = {}
+                        data = Nothing
+                        file = Nothing
+                        responseData = Nothing
+                        context = Listener.GetContext
+                        request = context.Request
+                        response = context.Response
+                        path = request.Url.AbsolutePath.Split({"/"}, StringSplitOptions.RemoveEmptyEntries)
+                        If request.ContentLength64 > 5000000 Then Throw New ContentSizeLimitExceededException
+                        If path.Length < 1 Then Throw New NoResourceGivenException
+                        ProcessInput(request.ContentEncoding, request.InputStream, request.ContentType, data, file)
+                        responseData = NavigateMap(context, data, file)
+                        RaiseEvent OnRequest(String.Format("{0} - {1} : {2}" & vbCrLf & "{3}" & vbCrLf & vbCrLf & "{4}",
+                                                           Now().ToShortTimeString,
+                                                           request.HttpMethod,
+                                                           request.Url.AbsoluteUri,
+                                                           CStr(request.ContentType),
+                                                           data))
+                        If responseData.GetType = GetType(MemoryStream) Then
+                            SendResponse(response, DirectCast(responseData, MemoryStream))
+                        Else
+                            SendResponse(response, responseData.ToString)
+                        End If
+                    Catch ex As Exception
+                        HandleRequestException(response, ex, path)
+                    End Try
+                    Console.WriteLine("Done")
+                End While
+                Thread.Sleep(3000)
+                Listener.Start()
             End While
-            Thread.Sleep(3000)
-            Listener.Start()
-        End While
+        Catch ex As Exception
+
+        End Try
+
     End Sub
 
     Private Function NavigateMap(ByRef context As HttpListenerContext, data As String, file As MemoryStream) As Object
@@ -112,8 +124,8 @@ Public Class HttpController
             response.OutputStream.Write(responseBytes, 0, responseBytes.Length)
             response.Close()
         Catch ex As Exception
-            response.StatusCode = 500
-            SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
+            'response.StatusCode = 500
+            'SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
         End Try
     End Sub
 

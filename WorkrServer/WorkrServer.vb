@@ -13,11 +13,12 @@ Public Class WorkrServer
             {"chats", New Table(Of Chat)(DB.Chats)},
             {"messages", New Table(Of Message)(DB.Messages)},
             {"ratings", New Table(Of Rating)(DB.Ratings)},
-            {"tags", New Table(Of Tag)(DB.Tags)},
-            {"tagreferences", New Table(Of TagReference)(DB.TagReferences)}
+            {"posttags", New Table(Of PostTag)(DB.PostTags)},
+            {"posttagreferences", New Table(Of PostTagReferences)(DB.PostTagReferences)},
+            {"postbids", New Table(Of PostBid)(DB.PostBids)}
         }
 
-        Controller = New HttpController({"http://127.0.0.1:9877/", "http://skurk.info:9877/"}, map)
+        Controller = New HttpController({"http://127.0.0.1:9877/", "http://192.168.1.88:9877/"}, map)
         Controller.StartListening()
     End Sub
 
