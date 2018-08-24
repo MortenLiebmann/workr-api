@@ -38,7 +38,7 @@ Public Class Post
                     Select e.ID).ToArray
         End Get
     End Property
-    Public test As PostTag()
+
     Public Property PostTags As PostTag()
         Get
             Return (From t As PostTag In DB.PostTags.AsNoTracking
@@ -48,9 +48,22 @@ Public Class Post
                     Select t).ToArray
         End Get
         Set(value As PostTag())
-            test = value
+            CreatePostTagEntitys(value)
         End Set
     End Property
+
+    Private Sub CreatePostTagEntitys(postTags As PostTag())
+        For Each e As PostTag In postTags
+            e.ID = Guid.NewGuid
+            Dim dbEntity As PostTag = Nothing
+            Try
+                dbEntity = DB.PostTags.Add(e)
+                DB.SaveChanges()
+            Catch ex As Exception
+                DB.DiscardTrackedEntityByID(dbEntity.ID)
+            End Try
+        Next
+    End Sub
 
     Public Overrides ReadOnly Property FileUploadAllowed As Boolean
         Get

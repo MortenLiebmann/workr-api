@@ -43,9 +43,7 @@ Public Class HttpController
             Dim responseData As Object
 
             While True
-                Console.WriteLine("MAIN LOOP")
                 While Listener.IsListening
-                    Console.WriteLine("HELLO?")
                     Try
                         path = {}
                         data = Nothing
@@ -73,7 +71,6 @@ Public Class HttpController
                     Catch ex As Exception
                         HandleRequestException(response, ex, path)
                     End Try
-                    Console.WriteLine("Done")
                 End While
                 Thread.Sleep(3000)
                 Listener.Start()
@@ -124,8 +121,6 @@ Public Class HttpController
             response.OutputStream.Write(responseBytes, 0, responseBytes.Length)
             response.Close()
         Catch ex As Exception
-            'response.StatusCode = 500
-            'SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
         End Try
     End Sub
 
