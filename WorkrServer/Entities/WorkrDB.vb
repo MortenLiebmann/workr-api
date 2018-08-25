@@ -6,6 +6,7 @@ Public Class WorkrDB
 
     Public Sub New()
         MyBase.New("name=PGSQL")
+        Me.Database.Log = New Action(Of String)(Sub(e) Debug.WriteLine(e)) 's >= System.Diagnostics.Debug.WriteLine(s);
     End Sub
 
     Protected Overrides Sub OnModelCreating(modelBuilder As DbModelBuilder)
@@ -26,7 +27,7 @@ Public Class WorkrDB
     Public Property Messages As DbSet(Of Message)
     Public Property Ratings As DbSet(Of Rating)
     Public Property PostTags As DbSet(Of PostTag)
-    Public Property PostTagReferences As DbSet(Of PostTagReferences)
+    Public Property PostTagReferences As DbSet(Of PostTagReference)
     Public Property PostBids As DbSet(Of PostBid)
 End Class
 

@@ -14,7 +14,7 @@ Public Class WorkrServer
             {"messages", New Table(Of Message)(DB.Messages)},
             {"ratings", New Table(Of Rating)(DB.Ratings)},
             {"posttags", New Table(Of PostTag)(DB.PostTags)},
-            {"posttagreferences", New Table(Of PostTagReferences)(DB.PostTagReferences)},
+            {"posttagreferences", New Table(Of PostTagReference)(DB.PostTagReferences)},
             {"postbids", New Table(Of PostBid)(DB.PostBids)}
         }
 

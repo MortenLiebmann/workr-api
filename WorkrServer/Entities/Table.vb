@@ -38,12 +38,12 @@ Public Class Table(Of T As Entity)
             Throw New Entity.IdNotFoundException(id, TableEntity.TableName)
         End Try
     End Function
-    'fix db id null
+
     Public Overloads Function Put(json As String) As T
         Dim jsonEntity As T = Nothing
         Try
             jsonEntity = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
-            'jsonEntity.ID = Guid.NewGuid
+            If jsonEntity.ID Is Nothing OrElse jsonEntity.ID = Guid.Empty Then jsonEntity.ID = Guid.NewGuid
             Dim result As T = DbSet.Add(jsonEntity)
             DB.SaveChanges()
             Return result

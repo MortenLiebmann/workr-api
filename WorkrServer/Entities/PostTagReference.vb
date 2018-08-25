@@ -3,7 +3,7 @@ Imports System.ComponentModel.DataAnnotations.Schema
 Imports Newtonsoft.Json
 
 <Table("posttagreferences")>
-Public Class PostTagReferences
+Public Class PostTagReference
     Inherits Entity
 
     <Key>

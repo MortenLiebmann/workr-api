@@ -42,7 +42,7 @@ Public Class Post
     Public Property PostTags As PostTag()
         Get
             Return (From t As PostTag In DB.PostTags.AsNoTracking
-                    Join tr As PostTagReferences In DB.PostTagReferences.AsNoTracking
+                    Join tr As PostTagReference In DB.PostTagReferences.AsNoTracking
                     On tr.PostTagID Equals t.ID
                     Where tr.PostID = Me.ID
                     Select t).ToArray
@@ -53,12 +53,29 @@ Public Class Post
     End Property
 
     Private Sub CreatePostTagEntitys(postTags As PostTag())
+        If Me.ID Is Nothing OrElse Me.ID = Guid.Empty Then Me.ID = Guid.NewGuid
+        Dim newPostTags As New List(Of PostTag)
         For Each e As PostTag In postTags
             e.ID = Guid.NewGuid
             Dim dbEntity As PostTag = Nothing
             Try
                 dbEntity = DB.PostTags.Add(e)
-                DB.SaveChanges()
+                newPostTags.Add(dbEntity)
+            Catch ex As Exception
+                DB.DiscardTrackedEntityByID(dbEntity.ID)
+            End Try
+        Next
+        CreatePostTagReferenceEntitys(newPostTags.ToArray)
+    End Sub
+
+    Private Sub CreatePostTagReferenceEntitys(postTags As PostTag())
+        For Each e As PostTag In postTags
+            Dim dbEntity As PostTagReference = Nothing
+            Try
+                dbEntity = DB.PostTagReferences.Add(New PostTagReference With {
+                                                    .ID = Guid.NewGuid,
+                                                    .PostID = Me.ID,
+                                                    .PostTagID = e.ID})
             Catch ex As Exception
                 DB.DiscardTrackedEntityByID(dbEntity.ID)
             End Try
