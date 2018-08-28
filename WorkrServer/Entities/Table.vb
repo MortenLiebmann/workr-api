@@ -3,6 +3,7 @@ Imports System.IO
 Imports System.Reflection
 Imports Newtonsoft.Json
 Imports WorkrServer
+Imports WorkrServer.Entity
 
 Public Class Table(Of T As Entity)
     Public ReadOnly Property DbSet As DbSet(Of T)
@@ -98,11 +99,12 @@ Public Class Table(Of T As Entity)
             Return dbEntity
         Catch ex As Exception
             DB.DiscardTrackedEntityByID(Guid.Parse(id))
-        Throw ex
+            Throw ex
         End Try
     End Function
 
     Public Function PutFile(file As MemoryStream, associatedEntity As String) As T
+        If Not TableEntity.FileUploadAllowed Then Throw New FileUploadNotAllowedException
         Dim dbEntity As T
         Dim fileEntity As T = TableEntity
         fileEntity = fileEntity.CreateFileAssociatedEntity(New With {.associatedEntityID = Guid.Parse(associatedEntity)})
@@ -130,7 +132,7 @@ Public Class Table(Of T As Entity)
         Return dbEntity
     End Function
 
-    Public Function View(associatedEntityID As String, id As String) As MemoryStream
+    Public Function GetFile(associatedEntityID As String, id As String) As MemoryStream
         Dim fileStream As New MemoryStream
 
         Dim path As String = String.Format(
