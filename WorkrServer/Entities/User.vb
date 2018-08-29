@@ -13,13 +13,15 @@ Public Class User
     Public Property CreatedDate As DateTime?
     Public Property Name As String
     Public Property Email As String
+    <JsonIgnore>
     Public Property PasswordHash As String
+    <JsonIgnore>
     Public Property Salt As String
     Public Property Address As String
     Public Property Business As String
     Public Property Phone As String
     Public Property Company As String
-    Public Property AccountFlags As Int64?
+    Public Property Flags As Int64?
 
     Public Overrides ReadOnly Property FileUploadAllowed As Boolean
         Get

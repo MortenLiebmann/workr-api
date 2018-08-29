@@ -12,6 +12,7 @@ Public Class Chat
     Public Property CreatedDate As DateTime?
     Public Property ChatParty1UserID As Guid?
     Public Property ChatParty2UserID As Guid?
+    Public Property Flags As Int64?
 
     Public ReadOnly Property Post() As Post
         Get

@@ -11,7 +11,7 @@ Public Class PostBid
     Public Property CreatedDate As DateTime?
     Public Property Text As String
     Public Property Price As Decimal
-    Public Property PostBidFlags As Int64?
+    Public Property Flags As Int64?
 
     Public Overrides ReadOnly Property TableName As String
         Get

@@ -53,6 +53,7 @@ Module Helper
     ''' <param name="superset"></param>
     ''' <returns>Boolean</returns>
     Public Function IsSubsetOf(ByVal subset As Object(), ByVal superset As Object()) As Boolean
+        If superset Is Nothing Then Return False
         Dim supersetList As List(Of Object) = superset.ToList
         Dim subsetList As List(Of Object) = subset.ToList
         For Each subItem In subsetList
@@ -69,7 +70,43 @@ Module Helper
 
         Return True
     End Function
+    Public Function IsSubsetOf(ByVal subset As Guid?(), ByVal superset As Guid?()) As Boolean
+        If superset Is Nothing Then Return False
+        Dim supersetList As List(Of Guid?) = superset.ToList
+        Dim subsetList As List(Of Guid?) = subset.ToList
+        For Each subItem In subsetList
+            Dim found As Boolean = False
+            For Each supItem In supersetList
+                'If IsArray(supItem) Then
+                '    If IsSubsetOf(subItem, supItem) Then found = True : supersetList.Remove(supItem) : Exit For
+                'Else
+                If subItem = supItem Then found = True : supersetList.Remove(supItem) : Exit For
+                'End If
+            Next
+            If Not found Then Return False
+        Next
 
+        Return True
+    End Function
+
+    Public Function IsSubsetOf(ByVal subset As PostTag(), ByVal superset As PostTag()) As Boolean
+        If superset Is Nothing Then Return False
+        Dim supersetList As List(Of PostTag) = superset.ToList
+        Dim subsetList As List(Of PostTag) = subset.ToList
+        For Each subItem In subsetList
+            Dim found As Boolean = False
+            For Each supItem In supersetList
+                'If IsArray(supItem) Then
+                '    If IsSubsetOf(subItem, supItem) Then found = True : supersetList.Remove(supItem) : Exit For
+                'Else
+                If subItem.Name = supItem.Name Then found = True : supersetList.Remove(supItem) : Exit For
+                'End If
+            Next
+            If Not found Then Return False
+        Next
+
+        Return True
+    End Function
     Public Sub ProcessInput(enc As Encoding, input As Stream, contentType As String, Optional ByRef outStringDate As String = "", Optional ByRef outFile As MemoryStream = Nothing)
         Dim boundary As String = GetBoundary(contentType)
         If boundary = "" Then

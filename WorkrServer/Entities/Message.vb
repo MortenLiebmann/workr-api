@@ -13,7 +13,7 @@ Public Class Message
     Public Property CreatedDate As DateTime?
     Public Property UpdatedDate As DateTime?
     Public Property Text As String
-    Public Property MessageFlags As Int64?
+    Public Property Flags As Int64?
 
     Public ReadOnly Property Chat() As Chat
         Get

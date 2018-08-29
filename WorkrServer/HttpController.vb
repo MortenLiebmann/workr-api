@@ -89,7 +89,7 @@ Public Class HttpController
                 Case "GET"
                     If context.Request.Url.Query = "?file" OrElse
                         GetContentType(context.Request.ContentType).StartsWith("image/") Then
-                        Return Map(path(0)).View(path(1), path(2))
+                        Return Map(path(0)).GetFile(path(1), path(2))
                     End If
                     If path.Length > 1 Then response = Map(path(0)).GetByID(path(1)) : Exit Select
                     response = Map(path(0)).GetAll()
@@ -104,7 +104,7 @@ Public Class HttpController
                 Case "PATCH"
                     response = Map(path(0)).Patch(path(1), data)
                 Case "VIEW"
-                    response = Map(path(0)).View(path(1), path(2)) : Return response
+                    response = Map(path(0)).GetFile(path(1), path(2)) : Return response
             End Select
         Catch ex As IndexOutOfRangeException
             Throw New MalformedUrlException
@@ -113,7 +113,7 @@ Public Class HttpController
         Return JsonConvert.SerializeObject(response, JSONSettings)
     End Function
 
-    Private Overloads Sub SendResponse(ByRef response As HttpListenerResponse, ByVal data As String)
+    Private Overloads Sub SendResponse(ByRef response As HttpListenerResponse, data As String)
         Try
             Dim responseBytes As Byte() = Encoding.UTF8.GetBytes(data)
             response.ContentType = "application/json"
@@ -124,7 +124,7 @@ Public Class HttpController
         End Try
     End Sub
 
-    Private Overloads Sub SendResponse(ByRef response As HttpListenerResponse, ByVal data As MemoryStream)
+    Private Overloads Sub SendResponse(ByRef response As HttpListenerResponse, data As MemoryStream)
         Dim dataStream As MemoryStream = data
         dataStream.Position = 0
         response.ContentType = "image/png"

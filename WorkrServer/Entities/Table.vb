@@ -75,6 +75,7 @@ Public Class Table(Of T As Entity)
                                                   Next
                                                   Return True
                                               End Function
+        Return DbSet.ToArray().Where(selector).ToArray
         Return DbSet.Where(selector).ToArray
     End Function
 
@@ -160,6 +161,10 @@ Public Class Table(Of T As Entity)
 
     Private Function CompareEntityProperty(jsonEntity As T, dbEntity As T, prop As PropertyInfo) As Boolean
         If prop.GetValue(jsonEntity) Is Nothing Then Return True
+        If prop.PropertyType.IsArray And prop.GetType() IsNot GetType(Guid?) Then
+            Return IsSubsetOf(prop.GetValue(jsonEntity), prop.GetValue(dbEntity))
+        End If
+        If prop.PropertyType Is GetType(Entity) Then Return True
         If prop.PropertyType Is GetType(DateTime) Then
             Dim t1 As UInt64 = Math.Round(CDate(prop.GetValue(jsonEntity)).Ticks / TimeSpan.TicksPerSecond, 0) * TimeSpan.TicksPerSecond
             Dim t2 As UInt64 = Math.Round(CDate(prop.GetValue(dbEntity)).Ticks / TimeSpan.TicksPerSecond, 0) * TimeSpan.TicksPerSecond
@@ -167,4 +172,6 @@ Public Class Table(Of T As Entity)
         End If
         Return prop.GetValue(jsonEntity) = prop.GetValue(dbEntity)
     End Function
+
+
 End Class

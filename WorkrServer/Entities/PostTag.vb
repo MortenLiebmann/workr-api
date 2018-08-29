@@ -9,7 +9,8 @@ Public Class PostTag
     <Key>
     Public Overrides Property ID As Guid?
     Public Property Name As String
-    Public Property PostTagFlags As Int64?
+    Public Property CreatedDate As DateTime?
+    Public Property Flags As Int64?
 
     Public Overrides ReadOnly Property FileUploadAllowed As Boolean
         Get
@@ -30,4 +31,12 @@ Public Class PostTag
     Public Overrides Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
         Throw New NotImplementedException()
     End Function
+
+    Public Shared Operator =(tag1 As PostTag, tag2 As PostTag) As Boolean
+        Return tag1.Name = tag2.Name
+    End Operator
+
+    Public Shared Operator <>(tag1 As PostTag, tag2 As PostTag) As Boolean
+        Return tag1.Name <> tag2.Name
+    End Operator
 End Class

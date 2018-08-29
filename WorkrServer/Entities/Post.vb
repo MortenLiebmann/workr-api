@@ -16,7 +16,7 @@ Public Class Post
     Public Property Description As String
     Public Property Address As String
     Public Property JobEndDate As DateTime?
-    Public Property PostFlags As Int64?
+    Public Property Flags As Int64?
 
     Public ReadOnly Property CreatedByUser As User
         Get
@@ -52,14 +52,32 @@ Public Class Post
         End Set
     End Property
 
+    Private m_Tags As String()
+    Public Property Tags As String()
+        Get
+            If m_Tags IsNot Nothing Then Return m_Tags
+            Return (From t As PostTag In DB.PostTags.AsNoTracking
+                    Join tr As PostTagReference In DB.PostTagReferences.AsNoTracking
+                    On tr.PostTagID Equals t.ID
+                    Where tr.PostID = Me.ID
+                    Select t.Name).ToArray
+        End Get
+        Set(value As String())
+            m_Tags = value
+        End Set
+    End Property
+
     Private Sub CreatePostTagEntitys(postTags As PostTag())
         If Me.ID Is Nothing OrElse Me.ID = Guid.Empty Then Me.ID = Guid.NewGuid
         Dim newPostTags As New List(Of PostTag)
-        For Each e As PostTag In postTags
-            e.ID = Guid.NewGuid
+        For Each tag As PostTag In postTags
+            If (From e As PostTag In DB.PostTags
+                Where e.Name = tag.Name
+                Select e).Count > 0 Then Continue For
+            tag.ID = Guid.NewGuid
             Dim dbEntity As PostTag = Nothing
             Try
-                dbEntity = DB.PostTags.Add(e)
+                dbEntity = DB.PostTags.Add(tag)
                 newPostTags.Add(dbEntity)
             Catch ex As Exception
                 DB.DiscardTrackedEntityByID(dbEntity.ID)
