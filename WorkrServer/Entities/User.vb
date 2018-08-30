@@ -14,9 +14,9 @@ Public Class User
     Public Property Name As String
     Public Property Email As String
     <JsonIgnore>
-    Public Property PasswordHash As String
+    Public Property PasswordHash As String = "336E28244541A68A5209083537BCC18CE661CE4B4B9452BA8BA543B6AB9A2BA4" 'fix
     <JsonIgnore>
-    Public Property Salt As String
+    Public Property Salt As String = "6661488" ' fix
     Public Property Address As String
     Public Property Business As String
     Public Property Phone As String

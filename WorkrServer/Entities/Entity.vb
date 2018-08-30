@@ -65,4 +65,19 @@ Public MustInherit Class Entity
             End Get
         End Property
     End Class
+
+    Public Class ForeignKeyFialationException
+        Inherits Exception
+
+        Dim m_Message As String = ""
+        Public Sub New(message As String)
+            m_Message = message.Replace("""", "'")
+        End Sub
+
+        Public Overrides ReadOnly Property Message As String
+            Get
+                Return m_Message
+            End Get
+        End Property
+    End Class
 End Class

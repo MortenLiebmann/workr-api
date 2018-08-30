@@ -42,14 +42,22 @@ Public Class Table(Of T As Entity)
 
     Public Overloads Function Put(json As String) As T
         Dim jsonEntity As T = Nothing
+        Dim dbEntity As T = Nothing
         Try
             jsonEntity = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
             If jsonEntity.ID Is Nothing OrElse jsonEntity.ID = Guid.Empty Then jsonEntity.ID = Guid.NewGuid
-            Dim result As T = DbSet.Add(jsonEntity)
+            dbEntity = DbSet.Add(jsonEntity)
             DB.SaveChanges()
-            Return result
+            Return dbEntity
+        Catch ex As Infrastructure.DbUpdateException
+            DB.DiscardTrackedEntityByID(dbEntity.ID)
+            Dim exceptionDetail As Core.UpdateException = TryCast(ex.InnerException, Core.UpdateException)
+            If exceptionDetail IsNot Nothing Then
+                Throw New ForeignKeyFialationException(DirectCast(exceptionDetail.InnerException, Npgsql.NpgsqlException).Detail)
+            End If
+            Throw ex
         Catch ex As Exception
-            DB.DiscardTrackedEntityByID(jsonEntity.ID)
+            DB.DiscardTrackedEntityByID(dbEntity.ID)
             Throw ex
         End Try
     End Function

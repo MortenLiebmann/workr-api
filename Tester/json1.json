@@ -1,9 +1,11 @@
 ﻿{
-  "Name": "Mike Hawk",
+  "ID": "f07aa943-a0c1-42d6-bde8-d706f25b34aa",
+  "CreatedDate": "2018-08-28T13:20:15Z",
+  "Name": "Mike Hawk2",
   "Email": "MikeHawk69@gmail.com",
   "Address": "123 Fakestreet",
-  "Business": "Plumbing",
-  "Phone": 12345678,
-  "Company": "Hawk Plumbing",
-  "AccountFlags": 0
+  "Business": null,
+  "Phone": "123123123",
+  "Company": "WORKR ApS",
+  "AccountFlags": 128
 }

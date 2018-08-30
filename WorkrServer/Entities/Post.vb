@@ -67,6 +67,10 @@ Public Class Post
         End Set
     End Property
 
+    Public Function ShouldSerializeTags() As Boolean
+        Return False
+    End Function
+
     Private Sub CreatePostTagEntitys(postTags As PostTag())
         If Me.ID Is Nothing OrElse Me.ID = Guid.Empty Then Me.ID = Guid.NewGuid
         Dim newPostTags As New List(Of PostTag)
