@@ -145,7 +145,11 @@ Public Class HttpController
     End Function
 
     Private Function CreateOnRequestString(method As String, origin As String, url As String, contenttype As String, data As String) As String
-        Return String.Format("REQUEST TIME" & vbTab & "{0}" & vbCrLf & "ORIGIN" & vbTab & vbTab & "{1}" & vbCrLf & "URL" & vbTab & vbTab & "{2} \ {3}" & vbCrLf & "CONTENT-TYPE:" & vbTab & "{4}" & vbCrLf & vbCrLf & "{5}",
+        Return String.Format("REQUEST TIME" & vbTab & "{0}" & vbCrLf &
+                             "ORIGIN" & vbTab & vbTab & "{1}" & vbCrLf &
+                             "URL" & vbTab & vbTab & "{2} \ {3}" & vbCrLf &
+                             "CONTENT-TYPE:" & vbTab & "{4}" & vbCrLf & vbCrLf &
+                             "{5}",
                              Now().ToLongTimeString,
                              origin,
                              method,

@@ -2,6 +2,7 @@
 Imports System.IO
 Imports System.Reflection
 Imports Newtonsoft.Json
+Imports Newtonsoft.Json.Linq
 Imports WorkrServer
 Imports WorkrServer.Entity
 
@@ -76,7 +77,11 @@ Public Class Table(Of T As Entity)
         End Try
     End Function
 
-    Public Overloads Function Search(jsonEntity As T) As T()
+    Public Function Search(json As String) As T()
+        Dim jo As JObject = JObject.Parse(json)
+        jo.AddFirst(New JProperty("HttpMethod", "POST"))
+        json = jo.ToString()
+        Dim jsonEntity As T = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
         Dim selector As Func(Of T, Boolean) = Function(e)
                                                   For Each prop As PropertyInfo In Properties
                                                       If Not CompareEntityProperty(jsonEntity, e, prop) Then Return False
@@ -85,10 +90,6 @@ Public Class Table(Of T As Entity)
                                               End Function
         Return DbSet.ToArray().Where(selector).ToArray
         Return DbSet.Where(selector).ToArray
-    End Function
-
-    Public Overloads Function Search(jsonEntity As String) As T()
-        Return Search(JsonConvert.DeserializeObject(Of T)(jsonEntity, JSONSettings))
     End Function
 
     Public Function Patch(id As String, json As String) As T
@@ -169,6 +170,7 @@ Public Class Table(Of T As Entity)
 
     Private Function CompareEntityProperty(jsonEntity As T, dbEntity As T, prop As PropertyInfo) As Boolean
         If prop.GetValue(jsonEntity) Is Nothing Then Return True
+        If prop.Name = "HttpMethod" Then Return True
         If prop.PropertyType.IsArray And prop.GetType() IsNot GetType(Guid?) Then
             Return IsSubsetOf(prop.GetValue(jsonEntity), prop.GetValue(dbEntity))
         End If

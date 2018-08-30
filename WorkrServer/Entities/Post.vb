@@ -1,8 +1,10 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
 Imports System.Data.Entity
+Imports System.Net.Http
 Imports System.Reflection
 Imports Newtonsoft.Json
+Imports Newtonsoft.Json.Linq
 
 <Table("posts")>
 Public Class Post
@@ -17,6 +19,19 @@ Public Class Post
     Public Property Address As String
     Public Property JobEndDate As DateTime?
     Public Property Flags As Int64?
+
+    Private m_Tags As PostTag()
+    'Private m_HttpMethod As String = ""
+    'Private m_Tags As Object()
+
+    'Public Sub New()
+    'End Sub
+
+    '<JsonConstructor>
+    'Public Sub New(method As String)
+    '    m_HttpMethod = method
+    'End Sub
+
 
     Public ReadOnly Property CreatedByUser As User
         Get
@@ -41,6 +56,14 @@ Public Class Post
 
     Public Property PostTags As PostTag()
         Get
+            If m_Tags IsNot Nothing AndAlso m_Tags.Count > 0 Then
+                Return m_Tags
+                'Dim e As New List(Of Object)
+                'For Each t As Object In m_Tags
+                '    e.Add(New PostTag() With {.Name = DirectCast(t, JObject).Property("Name")})
+                'Next
+                'Return e.ToArray
+            End If
             Return (From t As PostTag In DB.PostTags.AsNoTracking
                     Join tr As PostTagReference In DB.PostTagReferences.AsNoTracking
                     On tr.PostTagID Equals t.ID
@@ -48,26 +71,36 @@ Public Class Post
                     Select t).ToArray
         End Get
         Set(value As PostTag())
-            CreatePostTagEntitys(value)
+            'fix this
+            Select Case HttpMethod
+                Case "PUT"
+                    CreatePostTagEntitys(value)
+                    Exit Property
+                Case Else
+                    m_Tags = value
+                    Exit Property
+            End Select
         End Set
     End Property
 
-    Private m_Tags As String()
-    Public Property Tags As String()
-        Get
-            If m_Tags IsNot Nothing Then Return m_Tags
-            Return (From t As PostTag In DB.PostTags.AsNoTracking
-                    Join tr As PostTagReference In DB.PostTagReferences.AsNoTracking
-                    On tr.PostTagID Equals t.ID
-                    Where tr.PostID = Me.ID
-                    Select t.Name).ToArray
-        End Get
-        Set(value As String())
-            m_Tags = value
-        End Set
-    End Property
+    'Public Property Tags As String()
+    '    Get
+    '        If m_Tags IsNot Nothing Then Return m_Tags
+    '        Return (From t As PostTag In DB.PostTags.AsNoTracking
+    '                Join tr As PostTagReference In DB.PostTagReferences.AsNoTracking
+    '                On tr.PostTagID Equals t.ID
+    '                Where tr.PostID = Me.ID
+    '                Select t.Name).ToArray
+    '    End Get
+    '    Set(value As String())
+    '        m_Tags = value
+    '    End Set
+    'End Property
 
     Public Function ShouldSerializeTags() As Boolean
+        Return False
+    End Function
+    Public Function ShouldSerializeHttpMethod() As Boolean
         Return False
     End Function
 
@@ -104,17 +137,10 @@ Public Class Post
         Next
     End Sub
 
-    Public Overrides ReadOnly Property FileUploadAllowed As Boolean
-        Get
-            Return False
-        End Get
-    End Property
-
-    Public Overrides ReadOnly Property TableName As String
-        Get
-            Return "posts"
-        End Get
-    End Property
+    <NotMapped>
+    Public Property HttpMethod As String = ""
+    Public Overrides ReadOnly Property FileUploadAllowed As Boolean = False
+    Public Overrides ReadOnly Property TableName As String = "posts"
 
     Public Overrides Function OnFileUpload(Optional params As Object = Nothing) As Object
         Throw New NotImplementedException()
