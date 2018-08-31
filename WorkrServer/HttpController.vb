@@ -55,14 +55,12 @@ Public Class HttpController
                         path = request.Url.AbsolutePath.Split({"/"}, StringSplitOptions.RemoveEmptyEntries)
                         If request.ContentLength64 > 5000000 Then Throw New ContentSizeLimitExceededException
                         If path.Length < 1 Then Throw New NoResourceGivenException
+                        Dim x As Boolean
+                        If path(0).ToLower = "login" Then
+                            x = Authenticate(request.Headers("Authorization"))
+                        End If
                         ProcessInput(request.ContentEncoding, request.InputStream, request.ContentType, data, file)
                         responseData = NavigateMap(context, data, file)
-                        'RaiseEvent OnRequest(String.Format("{0} - {1} : {2}" & vbCrLf & "{3}" & vbCrLf & vbCrLf & "{4}",
-                        '                                   Now().ToShortTimeString,
-                        '                                   request.HttpMethod,
-                        '                                   request.Url.AbsoluteUri,
-                        '                                   CStr(request.ContentType),
-                        '                                   data))
                         RaiseEvent OnRequest(CreateOnRequestString(request.HttpMethod, request.RemoteEndPoint.Address.ToString, request.Url.AbsoluteUri, CStr(request.ContentType), data))
                         If responseData.GetType = GetType(MemoryStream) Then
                             SendResponse(response, DirectCast(responseData, MemoryStream))
@@ -90,6 +88,7 @@ Public Class HttpController
                 Case "GET"
                     If context.Request.Url.Query = "?file" OrElse
                         GetContentType(context.Request.ContentType).StartsWith("image/") Then
+                        If path.Count < 3 Then Return Map(path(0)).GetFile(path(1))
                         Return Map(path(0)).GetFile(path(1), path(2))
                     End If
                     If path.Length > 1 Then response = Map(path(0)).GetByID(path(1)) : Exit Select
@@ -198,81 +197,6 @@ Public Class HttpController
                 SendResponse(response, ErrorResponse(response.StatusCode, "Unknown Error."))
         End Select
     End Sub
-
-    'Protected Function GetHashAsHex(ByVal data As Byte()) As String
-    '    Dim hasher As SHA256 = SHA256.Create
-    '    Return BitConverter.ToString(hasher.ComputeHash(data)).Replace("-", "").ToLower
-    'End Function
-
-    'Function AuthLogin(ByVal collection As FormCollection) As ActionResult
-    '    Dim U As User = Nothing
-    '    Dim username As String = Nothing
-    '    Dim password As String = Nothing
-    '    Try
-    '        username = Request("username").ToLower
-    '        password = Request("password")
-
-    '        If Not String.IsNullOrEmpty(username) Or Not String.IsNullOrEmpty(password) Then
-    '            U = (From e As User In C.Users
-    '                 Where e.NetLogin.ToLower = username And e.LocalPhone = password
-    '                 Select e).AsNoTracking.FirstOrDefault
-    '        End If
-
-    '        If U Is Nothing Then
-    '            Return RedirectToAction("Login")
-    '        End If
-
-    '        Dim rand As New RNGCryptoServiceProvider()
-    '        Dim tokenBytes As Byte() = New Byte(23) {} '32 base64 chars
-    '        Dim selectorBytes As Byte() = New Byte(8) {} '12 base64 chars
-    '        Dim base64Token As String
-    '        Dim base64Selector As String
-    '        Dim token As New Token
-    '        Dim cookie As New HttpCookie("SmartDirAuthToken")
-
-    '        rand.GetBytes(tokenBytes)
-    '        rand.GetBytes(selectorBytes)
-    '        base64Token = Convert.ToBase64String(tokenBytes)
-    '        base64Selector = Convert.ToBase64String(selectorBytes)
-
-    '        token.TokenHash = GetHashAsHex(tokenBytes)
-    '        token.Selector = base64Selector
-    '        token.UserID = U.UniqueID
-    '        token.Expires = DateTime.UtcNow().AddDays(30)
-
-    '        C.Tokens.Add(token)
-    '        C.SaveChanges()
-
-    '        Session("user") = U
-
-    '        cookie.Value = base64Selector & "." & base64Token
-    '        cookie.Expires = DateTime.UtcNow.AddDays(30)
-    '        cookie.HttpOnly = True
-
-    '        Response.SetCookie(cookie)
-
-    '        If Request.Cookies("SmartDirFirstLogin") Is Nothing Then
-    '            Dim firstlogin As New HttpCookie("SmartDirFirstLogin")
-    '            firstlogin.Expires = DateTime.UtcNow.AddYears(10)
-    '            Response.SetCookie(firstlogin)
-    '            Return RedirectToAction("Help")
-    '        End If
-
-    '        Return RedirectToAction("Index")
-    '    Catch ex As Exception
-    '        LogMessage("Home", vbCrLf &
-    '            "***************************" & vbCrLf &
-    '            "AuthLogin *** ERROR ***" & vbCrLf &
-    '            "MSG: " & ex.Message & vbCrLf &
-    '            "USER: " & JsonConvert.SerializeObject(U) & vbCrLf &
-    '            "USERNAME INPUT: " & username & vbCrLf &
-    '            "IP ADDRESS: " & Request.UserHostAddress & vbCrLf &
-    '            "***************************"
-    '        )
-    '    End Try
-
-    '    Return RedirectToAction("Login")
-    'End Function
 
     Public Class ContentSizeLimitExceededException
         Inherits Exception

@@ -21,6 +21,7 @@ Public Class WorkrDB
     End Sub
 
     Public Property Users As DbSet(Of User)
+    Public Property UserImages As DbSet(Of UserImage)
     Public Property Posts As DbSet(Of Post)
     Public Property PostImages As DbSet(Of PostImage)
     Public Property Chats As DbSet(Of Chat)

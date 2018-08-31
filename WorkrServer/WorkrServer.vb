@@ -8,6 +8,7 @@ Public Class WorkrServer
     Public Sub Start()
         Dim map As New Dictionary(Of String, Object) From {
             {"users", New Table(Of User)(DB.Users)},
+            {"userimages", New Table(Of UserImage)(DB.UserImages)},
             {"posts", New Table(Of Post)(DB.Posts)},
             {"postimages", New Table(Of PostImage)(DB.PostImages)},
             {"chats", New Table(Of Chat)(DB.Chats)},

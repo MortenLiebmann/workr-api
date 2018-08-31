@@ -146,6 +146,28 @@ Public Class Table(Of T As Entity)
         Return dbEntity
     End Function
 
+    Public Function GetFile(id As String) As MemoryStream
+        Dim fileStream As New MemoryStream
+
+        Dim path As String = String.Format(
+                "{0}\{1}\{2}\",
+                Environment.CurrentDirectory,
+                TableEntity.TableName,
+                id)
+        path += GetFirstFileInFolder(path)
+        Try
+            Dim fileReader As New FileStream(path,
+                                 FileMode.Open,
+                                 FileAccess.Read)
+            fileReader.CopyTo(fileStream)
+            Return fileStream
+        Catch ex As IO.FileNotFoundException
+            Throw New Entity.FileNotFoundException
+        Catch ex As DirectoryNotFoundException
+            Throw New Entity.FileNotFoundException
+        End Try
+    End Function
+
     Public Function GetFile(associatedEntityID As String, id As String) As MemoryStream
         Dim fileStream As New MemoryStream
 
@@ -171,6 +193,11 @@ Public Class Table(Of T As Entity)
     Private Sub MakeUploadFolder(folderName As String)
         If Not Directory.Exists(Environment.CurrentDirectory & "\" & folderName) Then MkDir(Environment.CurrentDirectory & "\" & folderName)
     End Sub
+
+    Private Function GetFirstFileInFolder(folderPath As String) As String
+        Dim folder As New DirectoryInfo(folderPath)
+        Return folder.GetFiles()(0).Name
+    End Function
 
     Private Function CompareEntityProperty(jsonEntity As T, dbEntity As T, prop As PropertyInfo) As Boolean
         If prop.GetValue(jsonEntity) Is Nothing Then Return True
