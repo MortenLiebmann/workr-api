@@ -52,13 +52,10 @@ Public Class HttpController
                         context = Listener.GetContext
                         request = context.Request
                         response = context.Response
+                        Authenticate(request.Headers("Authorization"))
                         path = request.Url.AbsolutePath.Split({"/"}, StringSplitOptions.RemoveEmptyEntries)
                         If request.ContentLength64 > 5000000 Then Throw New ContentSizeLimitExceededException
                         If path.Length < 1 Then Throw New NoResourceGivenException
-                        Dim x As Boolean
-                        If path(0).ToLower = "login" Then
-                            x = Authenticate(request.Headers("Authorization"))
-                        End If
                         ProcessInput(request.ContentEncoding, request.InputStream, request.ContentType, data, file)
                         responseData = NavigateMap(context, data, file)
                         RaiseEvent OnRequest(CreateOnRequestString(request.HttpMethod, request.RemoteEndPoint.Address.ToString, request.Url.AbsoluteUri, CStr(request.ContentType), data))
@@ -159,6 +156,9 @@ Public Class HttpController
 
     Private Sub HandleRequestException(ByRef response As HttpListenerResponse, ex As Exception, path As String())
         Select Case ex.GetType
+            Case GetType(NotAuthorizedException)
+                response.StatusCode = 401
+                SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
             Case GetType(ContentSizeLimitExceededException)
                 response.StatusCode = 413
                 SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))

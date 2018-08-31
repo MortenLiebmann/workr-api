@@ -42,6 +42,7 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Overloads Function Put(json As String) As T
+        CheckPermissions()
         AddHttpMethodProperty(json, "PUT")
         Dim jsonEntity As T = Nothing
         Dim dbEntity As T = Nothing
@@ -69,6 +70,7 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Function Delete(id As String) As Boolean
+        CheckPermissions()
         Try
             Dim userID As Guid = Guid.Parse(id)
             DbSet.Remove((From e As T In DbSet
@@ -96,6 +98,7 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Function Patch(id As String, json As String) As T
+        CheckPermissions()
         Try
             AddHttpMethodProperty(json, "PATCH")
             Dim jsonEntity As T = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
@@ -118,6 +121,8 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Function PutFile(file As MemoryStream, associatedEntity As String) As T
+        CheckPermissions()
+
         If Not TableEntity.FileUploadAllowed Then Throw New FileUploadNotAllowedException
         Dim dbEntity As T
         Dim fileEntity As T = TableEntity
@@ -189,6 +194,10 @@ Public Class Table(Of T As Entity)
             Throw New Entity.FileNotFoundException
         End Try
     End Function
+
+    Private Sub CheckPermissions()
+        If AuthUser Is Nothing Then Throw New NotAuthorizedException
+    End Sub
 
     Private Sub MakeUploadFolder(folderName As String)
         If Not Directory.Exists(Environment.CurrentDirectory & "\" & folderName) Then MkDir(Environment.CurrentDirectory & "\" & folderName)

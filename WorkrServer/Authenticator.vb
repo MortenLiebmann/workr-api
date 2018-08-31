@@ -1,15 +1,24 @@
 ﻿Imports System.Security.Cryptography
 Imports System.Text
+Imports WorkrServer
 
 Public Module Authenticator
-    Private hasher As SHA256 = SHA256.Create
+    Private m_Hasher As SHA256 = SHA256.Create
+    Private m_AuthUser As User = Nothing
+
+    Public ReadOnly Property AuthUser As User
+        Get
+            Return m_AuthUser
+        End Get
+    End Property
 
     Public Function GetHashAsHex(ByVal data As Byte()) As String
-        Return BitConverter.ToString(hasher.ComputeHash(data)).Replace("-", "").ToLower
+        Return BitConverter.ToString(m_Hasher.ComputeHash(data)).Replace("-", "").ToLower
     End Function
 
     Public Function Authenticate(authHeaderBase64 As String) As Boolean
         Try
+            m_AuthUser = Nothing
             authHeaderBase64 = authHeaderBase64.Replace("Basic ", "")
             Dim authHeaderString As String = Encoding.UTF8.GetString(Convert.FromBase64String(authHeaderBase64))
             Dim authEmail As String = authHeaderString.Split(":")(0)
@@ -20,12 +29,24 @@ Public Module Authenticator
                                     Select e).Single
 
             If GetHashAsHex(Encoding.UTF8.GetBytes(authUser.Salt & authPassword)) = authUser.PasswordHash.ToLower Then
+                m_AuthUser = authUser
                 Return True
             End If
         Catch ex As Exception
         End Try
+        m_AuthUser = Nothing
         Return False
     End Function
+
+    Public Class NotAuthorizedException
+        Inherits Exception
+
+        Public Overrides ReadOnly Property Message As String
+            Get
+                Return "Not authorized."
+            End Get
+        End Property
+    End Class
 
     'Function AuthLogin(ByVal collection As FormCollection) As ActionResult
     '    Dim U As User = Nothing
