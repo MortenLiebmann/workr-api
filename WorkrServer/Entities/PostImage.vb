@@ -36,6 +36,11 @@ Public Class PostImage
         End Get
     End Property
 
+    Public Overrides Sub OnPut(Optional params As Object = Nothing)
+        If AuthUser Is Nothing Then Throw New NotAuthorizedException
+        If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid
+    End Sub
+
     Public Overrides Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
         If params Is Nothing Then Throw New Exception("params is nothing")
         Return CreateFileAssociatedPostImage(params.associatedEntityID)

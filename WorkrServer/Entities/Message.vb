@@ -45,6 +45,12 @@ Public Class Message
         End Get
     End Property
 
+    Public Overrides Sub OnPut(Optional params As Object = Nothing)
+        If AuthUser Is Nothing Then Throw New NotAuthorizedException
+        If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid
+        SentByUserID = AuthUser.ID
+    End Sub
+
     Public Overrides Function OnFileUpload(Optional params As Object = Nothing) As Object
         Throw New NotImplementedException()
     End Function

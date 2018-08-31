@@ -110,8 +110,8 @@
     <Compile Include="Entities\PostTagReference.vb" />
     <Compile Include="Entities\User.vb" />
     <Compile Include="Entities\UserImage.vb" />
-    <Compile Include="Entities\WorkrDB.vb" />
-    <Compile Include="Entities\Table.vb" />
+    <Compile Include="WorkrDB.vb" />
+    <Compile Include="Table.vb" />
     <Compile Include="WorkrServer.vb" />
     <Compile Include="HttpController.vb" />
     <Compile Include="Helper.vb" />

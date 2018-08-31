@@ -57,7 +57,7 @@ Public Class HttpController
                         If request.ContentLength64 > 5000000 Then Throw New ContentSizeLimitExceededException
                         If path.Length < 1 Then Throw New NoResourceGivenException
                         ProcessInput(request.ContentEncoding, request.InputStream, request.ContentType, data, file)
-                        responseData = NavigateMap(context, data, file)
+                        responseData = NavigateMap(context, path, data, file)
                         RaiseEvent OnRequest(CreateOnRequestString(request.HttpMethod, request.RemoteEndPoint.Address.ToString, request.Url.AbsoluteUri, CStr(request.ContentType), data))
                         If responseData.GetType = GetType(MemoryStream) Then
                             SendResponse(response, DirectCast(responseData, MemoryStream))
@@ -77,16 +77,15 @@ Public Class HttpController
 
     End Sub
 
-    Private Function NavigateMap(ByRef context As HttpListenerContext, data As String, file As MemoryStream) As Object
+    Private Function NavigateMap(ByRef context As HttpListenerContext, path As String(), data As String, file As MemoryStream) As Object
         Dim response = Nothing
-        Dim path = context.Request.Url.AbsolutePath.Split({"/"}, StringSplitOptions.RemoveEmptyEntries)
         Try
             Select Case context.Request.HttpMethod
                 Case "GET"
                     If path(0).ToLower = "auth" Then response = AuthUser : Exit Select
                     If context.Request.Url.Query = "?file" OrElse
                         GetContentType(context.Request.ContentType).StartsWith("image/") Then
-                        If path.Count < 3 Then Return ResourceMap(path(0)).GetFile(path(1))
+                        If path.Length < 3 Then Return ResourceMap(path(0)).GetFile(path(1))
                         Return ResourceMap(path(0)).GetFile(path(1), path(2))
                     End If
                     If path.Length > 1 Then response = ResourceMap(path(0)).GetByID(path(1)) : Exit Select
