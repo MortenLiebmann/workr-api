@@ -13,13 +13,13 @@ Public Class HttpController
     Private ListenThread As Thread
 
     Public Sub New(ByVal baseUrl As String, ByRef Map As Dictionary(Of String, Object))
-        Helper.Map = Map
+        Helper.ResourceMap = Map
         Listener = New HttpListener()
         Listener.Prefixes.Add(baseUrl)
     End Sub
 
     Public Sub New(ByVal baseURLs As String(), ByRef Map As Dictionary(Of String, Object))
-        Helper.Map = Map
+        Helper.ResourceMap = Map
         Listener = New HttpListener()
         For Each url As String In baseURLs
             Listener.Prefixes.Add(url)
@@ -52,8 +52,8 @@ Public Class HttpController
                         context = Listener.GetContext
                         request = context.Request
                         response = context.Response
-                        Authenticate(request.Headers("Authorization"))
                         path = request.Url.AbsolutePath.Split({"/"}, StringSplitOptions.RemoveEmptyEntries)
+                        Authenticate(request.Headers("Authorization"))
                         If request.ContentLength64 > 5000000 Then Throw New ContentSizeLimitExceededException
                         If path.Length < 1 Then Throw New NoResourceGivenException
                         ProcessInput(request.ContentEncoding, request.InputStream, request.ContentType, data, file)
@@ -83,25 +83,27 @@ Public Class HttpController
         Try
             Select Case context.Request.HttpMethod
                 Case "GET"
+                    If path(0).ToLower = "auth" Then response = AuthUser : Exit Select
                     If context.Request.Url.Query = "?file" OrElse
                         GetContentType(context.Request.ContentType).StartsWith("image/") Then
-                        If path.Count < 3 Then Return Map(path(0)).GetFile(path(1))
-                        Return Map(path(0)).GetFile(path(1), path(2))
+                        If path.Count < 3 Then Return ResourceMap(path(0)).GetFile(path(1))
+                        Return ResourceMap(path(0)).GetFile(path(1), path(2))
                     End If
-                    If path.Length > 1 Then response = Map(path(0)).GetByID(path(1)) : Exit Select
-                    response = Map(path(0)).GetAll()
+                    If path.Length > 1 Then response = ResourceMap(path(0)).GetByID(path(1)) : Exit Select
+                    response = ResourceMap(path(0)).GetAll()
                 Case "POST"
-                    If path.Length > 1 Then response = Map(path(0)).GetByID(path(1)) : Exit Select
-                    response = Map(path(0)).Search(data)
+                    If path.Length > 1 Then response = ResourceMap(path(0)).GetByID(path(1)) : Exit Select
+                    response = ResourceMap(path(0)).Search(data)
                 Case "PUT"
-                    If file IsNot Nothing Then response = Map(path(0)).PutFile(file, path(1)) : Exit Select
-                    response = Map(path(0)).Put(data)
+                    If path(0).ToLower = "register" Then response = Register(data, context.Request.Headers("Password")) : Exit Select
+                    If file IsNot Nothing Then response = ResourceMap(path(0)).PutFile(file, path(1)) : Exit Select
+                    response = ResourceMap(path(0)).Put(data)
                 Case "DELETE"
-                    response = Map(path(0)).Delete(path(1))
+                    response = ResourceMap(path(0)).Delete(path(1))
                 Case "PATCH"
-                    response = Map(path(0)).Patch(path(1), data)
+                    response = ResourceMap(path(0)).Patch(path(1), data)
                 Case "VIEW"
-                    response = Map(path(0)).GetFile(path(1), path(2)) : Return response
+                    response = ResourceMap(path(0)).GetFile(path(1), path(2)) : Return response
             End Select
         Catch ex As IndexOutOfRangeException
             Throw New MalformedUrlException
@@ -158,6 +160,12 @@ Public Class HttpController
         Select Case ex.GetType
             Case GetType(NotAuthorizedException)
                 response.StatusCode = 401
+                SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
+            Case GetType(UserRegistrationException)
+                response.StatusCode = 400
+                SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
+            Case GetType(PasswordRequirementException)
+                response.StatusCode = 400
                 SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
             Case GetType(ContentSizeLimitExceededException)
                 response.StatusCode = 413

@@ -1,5 +1,6 @@
 ﻿Imports System.Security.Cryptography
 Imports System.Text
+Imports Newtonsoft.Json
 Imports WorkrServer
 
 Public Module Authenticator
@@ -11,10 +12,6 @@ Public Module Authenticator
             Return m_AuthUser
         End Get
     End Property
-
-    Public Function GetHashAsHex(ByVal data As Byte()) As String
-        Return BitConverter.ToString(m_Hasher.ComputeHash(data)).Replace("-", "").ToLower
-    End Function
 
     Public Function Authenticate(authHeaderBase64 As String) As Boolean
         Try
@@ -28,7 +25,7 @@ Public Module Authenticator
                                     Where e.Email.ToLower = authEmail.ToLower
                                     Select e).Single
 
-            If GetHashAsHex(Encoding.UTF8.GetBytes(authUser.Salt & authPassword)) = authUser.PasswordHash.ToLower Then
+            If GetHashAsHex(authUser.Salt & authPassword) = authUser.PasswordHash.ToLower Then
                 m_AuthUser = authUser
                 Return True
             End If
@@ -36,6 +33,44 @@ Public Module Authenticator
         End Try
         m_AuthUser = Nothing
         Return False
+    End Function
+
+    Public Function Register(jsonUser As String, password As String) As User
+        If password.Length < 8 Then Throw New PasswordRequirementException
+        Dim newUser As New User
+        Try
+            newUser = JsonConvert.DeserializeObject(Of User)(jsonUser, JSONSettings)
+            If String.IsNullOrEmpty(newUser.Email) Then Throw New UserRegistrationException
+            If String.IsNullOrEmpty(newUser.Name) Then Throw New UserRegistrationException
+            If DB.Users.Where(Function(e) e.Email.ToLower = newUser.Email.ToLower).Count > 0 Then Throw New UserRegistrationException
+            newUser.ID = Guid.NewGuid
+            newUser.Salt = GenerateSalt()
+            newUser.PasswordHash = GetHashAsHex(newUser.Salt & password)
+            DB.Users.Add(newUser)
+            DB.SaveChanges()
+            Return (From e As User In DB.Users
+                    Where e.ID = newUser.ID
+                    Select e).Single
+        Catch ex As Exception
+            DB.DiscardTrackedEntityByID(newUser)
+            Throw ex
+        End Try
+    End Function
+
+    Private Function GetHashAsHex(ByVal data As Byte()) As String
+        Return BitConverter.ToString(m_Hasher.ComputeHash(data)).Replace("-", "").ToLower
+    End Function
+
+    Private Function GetHashAsHex(ByVal data As String) As String
+        Dim dataBytes As Byte() = Encoding.UTF8.GetBytes(data)
+        Return BitConverter.ToString(m_Hasher.ComputeHash(dataBytes)).Replace("-", "").ToLower
+    End Function
+
+    Private Function GenerateSalt() As String
+        Dim rand As New RNGCryptoServiceProvider()
+        Dim saltBytes As Byte() = New Byte(23) {} '32 base64 chars
+        rand.GetBytes(saltBytes)
+        Return Convert.ToBase64String(saltBytes)
     End Function
 
     Public Class NotAuthorizedException
@@ -48,74 +83,23 @@ Public Module Authenticator
         End Property
     End Class
 
-    'Function AuthLogin(ByVal collection As FormCollection) As ActionResult
-    '    Dim U As User = Nothing
-    '    Dim username As String = Nothing
-    '    Dim password As String = Nothing
-    '    Try
-    '        username = Request("username").ToLower
-    '        password = Request("password")
+    Public Class UserRegistrationException
+        Inherits Exception
 
-    '        If Not String.IsNullOrEmpty(username) Or Not String.IsNullOrEmpty(password) Then
-    '            U = (From e As User In C.Users
-    '                 Where e.NetLogin.ToLower = username And e.LocalPhone = password
-    '                 Select e).AsNoTracking.FirstOrDefault
-    '        End If
+        Public Overrides ReadOnly Property Message As String
+            Get
+                Return "Error registering user."
+            End Get
+        End Property
+    End Class
 
-    '        If U Is Nothing Then
-    '            Return RedirectToAction("Login")
-    '        End If
+    Public Class PasswordRequirementException
+        Inherits Exception
 
-    '        Dim rand As New RNGCryptoServiceProvider()
-    '        Dim tokenBytes As Byte() = New Byte(23) {} '32 base64 chars
-    '        Dim selectorBytes As Byte() = New Byte(8) {} '12 base64 chars
-    '        Dim base64Token As String
-    '        Dim base64Selector As String
-    '        Dim token As New Token
-    '        Dim cookie As New HttpCookie("SmartDirAuthToken")
-
-    '        rand.GetBytes(tokenBytes)
-    '        rand.GetBytes(selectorBytes)
-    '        base64Token = Convert.ToBase64String(tokenBytes)
-    '        base64Selector = Convert.ToBase64String(selectorBytes)
-
-    '        token.TokenHash = GetHashAsHex(tokenBytes)
-    '        token.Selector = base64Selector
-    '        token.UserID = U.UniqueID
-    '        token.Expires = DateTime.UtcNow().AddDays(30)
-
-    '        C.Tokens.Add(token)
-    '        C.SaveChanges()
-
-    '        Session("user") = U
-
-    '        cookie.Value = base64Selector & "." & base64Token
-    '        cookie.Expires = DateTime.UtcNow.AddDays(30)
-    '        cookie.HttpOnly = True
-
-    '        Response.SetCookie(cookie)
-
-    '        If Request.Cookies("SmartDirFirstLogin") Is Nothing Then
-    '            Dim firstlogin As New HttpCookie("SmartDirFirstLogin")
-    '            firstlogin.Expires = DateTime.UtcNow.AddYears(10)
-    '            Response.SetCookie(firstlogin)
-    '            Return RedirectToAction("Help")
-    '        End If
-
-    '        Return RedirectToAction("Index")
-    '    Catch ex As Exception
-    '        LogMessage("Home", vbCrLf &
-    '            "***************************" & vbCrLf &
-    '            "AuthLogin *** ERROR ***" & vbCrLf &
-    '            "MSG: " & ex.Message & vbCrLf &
-    '            "USER: " & JsonConvert.SerializeObject(U) & vbCrLf &
-    '            "USERNAME INPUT: " & username & vbCrLf &
-    '            "IP ADDRESS: " & Request.UserHostAddress & vbCrLf &
-    '            "***************************"
-    '        )
-    '    End Try
-
-    '    Return RedirectToAction("Login")
-    'End Function
-
+        Public Overrides ReadOnly Property Message As String
+            Get
+                Return "Password must be no less than 8 characters."
+            End Get
+        End Property
+    End Class
 End Module

@@ -55,7 +55,7 @@ Public Class Table(Of T As Entity)
                     Where e.ID = dbEntity.ID
                     Select e).Single
         Catch ex As Infrastructure.DbUpdateException
-            DB.DiscardTrackedEntityByID(dbEntity.ID)
+            DB.DiscardTrackedEntityByID(dbEntity)
             Dim exceptionDetail As Core.UpdateException = TryCast(ex.InnerException, Core.UpdateException)
             If exceptionDetail IsNot Nothing Then
                 Throw New ForeignKeyFialationException(DirectCast(exceptionDetail.InnerException, Npgsql.NpgsqlException).Detail)
@@ -64,7 +64,7 @@ Public Class Table(Of T As Entity)
         Catch ex As JsonReaderException
             Throw New MalformedJsonException(ex.Message)
         Catch ex As Exception
-            DB.DiscardTrackedEntityByID(dbEntity.ID)
+            DB.DiscardTrackedEntityByID(dbEntity)
             Throw ex
         End Try
     End Function
@@ -79,7 +79,6 @@ Public Class Table(Of T As Entity)
             DB.SaveChanges()
             Return True
         Catch ex As Exception
-            DB.DiscardTrackedEntityByID(Guid.Parse(id))
             Throw ex
         End Try
     End Function
@@ -99,13 +98,14 @@ Public Class Table(Of T As Entity)
 
     Public Function Patch(id As String, json As String) As T
         CheckPermissions()
+        Dim dbEntity As T = Nothing
         Try
             AddHttpMethodProperty(json, "PATCH")
             Dim jsonEntity As T = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
             Dim userID As Guid = Guid.Parse(id)
-            Dim dbEntity As T = (From e As T In DbSet
-                                 Where e.ID = userID
-                                 Select e).First
+            dbEntity = (From e As T In DbSet
+                        Where e.ID = userID
+                        Select e).First
 
             For Each prop As PropertyInfo In Properties
                 If prop.GetValue(jsonEntity) Is Nothing Then Continue For
@@ -115,7 +115,7 @@ Public Class Table(Of T As Entity)
             DB.SaveChanges()
             Return dbEntity
         Catch ex As Exception
-            DB.DiscardTrackedEntityByID(Guid.Parse(id))
+            DB.DiscardTrackedEntityByID(dbEntity)
             Throw ex
         End Try
     End Function

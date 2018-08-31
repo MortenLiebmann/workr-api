@@ -13,9 +13,9 @@ Public Class WorkrDB
         modelBuilder.HasDefaultSchema("public")
     End Sub
 
-    Public Sub DiscardTrackedEntityByID(id As Guid)
+    Public Sub DiscardTrackedEntityByID(ent As Entity)
         Try
-            Me.ChangeTracker.Entries.Where(Function(e) e.Entity.ID = id).First.State = EntityState.Detached
+            Me.ChangeTracker.Entries.Where(Function(e) e.Entity.ID = ent.ID).First.State = EntityState.Detached
         Catch ex As Exception
         End Try
     End Sub
