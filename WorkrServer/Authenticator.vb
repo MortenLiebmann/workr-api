@@ -76,9 +76,17 @@ Public Module Authenticator
     Public Class NotAuthorizedException
         Inherits Exception
 
+        Private m_Message As String = "Not authorized."
+
+        Public Sub New()
+        End Sub
+
+        Public Sub New(message As String)
+            m_Message = message
+        End Sub
         Public Overrides ReadOnly Property Message As String
             Get
-                Return "Not authorized."
+                Return m_Message
             End Get
         End Property
     End Class

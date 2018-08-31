@@ -63,6 +63,7 @@ Public Class Chat
 
     Public Overrides Sub OnPut(Optional params As Object = Nothing)
         If AuthUser Is Nothing Then Throw New NotAuthorizedException
+        If Not AuthUser.ID = Post.CreatedByUserID Then Throw New NotAuthorizedException("Can't create chat on post user did not create.")
         If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid
         ChatParty1UserID = AuthUser.ID
     End Sub

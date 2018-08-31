@@ -38,6 +38,7 @@ Public Class UserImage
 
     Public Overrides Sub OnPut(Optional params As Object = Nothing)
         If AuthUser Is Nothing Then Throw New NotAuthorizedException
+        If Not AuthUser.ID = UserID Then Throw New NotAuthorizedException
         If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid
         UserID = AuthUser.ID
     End Sub

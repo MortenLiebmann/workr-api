@@ -72,9 +72,7 @@ Public Class HttpController
                 Listener.Start()
             End While
         Catch ex As Exception
-
         End Try
-
     End Sub
 
     Private Function NavigateMap(ByRef context As HttpListenerContext, path As String(), data As String, file As MemoryStream) As Object
