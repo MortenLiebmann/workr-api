@@ -156,9 +156,7 @@ Public Class HttpController
                              url,
                              contenttype,
                              data)
-
     End Function
-
 
     Private Sub HandleRequestException(ByRef response As HttpListenerResponse, ex As Exception, path As String())
         Select Case ex.GetType
@@ -187,6 +185,9 @@ Public Class HttpController
                 response.StatusCode = 400
                 SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
             Case GetType(MalformedUrlException)
+                response.StatusCode = 400
+                SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
+            Case GetType(MalformedJsonException)
                 response.StatusCode = 400
                 SendResponse(response, ErrorResponse(response.StatusCode, ex.Message))
             Case GetType(Exception)

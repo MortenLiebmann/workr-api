@@ -14,8 +14,15 @@ Public MustInherit Class Entity
     <JsonIgnore>
     Public MustOverride ReadOnly Property FileUploadAllowed As Boolean
 
+    <NotMapped>
+    Public Property HttpMethod As String = ""
+
     Public MustOverride Function OnFileUpload(Optional params As Object = Nothing) As Object
     Public MustOverride Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
+
+    Public Function ShouldSerializeHttpMethod() As Boolean
+        Return False
+    End Function
 
     Public Class OnFileUploadException
         Inherits Exception
@@ -67,6 +74,21 @@ Public MustInherit Class Entity
     End Class
 
     Public Class ForeignKeyFialationException
+        Inherits Exception
+
+        Dim m_Message As String = ""
+        Public Sub New(message As String)
+            m_Message = message.Replace("""", "'")
+        End Sub
+
+        Public Overrides ReadOnly Property Message As String
+            Get
+                Return m_Message
+            End Get
+        End Property
+    End Class
+
+    Public Class MalformedJsonException
         Inherits Exception
 
         Dim m_Message As String = ""

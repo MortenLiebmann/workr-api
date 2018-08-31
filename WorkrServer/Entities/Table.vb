@@ -42,6 +42,7 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Overloads Function Put(json As String) As T
+        AddHttpMethodProperty(json, "PUT")
         Dim jsonEntity As T = Nothing
         Dim dbEntity As T = Nothing
         Try
@@ -49,7 +50,9 @@ Public Class Table(Of T As Entity)
             If jsonEntity.ID Is Nothing OrElse jsonEntity.ID = Guid.Empty Then jsonEntity.ID = Guid.NewGuid
             dbEntity = DbSet.Add(jsonEntity)
             DB.SaveChanges()
-            Return dbEntity
+            Return (From e As T In DbSet.AsNoTracking
+                    Where e.ID = dbEntity.ID
+                    Select e).Single
         Catch ex As Infrastructure.DbUpdateException
             DB.DiscardTrackedEntityByID(dbEntity.ID)
             Dim exceptionDetail As Core.UpdateException = TryCast(ex.InnerException, Core.UpdateException)
@@ -57,6 +60,8 @@ Public Class Table(Of T As Entity)
                 Throw New ForeignKeyFialationException(DirectCast(exceptionDetail.InnerException, Npgsql.NpgsqlException).Detail)
             End If
             Throw ex
+        Catch ex As JsonReaderException
+            Throw New MalformedJsonException(ex.Message)
         Catch ex As Exception
             DB.DiscardTrackedEntityByID(dbEntity.ID)
             Throw ex
@@ -78,9 +83,7 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Function Search(json As String) As T()
-        Dim jo As JObject = JObject.Parse(json)
-        jo.AddFirst(New JProperty("HttpMethod", "POST"))
-        json = jo.ToString()
+        AddHttpMethodProperty(json, "POST")
         Dim jsonEntity As T = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
         Dim selector As Func(Of T, Boolean) = Function(e)
                                                   For Each prop As PropertyInfo In Properties
@@ -94,6 +97,7 @@ Public Class Table(Of T As Entity)
 
     Public Function Patch(id As String, json As String) As T
         Try
+            AddHttpMethodProperty(json, "PATCH")
             Dim jsonEntity As T = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
             Dim userID As Guid = Guid.Parse(id)
             Dim dbEntity As T = (From e As T In DbSet
@@ -183,5 +187,9 @@ Public Class Table(Of T As Entity)
         Return prop.GetValue(jsonEntity) = prop.GetValue(dbEntity)
     End Function
 
-
+    Private Sub AddHttpMethodProperty(ByRef json As String, method As String)
+        Dim jo As JObject = JObject.Parse(json)
+        jo.AddFirst(New JProperty("HttpMethod", method))
+        json = jo.ToString()
+    End Sub
 End Class
