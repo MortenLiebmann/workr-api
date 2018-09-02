@@ -66,21 +66,25 @@ Public Class Post
 
     Private Sub CreatePostTagEntitys(postTags As PostTag())
         If Me.ID Is Nothing OrElse Me.ID = Guid.Empty Then Me.ID = Guid.NewGuid
-        Dim newPostTags As New List(Of PostTag)
+        Dim myPostTags As New List(Of PostTag)
         For Each tag As PostTag In postTags
-            If (From e As PostTag In DB.PostTags
-                Where e.Name = tag.Name
-                Select e).Count > 0 Then Continue For
+            Dim existingTag As PostTag = (From e As PostTag In DB.PostTags
+                                          Where e.Name = tag.Name
+                                          Select e).FirstOrDefault
+            If existingTag IsNot Nothing Then
+                myPostTags.Add(existingTag)
+                Continue For
+            End If
             tag.ID = Guid.NewGuid
             Dim dbEntity As PostTag = Nothing
             Try
                 dbEntity = DB.PostTags.Add(tag)
-                newPostTags.Add(dbEntity)
+                myPostTags.Add(dbEntity)
             Catch ex As Exception
                 DB.DiscardTrackedEntityByID(dbEntity)
             End Try
         Next
-        CreatePostTagReferenceEntitys(newPostTags.ToArray)
+        CreatePostTagReferenceEntitys(myPostTags.ToArray)
     End Sub
 
     Private Sub CreatePostTagReferenceEntitys(postTags As PostTag())
