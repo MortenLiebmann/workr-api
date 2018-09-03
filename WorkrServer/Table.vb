@@ -43,7 +43,7 @@ Public Class Table(Of T As Entity)
 
     Public Overloads Function Put(json As String) As T
         CheckPermissions()
-        AddHttpMethodProperty(json, "PUT")
+        AddJsonProperty(json, "HttpMethod", "PUT")
         Dim jsonEntity As T = Nothing
         Dim dbEntity As T = Nothing
         Try
@@ -84,7 +84,7 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Function Search(json As String) As T()
-        AddHttpMethodProperty(json, "POST")
+        AddJsonProperty(json, "HttpMethod", "POST")
         Dim jsonEntity As T = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
         Dim selector As Func(Of T, Boolean) = Function(e)
                                                   For Each prop As PropertyInfo In Properties
@@ -100,15 +100,18 @@ Public Class Table(Of T As Entity)
         CheckPermissions()
         Dim dbEntity As T = Nothing
         Try
-            AddHttpMethodProperty(json, "PATCH")
+            AddJsonProperty(json, "ID", id)
+            AddJsonProperty(json, "HttpMethod", "PATCH")
             Dim jsonEntity As T = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
-            Dim userID As Guid = Guid.Parse(id)
+            Dim entityID As Guid = Guid.Parse(id)
             dbEntity = (From e As T In DbSet
-                        Where e.ID = userID
+                        Where e.ID = entityID
                         Select e).First
 
             For Each prop As PropertyInfo In Properties
                 If prop.GetValue(jsonEntity) Is Nothing Then Continue For
+                If prop.Name = "ID" Then Continue For
+                If Not prop.CanWrite Then Continue For
                 prop.SetValue(dbEntity, prop.GetValue(jsonEntity))
             Next
 
@@ -223,9 +226,9 @@ Public Class Table(Of T As Entity)
         Return prop.GetValue(jsonEntity) = prop.GetValue(dbEntity)
     End Function
 
-    Private Sub AddHttpMethodProperty(ByRef json As String, method As String)
+    Private Sub AddJsonProperty(ByRef json As String, propertyName As String, propertyValue As Object)
         Dim jo As JObject = JObject.Parse(json)
-        jo.AddFirst(New JProperty("HttpMethod", method))
+        jo.AddFirst(New JProperty(propertyName, propertyValue))
         json = jo.ToString()
     End Sub
 End Class

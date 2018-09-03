@@ -54,7 +54,7 @@ Public Class Post
         End Get
         Set(value As PostTag())
             Select Case HttpMethod
-                Case "PUT"
+                Case "PUT", "PATCH"
                     CreatePostTagEntitys(value)
                     Exit Property
                 Case Else
@@ -88,13 +88,18 @@ Public Class Post
     End Sub
 
     Private Sub CreatePostTagReferenceEntitys(postTags As PostTag())
-        For Each e As PostTag In postTags
+        For Each tag As PostTag In postTags
             Dim dbEntity As PostTagReference = Nothing
             Try
+                If (From e As PostTagReference In DB.PostTagReferences
+                    Where e.PostID = Me.ID And
+                    e.PostTagID = tag.ID
+                    Select e).FirstOrDefault IsNot Nothing Then Continue For
+
                 dbEntity = DB.PostTagReferences.Add(New PostTagReference With {
                                                     .ID = Guid.NewGuid,
                                                     .PostID = Me.ID,
-                                                    .PostTagID = e.ID})
+                                                    .PostTagID = tag.ID})
             Catch ex As Exception
                 DB.DiscardTrackedEntityByID(dbEntity)
             End Try
