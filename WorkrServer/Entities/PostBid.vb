@@ -13,6 +13,20 @@ Public Class PostBid
     Public Property Price As Decimal
     Public Property Flags As Int64?
 
+    Public ReadOnly Property CreatedByUser As User
+        Get
+            Try
+                If Me.CreatedByUserID Is Nothing Then Return Nothing
+                Return (From e As User In DB.Users.AsNoTracking
+                        Where e.ID = Me.CreatedByUserID
+                        Select e).First
+            Catch ex As InvalidOperationException
+                Throw New IdNotFoundException(Me.CreatedByUserID.ToString, "users")
+            End Try
+        End Get
+    End Property
+
+
     Public Overrides ReadOnly Property TableName As String
         Get
             Return "postbids"

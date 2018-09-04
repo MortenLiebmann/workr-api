@@ -20,11 +20,13 @@ Public Class Post
     Public Property JobEndDate As DateTime?
     Public Property Flags As Int64?
 
+    Private m_CreatedByUser As User
     Private m_Tags As PostTag()
 
-    Public ReadOnly Property CreatedByUser As User
+    Public Property CreatedByUser As User
         Get
             Try
+                If m_CreatedByUser IsNot Nothing Then Return m_CreatedByUser
                 If Me.CreatedByUserID Is Nothing Then Return Nothing
                 Return (From e As User In DB.Users.AsNoTracking
                         Where e.ID = Me.CreatedByUserID
@@ -33,6 +35,9 @@ Public Class Post
                 Throw New IdNotFoundException(Me.CreatedByUserID.ToString, "users")
             End Try
         End Get
+        Set(value As User)
+            If HttpMethod = "POST" Then m_CreatedByUser = value
+        End Set
     End Property
 
     Public ReadOnly Property PostImageIDs As Guid?()
@@ -62,6 +67,19 @@ Public Class Post
                     Exit Property
             End Select
         End Set
+    End Property
+
+    Public ReadOnly Property PostBids As PostBid()
+        Get
+            Try
+                If Me.ID Is Nothing Then Return Nothing
+                Return (From e As PostBid In DB.PostBids.AsNoTracking
+                        Where e.PostID = Me.ID
+                        Select e).ToArray
+            Catch ex As InvalidOperationException
+                Throw New IdNotFoundException(Me.CreatedByUserID.ToString, "users")
+            End Try
+        End Get
     End Property
 
     Private Sub CreatePostTagEntitys(postTags As PostTag())

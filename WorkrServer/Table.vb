@@ -211,21 +211,6 @@ Public Class Table(Of T As Entity)
         Return folder.GetFiles()(0).Name
     End Function
 
-    Private Function CompareEntityProperty(jsonEntity As T, dbEntity As T, prop As PropertyInfo) As Boolean
-        If prop.GetValue(jsonEntity) Is Nothing Then Return True
-        If prop.Name = "HttpMethod" Then Return True
-        If prop.PropertyType.IsArray And prop.GetType() IsNot GetType(Guid?) Then
-            Return IsSubsetOf(prop.GetValue(jsonEntity), prop.GetValue(dbEntity))
-        End If
-        If prop.PropertyType Is GetType(Entity) Then Return True
-        If prop.PropertyType Is GetType(DateTime) Then
-            Dim t1 As UInt64 = Math.Round(CDate(prop.GetValue(jsonEntity)).Ticks / TimeSpan.TicksPerSecond, 0) * TimeSpan.TicksPerSecond
-            Dim t2 As UInt64 = Math.Round(CDate(prop.GetValue(dbEntity)).Ticks / TimeSpan.TicksPerSecond, 0) * TimeSpan.TicksPerSecond
-            Return t1 = t2
-        End If
-        Return prop.GetValue(jsonEntity) = prop.GetValue(dbEntity)
-    End Function
-
     Private Sub AddJsonProperty(ByRef json As String, propertyName As String, propertyValue As Object)
         Dim jo As JObject = JObject.Parse(json)
         jo.AddFirst(New JProperty(propertyName, propertyValue))

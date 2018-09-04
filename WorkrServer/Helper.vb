@@ -46,6 +46,24 @@ Module Helper
         End Set
     End Property
 
+
+    Public Function CompareEntityProperty(jsonEntity As Entity, dbEntity As Entity, prop As PropertyInfo) As Boolean
+        If prop.GetValue(jsonEntity) Is Nothing Then Return True
+        If prop.Name = "HttpMethod" Then Return True
+        If prop.PropertyType.IsArray And prop.GetType() IsNot GetType(Guid?) Then
+            Return IsSubsetOf(prop.GetValue(jsonEntity), prop.GetValue(dbEntity))
+        End If
+        If prop.PropertyType Is GetType(Entity) Then
+            Return True
+        End If
+        If prop.PropertyType Is GetType(DateTime) Then
+            Dim t1 As UInt64 = Math.Round(CDate(prop.GetValue(jsonEntity)).Ticks / TimeSpan.TicksPerSecond, 0) * TimeSpan.TicksPerSecond
+            Dim t2 As UInt64 = Math.Round(CDate(prop.GetValue(dbEntity)).Ticks / TimeSpan.TicksPerSecond, 0) * TimeSpan.TicksPerSecond
+            Return t1 = t2
+        End If
+        Return prop.GetValue(jsonEntity) = prop.GetValue(dbEntity)
+    End Function
+
     ''' <summary>
     ''' Returns true if the superset array contains all items in subset array.
     ''' </summary>
