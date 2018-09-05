@@ -67,9 +67,18 @@ Public MustInherit Class Entity
     Public Class FileNotFoundException
         Inherits Exception
 
+        Dim m_Message As String = "Requested file was not found."
+
+        Public Sub New()
+        End Sub
+
+        Public Sub New(message As String)
+            m_Message = message.Replace("""", "'")
+        End Sub
+
         Public Overrides ReadOnly Property Message As String
             Get
-                Return "Requested file was not found."
+                Return m_Message
             End Get
         End Property
     End Class

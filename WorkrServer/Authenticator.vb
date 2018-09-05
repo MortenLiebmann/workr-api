@@ -52,7 +52,7 @@ Public Module Authenticator
                     Where e.ID = newUser.ID
                     Select e).Single
         Catch ex As Exception
-            DB.DiscardTrackedEntityByID(newUser)
+            DB.DiscardTrackedEntity(newUser)
             Throw ex
         End Try
     End Function

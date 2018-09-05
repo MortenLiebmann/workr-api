@@ -67,10 +67,10 @@ Public Class PostImage
             DB.SaveChanges()
             Return dbPostImage
         Catch ex As Data.Entity.Infrastructure.DbUpdateException
-            DB.DiscardTrackedEntityByID(params.ID)
+            DB.DiscardTrackedEntity(params)
             Throw New IdNotFoundException(postImage.PostID.ToString, "posts")
         Catch ex As Exception
-            DB.DiscardTrackedEntityByID(params.ID)
+            DB.DiscardTrackedEntity(params)
             Throw New OnFileUploadException
         End Try
     End Function

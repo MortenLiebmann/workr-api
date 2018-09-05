@@ -52,10 +52,10 @@ Public Class UserImage
             DB.SaveChanges()
             Return dbPostImage
         Catch ex As Data.Entity.Infrastructure.DbUpdateException
-            DB.DiscardTrackedEntityByID(params.ID)
+            DB.DiscardTrackedEntity(params)
             Throw New IdNotFoundException(userImage.UserID.ToString, "users")
         Catch ex As Exception
-            DB.DiscardTrackedEntityByID(params.ID)
+            DB.DiscardTrackedEntity(params)
             Throw New OnFileUploadException
         End Try
     End Function

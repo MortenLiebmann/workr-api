@@ -51,34 +51,35 @@ Module Helper
 
     Private Property FTPCredentials As New NetworkCredential("workr-api", "workr123")
 
-
-    Public Function FTPDownload(path As String) As MemoryStream
-        Dim ftpRequest As FtpWebRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & path.Replace("\", "/"))
-        Dim output As New MemoryStream
-        With ftpRequest
+    Public Function CreateFtpRequest(path As String, ftpMethod As String) As FtpWebRequest
+        Dim _ftp As FtpWebRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & path.Replace("\", "/"))
+        With _ftp
             .EnableSsl = False
             .Credentials = FTPCredentials
             .KeepAlive = False
             .UseBinary = True
             .UsePassive = True
-            .Method = WebRequestMethods.Ftp.DownloadFile
+            .Method = ftpMethod
         End With
+        Return _ftp
+    End Function
 
-        Using FTPResponse As FtpWebResponse = CType(ftpRequest.GetResponse, FtpWebResponse)
-            Using responseStream As Stream = FTPResponse.GetResponseStream
 
-                Dim buffer(2047) As Byte
-                Dim read As Integer = 0
-                Do
-                    read = responseStream.Read(buffer, 0, buffer.Length)
-                    output.Write(buffer, 0, read)
-                Loop Until read = 0
-                responseStream.Close()
+    Public Function FTPDownload(path As String) As MemoryStream
+        Dim output As New MemoryStream
+        Dim ftpRequest As FtpWebRequest = CreateFtpRequest(path, WebRequestMethods.Ftp.DownloadFile)
+        Dim ftpResponse As FtpWebResponse = ftpRequest.GetResponse
+        Dim responseStream As Stream = ftpResponse.GetResponseStream
+        Dim buffer(2047) As Byte
+        Dim read As Integer = 0
 
-                responseStream.Close()
-            End Using
-            FTPResponse.Close()
-        End Using
+        Do
+            read = responseStream.Read(buffer, 0, buffer.Length)
+            output.Write(buffer, 0, read)
+        Loop Until read = 0
+        responseStream.Close()
+        ftpResponse.Close()
+
         Return output
     End Function
 
@@ -87,23 +88,22 @@ Module Helper
         Dim ftpRequest As FtpWebRequest = Nothing
         Dim ftpResponse As FtpWebResponse = Nothing
         Dim ftpResponseStream As Stream = Nothing
+        Dim webRequest As New WebClient With {
+                .Credentials = FTPCredentials
+            }
+
         For i As Integer = 1 To folders.Length
             Try
-                ftpRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & String.Join("/", folders.Take(i)))
-                ftpRequest.Method = WebRequestMethods.Ftp.MakeDirectory
-                ftpRequest.Credentials = FTPCredentials
+                ftpRequest = CreateFtpRequest("ftp://skurk.info/home/" & String.Join("/", folders.Take(i)), WebRequestMethods.Ftp.MakeDirectory)
                 ftpRequest.GetResponse()
             Catch ex As Exception
             End Try
         Next
 
-        Dim webRequest As New WebClient With {
-            .Credentials = FTPCredentials
-        }
         webRequest.UploadData("ftp://skurk.info/home/" & String.Join("/", folders) & "/" & filename, "STOR", file.ToArray)
     End Sub
 
-    Public Function FTPDownloadFirstFile(dirPath As String, Optional fileExtension As String = ".png") As MemoryStream
+    Public Function FTPDownloadFirstFile(dirPath As String) As MemoryStream
         Dim ftpRequest As FtpWebRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & dirPath.Replace("\", "/"))
         Dim output As New MemoryStream
         Dim filename As String

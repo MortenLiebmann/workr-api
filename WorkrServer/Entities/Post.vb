@@ -103,7 +103,7 @@ Public Class Post
                 dbEntity = DB.PostTags.Add(tag)
                 myPostTags.Add(dbEntity)
             Catch ex As Exception
-                DB.DiscardTrackedEntityByID(dbEntity)
+                DB.DiscardTrackedEntity(dbEntity)
             End Try
         Next
         CreatePostTagReferenceEntitys(myPostTags.ToArray)
@@ -123,7 +123,7 @@ Public Class Post
                                                     .PostID = Me.ID,
                                                     .PostTagID = tag.ID})
             Catch ex As Exception
-                DB.DiscardTrackedEntityByID(dbEntity)
+                DB.DiscardTrackedEntity(dbEntity)
             End Try
         Next
     End Sub

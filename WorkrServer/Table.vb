@@ -1,5 +1,6 @@
 ﻿Imports System.Data.Entity
 Imports System.IO
+Imports System.Net
 Imports System.Reflection
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
@@ -55,7 +56,7 @@ Public Class Table(Of T As Entity)
                     Where e.ID = dbEntity.ID
                     Select e).Single
         Catch ex As Infrastructure.DbUpdateException
-            DB.DiscardTrackedEntityByID(dbEntity)
+            DB.DiscardTrackedEntity(dbEntity)
             Dim exceptionDetail As Core.UpdateException = TryCast(ex.InnerException, Core.UpdateException)
             If exceptionDetail IsNot Nothing Then
                 Throw New ForeignKeyFialationException(DirectCast(exceptionDetail.InnerException, Npgsql.NpgsqlException).Detail)
@@ -64,7 +65,7 @@ Public Class Table(Of T As Entity)
         Catch ex As JsonReaderException
             Throw New MalformedJsonException(ex.Message)
         Catch ex As Exception
-            DB.DiscardTrackedEntityByID(dbEntity)
+            DB.DiscardTrackedEntity(dbEntity)
             Throw ex
         End Try
     End Function
@@ -118,7 +119,7 @@ Public Class Table(Of T As Entity)
             DB.SaveChanges()
             Return dbEntity
         Catch ex As Exception
-            DB.DiscardTrackedEntityByID(dbEntity)
+            DB.DiscardTrackedEntity(dbEntity)
             Throw ex
         End Try
     End Function
@@ -158,8 +159,15 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Function GetFile(id As String) As MemoryStream
-        Dim path As String = String.Join("/", {TableEntity.TableName, id})
-        Return FTPDownloadFirstFile(path)
+        Try
+            Dim path As String = String.Join("/", {TableEntity.TableName, id})
+            Return FTPDownloadFirstFile(path)
+        Catch ex As Net.WebException
+            Throw New IdNotFoundException(id, TableEntity.TableName)
+        Catch ex As Exception
+            Throw ex
+        End Try
+
 
 
         'Dim fileStream As New MemoryStream
@@ -185,8 +193,15 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Function GetFile(associatedEntityID As String, id As String) As MemoryStream
-        Dim fileStream As New MemoryStream
-        Dim path As String = String.Join("/", {TableEntity.TableName, associatedEntityID, id & ".png"})
+        Try
+            Dim fileStream As New MemoryStream
+            Dim path As String = String.Join("/", {TableEntity.TableName, associatedEntityID, id & ".png"})
+            Return FTPDownload(path)
+        Catch ex As Net.WebException
+            Throw New Entity.FileNotFoundException(String.Format("File not found : '{0}/{1}/{2}'", TableEntity.TableName, associatedEntityID, id))
+        Catch ex As Exception
+            Throw ex
+        End Try
         'Dim path As String() = {TableEntity.TableName, associatedEntityID}
         'Dim filename As String = id & ".png"
         'Dim path As String = String.Format(
@@ -206,7 +221,7 @@ Public Class Table(Of T As Entity)
         'Catch ex As DirectoryNotFoundException
         '    Throw New Entity.FileNotFoundException
         'End Try
-        Return FTPDownload(path)
+
     End Function
 
     Private Sub CheckPermissions()
