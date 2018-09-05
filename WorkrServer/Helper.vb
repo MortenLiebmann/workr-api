@@ -1,5 +1,8 @@
 ﻿Imports System.Data.Entity
 Imports System.IO
+Imports System.Net
+Imports System.Net.Http
+Imports System.Net.Sockets
 Imports System.Reflection
 Imports System.Runtime.CompilerServices
 Imports System.Text
@@ -45,6 +48,147 @@ Module Helper
             m_DB = value
         End Set
     End Property
+
+    Private Property FTPCredentials As New NetworkCredential("workr-api", "workr123")
+
+
+    Public Function FTPDownload(path As String) As MemoryStream
+        Dim ftpRequest As FtpWebRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & path.Replace("\", "/"))
+        Dim output As New MemoryStream
+        With ftpRequest
+            .EnableSsl = False
+            .Credentials = FTPCredentials
+            .KeepAlive = False
+            .UseBinary = True
+            .UsePassive = True
+            .Method = WebRequestMethods.Ftp.DownloadFile
+        End With
+
+        Using FTPResponse As FtpWebResponse = CType(ftpRequest.GetResponse, FtpWebResponse)
+            Using responseStream As Stream = FTPResponse.GetResponseStream
+
+                Dim buffer(2047) As Byte
+                Dim read As Integer = 0
+                Do
+                    read = responseStream.Read(buffer, 0, buffer.Length)
+                    output.Write(buffer, 0, read)
+                Loop Until read = 0
+                responseStream.Close()
+
+                responseStream.Close()
+            End Using
+            FTPResponse.Close()
+        End Using
+        Return output
+    End Function
+
+
+    Public Sub FTPUpload(folders As String(), filename As String, file As MemoryStream)
+        Dim ftpRequest As FtpWebRequest = Nothing
+        Dim ftpResponse As FtpWebResponse = Nothing
+        Dim ftpResponseStream As Stream = Nothing
+        For i As Integer = 1 To folders.Length
+            Try
+                ftpRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & String.Join("/", folders.Take(i)))
+                ftpRequest.Method = WebRequestMethods.Ftp.MakeDirectory
+                ftpRequest.Credentials = FTPCredentials
+                ftpRequest.GetResponse()
+            Catch ex As Exception
+            End Try
+        Next
+
+        Dim webRequest As New WebClient With {
+            .Credentials = FTPCredentials
+        }
+        webRequest.UploadData("ftp://skurk.info/home/" & String.Join("/", folders) & "/" & filename, "STOR", file.ToArray)
+    End Sub
+
+    Public Function FTPDownloadFirstFile(dirPath As String, Optional fileExtension As String = ".png") As MemoryStream
+        Dim ftpRequest As FtpWebRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & dirPath.Replace("\", "/"))
+        Dim output As New MemoryStream
+        Dim filename As String
+        With ftpRequest
+            .EnableSsl = False
+            .Credentials = FTPCredentials
+            .KeepAlive = False
+            .UseBinary = True
+            .UsePassive = True
+            .Method = WebRequestMethods.Ftp.ListDirectory
+        End With
+
+        Dim ftpResponse As FtpWebResponse = CType(ftpRequest.GetResponse, FtpWebResponse)
+        Dim ftpResponseStream As New StreamReader(ftpResponse.GetResponseStream)
+
+        filename = ftpResponseStream.ReadLine.Split("/")(1)
+        ftpRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & dirPath & "/" & filename)
+        With ftpRequest
+            .EnableSsl = False
+            .Credentials = FTPCredentials
+            .KeepAlive = False
+            .UseBinary = True
+            .UsePassive = True
+            .Method = WebRequestMethods.Ftp.ListDirectory
+        End With
+        ftpRequest.Method = WebRequestMethods.Ftp.DownloadFile
+        ftpResponse = CType(ftpRequest.GetResponse, FtpWebResponse)
+        Dim s As Stream = ftpResponse.GetResponseStream
+
+        Using s
+
+            Dim buffer(2047) As Byte
+            Dim read As Integer = 0
+            Do
+                read = s.Read(buffer, 0, buffer.Length)
+                output.Write(buffer, 0, read)
+            Loop Until read = 0
+        End Using
+        ftpResponseStream.Close()
+        s.Close()
+        ftpResponse.Close()
+
+        Return output
+    End Function
+
+    'Public Function FTPUpload(folders As String(), filename As String) As String()
+    '    Dim ftpDirectorys As New List(Of String)
+    '    Dim ftpRequest As FtpWebRequest = FtpWebRequest.Create("ftp://skurk.info/home/")
+
+    '    With ftpRequest
+    '        .EnableSsl = False
+    '        .Credentials = New NetworkCredential("workr-api", "workr123")
+    '        .KeepAlive = False
+    '        .UseBinary = True
+    '        .UsePassive = True
+    '        .Method = WebRequestMethods.Ftp.ListDirectory
+    '    End With
+    '    Dim ftpResponse As FtpWebResponse = CType(ftpRequest.GetResponse, FtpWebResponse)
+    '    Dim ftpResponseStream As New StreamReader(ftpResponse.GetResponseStream)
+
+    '    Dim folderExists As Boolean = False
+    '    For Each folder In folders
+    '        While Not ftpResponseStream.EndOfStream
+    '            If folder = ftpResponseStream.ReadLine Then
+    '                folderExists = True
+    '            End If
+    '        End While
+    '    Next
+
+
+
+    '    Using FTPResponse As FtpWebResponse = CType(ftpRequest.GetResponse, FtpWebResponse)
+    '        Using responseStream As New StreamReader(FTPResponse.GetResponseStream)
+
+    '            Dim line = responseStream.ReadLine()
+
+    '            Do Until line Is Nothing
+    '                lines.Add(line)
+    '                line = responseStream.ReadLine()
+    '            Loop
+    '        End Using
+    '        FTPResponse.Close()
+    '    End Using
+    '    Return lines.ToArray
+    'End Function
 
 
     Public Function CompareEntityProperty(jsonEntity As Entity, dbEntity As Entity, prop As PropertyInfo) As Boolean

@@ -23,6 +23,7 @@ Public Class Post
     Private m_CreatedByUser As User
     Private m_Tags As PostTag()
 
+    <NotMapped>
     Public Property CreatedByUser As User
         Get
             Try
@@ -40,6 +41,7 @@ Public Class Post
         End Set
     End Property
 
+    <NotMapped>
     Public ReadOnly Property PostImageIDs As Guid?()
         Get
             Return (From e As PostImage In DB.PostImages.AsNoTracking
@@ -48,6 +50,7 @@ Public Class Post
         End Get
     End Property
 
+    <NotMapped>
     Public Property PostTags As PostTag()
         Get
             If m_Tags IsNot Nothing AndAlso m_Tags.Count > 0 Then Return m_Tags
@@ -69,6 +72,7 @@ Public Class Post
         End Set
     End Property
 
+    <NotMapped>
     Public ReadOnly Property PostBids As PostBid()
         Get
             Try

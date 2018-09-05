@@ -6,6 +6,13 @@ Public Class WorkrServer
     Private WithEvents Controller As HttpController
 
     Public Sub Start()
+
+        'Dim x As New IO.FileStream("C:\Users\rune\Pictures\33333.jpg", IO.FileMode.Open)
+        'Dim y As New IO.MemoryStream
+        'x.CopyTo(y)
+        'FTPUpload({"f1", "f2"}, "img.png", y)
+        'Dim x = FTPDownload("postimages/c46057dc-0061-4d1c-bb14-247eee3a0ee4/fc495a0f-abf2-4e50-9f11-4096aa726770.png")
+
         Dim map As New Dictionary(Of String, Object) From {
             {"users", New Table(Of User)(DB.Users)},
             {"userimages", New Table(Of UserImage)(DB.UserImages)},
