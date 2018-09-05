@@ -136,25 +136,7 @@ Public Class Table(Of T As Entity)
         Dim path As String() = {fileEntity.TableName, associatedEntity}
         Dim fileName As String = fileEntity.ID.ToString & ".png"
         FTPUpload(path, fileName, file)
-        'Dim path As String = String.Format(
-        '        "{0}\{1}\{2}\{3}.png",
-        '        Environment.CurrentDirectory,
-        '        fileEntity.TableName,
-        '        associatedEntity,
-        '        fileEntity.ID.ToString)
 
-        'MakeUploadFolder(fileEntity.TableName)
-        'MakeUploadFolder(fileEntity.TableName & "\" & associatedEntity)
-
-        'Dim fileSaver As New FileStream(
-        '    path,
-        '    FileMode.Create,
-        '    FileAccess.Write)
-
-        'file.Position = 0
-        'file.CopyTo(fileSaver)
-        'file.Close()
-        'fileSaver.Close()
         Return dbEntity
     End Function
 
@@ -167,29 +149,6 @@ Public Class Table(Of T As Entity)
         Catch ex As Exception
             Throw ex
         End Try
-
-
-
-        'Dim fileStream As New MemoryStream
-
-
-        'Dim path As String = String.Format(
-        '        "{0}\{1}\{2}\",
-        '        Environment.CurrentDirectory,
-        '        TableEntity.TableName,
-        '        id)
-        'path += GetFirstFileInFolder(path)
-        'Try
-        '    Dim fileReader As New FileStream(path,
-        '                         FileMode.Open,
-        '                         FileAccess.Read)
-        '    fileReader.CopyTo(fileStream)
-        '    Return fileStream
-        'Catch ex As IO.FileNotFoundException
-        '    Throw New Entity.FileNotFoundException
-        'Catch ex As DirectoryNotFoundException
-        '    Throw New Entity.FileNotFoundException
-        'End Try
     End Function
 
     Public Function GetFile(associatedEntityID As String, id As String) As MemoryStream
@@ -202,26 +161,6 @@ Public Class Table(Of T As Entity)
         Catch ex As Exception
             Throw ex
         End Try
-        'Dim path As String() = {TableEntity.TableName, associatedEntityID}
-        'Dim filename As String = id & ".png"
-        'Dim path As String = String.Format(
-        '        "{0}\{1}\{2}\{3}.png",
-        '        Environment.CurrentDirectory,
-        '        TableEntity.TableName,
-        '        associatedEntityID,
-        '        id)
-        'Try
-        '    Dim fileReader As New FileStream(path,
-        '                         FileMode.Open,
-        '                         FileAccess.Read)
-        '    fileReader.CopyTo(fileStream)
-        '    Return fileStream
-        'Catch ex As IO.FileNotFoundException
-        '    Throw New Entity.FileNotFoundException
-        'Catch ex As DirectoryNotFoundException
-        '    Throw New Entity.FileNotFoundException
-        'End Try
-
     End Function
 
     Private Sub CheckPermissions()
