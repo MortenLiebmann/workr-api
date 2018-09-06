@@ -126,16 +126,16 @@ Public Class Table(Of T As Entity)
         End Try
     End Function
 
-    Public Function PutFile(file As MemoryStream, associatedEntity As String) As T
+    Public Function PutFile(file As MemoryStream, associatedEntityID As String) As T
         CheckAuthentication()
 
         If Not TableEntity.FileUploadAllowed Then Throw New FileUploadNotAllowedException
         Dim dbEntity As T
         Dim fileEntity As T = TableEntity
-        fileEntity = fileEntity.CreateFileAssociatedEntity(New With {.associatedEntityID = Guid.Parse(associatedEntity)})
+        fileEntity = fileEntity.CreateFileAssociatedEntity(New With {.associatedEntityID = Guid.Parse(associatedEntityID)})
         dbEntity = fileEntity.OnFileUpload(fileEntity)
 
-        Dim path As String() = {fileEntity.TableName, associatedEntity}
+        Dim path As String() = {fileEntity.TableName, associatedEntityID}
         Dim fileName As String = fileEntity.ID.ToString & ".png"
         FTPUpload(path, fileName, file)
 
