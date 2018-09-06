@@ -1,6 +1,7 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
 Imports Newtonsoft.Json
+Imports WorkrServer
 
 <Table("posttags")>
 Public Class PostTag
@@ -28,6 +29,10 @@ Public Class PostTag
         If AuthUser Is Nothing Then Throw New NotAuthorizedException
         If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid
     End Sub
+
+    Public Overrides Function OnPatch(Optional params As Object = Nothing) As Boolean
+        Return True
+    End Function
 
     Public Overrides Function OnFileUpload(Optional params As Object = Nothing) As Object
         Throw New NotImplementedException()

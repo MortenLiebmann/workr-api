@@ -5,6 +5,7 @@ Imports System.Net.Http
 Imports System.Reflection
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
+Imports WorkrServer
 
 <Table("posts")>
 Public Class Post
@@ -19,6 +20,14 @@ Public Class Post
     Public Property Address As String
     Public Property JobEndDate As DateTime?
     Public Property Flags As Int64?
+
+    <Flags>
+    Public Enum PostFlags As Int64
+        OPEN = 0
+        DELETED = 1
+        ACCEPTED = 2
+        COMPLETED = 4
+    End Enum
 
     Private m_CreatedByUser As User
     Private m_Tags As PostTag()
@@ -143,5 +152,9 @@ Public Class Post
 
     Public Overrides Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
         Throw New NotImplementedException()
+    End Function
+
+    Public Overrides Function OnPatch(Optional params As Object = Nothing) As Boolean
+        Return True
     End Function
 End Class

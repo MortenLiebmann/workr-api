@@ -1,6 +1,7 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
 Imports Newtonsoft.Json
+Imports WorkrServer
 
 <Table("userimages")>
 Public Class UserImage
@@ -42,6 +43,10 @@ Public Class UserImage
         If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid
         UserID = AuthUser.ID
     End Sub
+
+    Public Overrides Function OnPatch(Optional params As Object = Nothing) As Boolean
+        Return True
+    End Function
 
     Public Overrides Function OnFileUpload(Optional params As Object = Nothing) As Object
         Dim userImage As UserImage = Nothing

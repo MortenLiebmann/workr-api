@@ -18,6 +18,7 @@ Public MustInherit Class Entity
     Public Property HttpMethod As String = ""
 
     Public MustOverride Sub OnPut(Optional params As Object = Nothing)
+    Public MustOverride Function OnPatch(Optional params As Object = Nothing) As Boolean
     Public MustOverride Function OnFileUpload(Optional params As Object = Nothing) As Object
     Public MustOverride Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
 

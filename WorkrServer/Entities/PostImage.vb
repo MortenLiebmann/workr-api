@@ -1,6 +1,7 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
 Imports Newtonsoft.Json
+Imports WorkrServer
 
 <Table("postimages")>
 Public Class PostImage
@@ -10,6 +11,7 @@ Public Class PostImage
     Public Overrides Property ID As Guid?
     Public Property PostID As Guid?
 
+    <NotMapped>
     <JsonIgnore>
     Public ReadOnly Property Post() As Post
         Get
@@ -73,5 +75,9 @@ Public Class PostImage
             DB.DiscardTrackedEntity(params)
             Throw New OnFileUploadException
         End Try
+    End Function
+
+    Public Overrides Function OnPatch(Optional params As Object = Nothing) As Boolean
+        Return True
     End Function
 End Class

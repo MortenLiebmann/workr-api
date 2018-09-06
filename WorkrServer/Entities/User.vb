@@ -57,4 +57,8 @@ Public Class User
     Public Overrides Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
         Throw New NotImplementedException()
     End Function
+
+    Public Overrides Function OnPatch(Optional params As Object = Nothing) As Boolean
+        Return True
+    End Function
 End Class

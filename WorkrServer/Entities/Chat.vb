@@ -1,6 +1,7 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
 Imports Newtonsoft.Json
+Imports WorkrServer
 
 <Table("chats")>
 Public Class Chat
@@ -14,6 +15,7 @@ Public Class Chat
     Public Property ChatParty2UserID As Guid?
     Public Property Flags As Int64?
 
+    <NotMapped>
     Public ReadOnly Property Post() As Post
         Get
             Try
@@ -27,6 +29,7 @@ Public Class Chat
         End Get
     End Property
 
+    <NotMapped>
     Public ReadOnly Property ChatParty1User() As User
         Get
             Try
@@ -40,6 +43,7 @@ Public Class Chat
         End Get
     End Property
 
+    <NotMapped>
     Public ReadOnly Property ChatParty2User() As User
         Get
             If Me.ChatParty2UserID Is Nothing Then Return Nothing
@@ -67,6 +71,10 @@ Public Class Chat
         If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid
         ChatParty1UserID = AuthUser.ID
     End Sub
+
+    Public Overrides Function OnPatch(Optional params As Object = Nothing) As Boolean
+        Return True
+    End Function
 
     Public Overrides Function OnFileUpload(Optional params As Object = Nothing) As Object
         Throw New NotImplementedException()

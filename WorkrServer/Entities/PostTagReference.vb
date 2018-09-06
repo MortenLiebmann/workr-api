@@ -1,6 +1,7 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
 Imports Newtonsoft.Json
+Imports WorkrServer
 
 <Table("posttagreferences")>
 Public Class PostTagReference
@@ -11,6 +12,7 @@ Public Class PostTagReference
     Public Property PostTagID As Guid?
     Public Property PostID As Guid?
 
+    <NotMapped>
     Public ReadOnly Property PostTag() As PostTag
         Get
             If Me.PostTagID Is Nothing Then Return Nothing
@@ -36,6 +38,10 @@ Public Class PostTagReference
         If AuthUser Is Nothing Then Throw New NotAuthorizedException
         If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid
     End Sub
+
+    Public Overrides Function OnPatch(Optional params As Object = Nothing) As Boolean
+        Return True
+    End Function
 
     Public Overrides Function OnFileUpload(Optional params As Object = Nothing) As Object
         Throw New NotImplementedException()

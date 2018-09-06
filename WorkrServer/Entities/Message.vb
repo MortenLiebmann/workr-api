@@ -1,6 +1,7 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
 Imports Newtonsoft.Json
+Imports WorkrServer
 
 <Table("messages")>
 Public Class Message
@@ -15,6 +16,7 @@ Public Class Message
     Public Property Text As String
     Public Property Flags As Int64?
 
+    <NotMapped>
     Public ReadOnly Property Chat() As Chat
         Get
             If Me.ChatID Is Nothing Then Return Nothing
@@ -24,6 +26,7 @@ Public Class Message
         End Get
     End Property
 
+    <NotMapped>
     Public ReadOnly Property SentByUser() As User
         Get
             If Me.SentByUserID Is Nothing Then Return Nothing
@@ -50,6 +53,10 @@ Public Class Message
         If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid
         SentByUserID = AuthUser.ID
     End Sub
+
+    Public Overrides Function OnPatch(Optional params As Object = Nothing) As Boolean
+        Return True
+    End Function
 
     Public Overrides Function OnFileUpload(Optional params As Object = Nothing) As Object
         Throw New NotImplementedException()

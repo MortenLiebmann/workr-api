@@ -43,7 +43,7 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Overloads Function Put(json As String) As T
-        CheckPermissions()
+        CheckAuthentication()
         AddJsonProperty(json, "HttpMethod", "PUT")
         Dim jsonEntity As T = Nothing
         Dim dbEntity As T = Nothing
@@ -71,7 +71,7 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Function Delete(id As String) As Boolean
-        CheckPermissions()
+        CheckAuthentication()
         Try
             Dim userID As Guid = Guid.Parse(id)
             DbSet.Remove((From e As T In DbSet
@@ -98,7 +98,7 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Function Patch(id As String, json As String) As T
-        CheckPermissions()
+        CheckAuthentication()
         Dim dbEntity As T = Nothing
         Try
             AddJsonProperty(json, "ID", id)
@@ -109,12 +109,14 @@ Public Class Table(Of T As Entity)
                         Where e.ID = entityID
                         Select e).First
 
-            For Each prop As PropertyInfo In Properties
-                If prop.GetValue(jsonEntity) Is Nothing Then Continue For
-                If prop.Name = "ID" Then Continue For
-                If Not prop.CanWrite Then Continue For
-                prop.SetValue(dbEntity, prop.GetValue(jsonEntity))
-            Next
+            If dbEntity.OnPatch(jsonEntity) Then
+                For Each prop As PropertyInfo In Properties
+                    If prop.GetValue(jsonEntity) Is Nothing Then Continue For
+                    If prop.Name = "ID" Then Continue For
+                    If Not prop.CanWrite Then Continue For
+                    prop.SetValue(dbEntity, prop.GetValue(jsonEntity))
+                Next
+            End If
 
             DB.SaveChanges()
             Return dbEntity
@@ -125,7 +127,7 @@ Public Class Table(Of T As Entity)
     End Function
 
     Public Function PutFile(file As MemoryStream, associatedEntity As String) As T
-        CheckPermissions()
+        CheckAuthentication()
 
         If Not TableEntity.FileUploadAllowed Then Throw New FileUploadNotAllowedException
         Dim dbEntity As T
@@ -163,7 +165,7 @@ Public Class Table(Of T As Entity)
         End Try
     End Function
 
-    Private Sub CheckPermissions()
+    Private Sub CheckAuthentication()
         If AuthUser Is Nothing Then Throw New NotAuthorizedException
     End Sub
 

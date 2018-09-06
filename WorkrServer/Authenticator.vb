@@ -36,7 +36,7 @@ Public Module Authenticator
     End Function
 
     Public Function Register(jsonUser As String, password As String) As User
-        If password.Length < 8 Then Throw New PasswordRequirementException
+        If password.Length < 8 And Not password.Contains(":") Then Throw New PasswordRequirementException
         Dim newUser As New User
         Try
             newUser = JsonConvert.DeserializeObject(Of User)(jsonUser, JSONSettings)

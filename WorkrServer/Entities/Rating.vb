@@ -2,6 +2,7 @@
 Imports System.ComponentModel.DataAnnotations.Schema
 Imports System.Data.Entity
 Imports Newtonsoft.Json
+Imports WorkrServer
 
 <Table("ratings")>
 Public Class Rating
@@ -17,6 +18,7 @@ Public Class Rating
     Public Property Text As String
     Public Property Flags As Int64?
 
+    <NotMapped>
     Public ReadOnly Property User() As User
         Get
             Try
@@ -30,6 +32,7 @@ Public Class Rating
         End Get
     End Property
 
+    <NotMapped>
     Public ReadOnly Property RatedByUser() As User
         Get
             If Me.RatedByUserID Is Nothing Then Return Nothing
@@ -39,6 +42,7 @@ Public Class Rating
         End Get
     End Property
 
+    <NotMapped>
     Public ReadOnly Property Post() As Post
         Get
             If Me.PostID Is Nothing Then Return Nothing
@@ -66,6 +70,10 @@ Public Class Rating
         If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid
         RatedByUserID = AuthUser.ID
     End Sub
+
+    Public Overrides Function OnPatch(Optional params As Object = Nothing) As Boolean
+        Return True
+    End Function
 
     Public Overrides Function OnFileUpload(Optional params As Object = Nothing) As Object
         Throw New NotImplementedException()
