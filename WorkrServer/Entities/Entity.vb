@@ -26,6 +26,14 @@ Public MustInherit Class Entity
         Return False
     End Function
 
+    Public Shared Operator =(e1 As Entity, e2 As Entity) As Boolean
+        Return e1.ID = e2.ID
+    End Operator
+
+    Public Shared Operator <>(e1 As Entity, e2 As Entity) As Boolean
+        Return Not e1.ID = e2.ID
+    End Operator
+
     Public Class OnFileUploadException
         Inherits Exception
 

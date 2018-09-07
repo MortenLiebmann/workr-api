@@ -39,14 +39,14 @@ Public Class User
         If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid
     End Sub
 
-    Public Shared Operator =(user1 As User, user2 As User)
+    Public Shared Shadows Operator =(user1 As User, user2 As User)
         If user1.ID = user2.ID Then Return True
         If CStr(user1.Email).ToLower = CStr(user2.Email).ToLower Then Return True
         If CStr(user1.Name).ToLower = CStr(user2.Name).ToLower Then Return True
         Return False
     End Operator
 
-    Public Shared Operator <>(user1 As User, user2 As User)
+    Public Shared Shadows Operator <>(user1 As User, user2 As User)
         Return Not (user1 = user2)
     End Operator
 

@@ -45,6 +45,8 @@ Public Class PostImage
     End Sub
 
     Public Overrides Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
+        If AuthUser Is Nothing Then Throw New NotAuthorizedException
+        If Not AuthUser.ID = Post.CreatedByUserID Then Throw New NotAuthorizedException("Can not add images to a post you didn't create.")
         If params Is Nothing Then Throw New Exception("params is nothing")
         Return CreateFileAssociatedPostImage(params.associatedEntityID)
     End Function
@@ -61,6 +63,8 @@ Public Class PostImage
     ''' <param name="params">An instance of PostImage</param>
     ''' <returns></returns>
     Public Overrides Function OnFileUpload(Optional params As Object = Nothing) As Object
+        If AuthUser Is Nothing Then Throw New NotAuthorizedException
+        If Not AuthUser.ID = Post.CreatedByUserID Then Throw New NotAuthorizedException("Can not add images to a post you didn't create.")
         Dim postImage As PostImage = Nothing
         Try
             If Not FileUploadAllowed Then Throw New FileUploadNotAllowedException

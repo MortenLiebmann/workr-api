@@ -49,6 +49,8 @@ Public Class UserImage
     End Function
 
     Public Overrides Function OnFileUpload(Optional params As Object = Nothing) As Object
+        If AuthUser Is Nothing Then Throw New NotAuthorizedException
+        If Not AuthUser.ID = UserID Then Throw New NotAuthorizedException("Can not upload userimage for a user you are not logged in as.")
         Dim userImage As UserImage = Nothing
         Try
             If Not FileUploadAllowed Then Throw New FileUploadNotAllowedException
@@ -66,6 +68,8 @@ Public Class UserImage
     End Function
 
     Public Overrides Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
+        If AuthUser Is Nothing Then Throw New NotAuthorizedException
+        If Not AuthUser.ID = UserID Then Throw New NotAuthorizedException("Can not upload userimage for a user you are not logged in as.")
         If params Is Nothing Then Throw New Exception("params is nothing")
         Return CreateFileAssociatedUserImage(params.associatedEntityID)
     End Function

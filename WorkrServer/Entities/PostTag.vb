@@ -42,11 +42,11 @@ Public Class PostTag
         Throw New NotImplementedException()
     End Function
 
-    Public Shared Operator =(tag1 As PostTag, tag2 As PostTag) As Boolean
+    Public Shared Shadows Operator =(tag1 As PostTag, tag2 As PostTag) As Boolean
         Return tag1.Name = tag2.Name
     End Operator
 
-    Public Shared Operator <>(tag1 As PostTag, tag2 As PostTag) As Boolean
+    Public Shared Shadows Operator <>(tag1 As PostTag, tag2 As PostTag) As Boolean
         Return tag1.Name <> tag2.Name
     End Operator
 End Class

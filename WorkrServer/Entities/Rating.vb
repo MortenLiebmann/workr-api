@@ -14,10 +14,11 @@ Public Class Rating
     Public Property RatedByUserID As Guid?
     Public Property PostID As Guid?
     Public Property CreatedDate As DateTime?
-    Public Property Score As Int16
+    Public Property Score As Int16?
     Public Property Text As String
     Public Property Flags As Int64?
 
+    <JsonIgnore>
     <NotMapped>
     Public ReadOnly Property User() As User
         Get
@@ -32,6 +33,7 @@ Public Class Rating
         End Get
     End Property
 
+    <JsonIgnore>
     <NotMapped>
     Public ReadOnly Property RatedByUser() As User
         Get
@@ -42,6 +44,7 @@ Public Class Rating
         End Get
     End Property
 
+    <JsonIgnore>
     <NotMapped>
     Public ReadOnly Property Post() As Post
         Get

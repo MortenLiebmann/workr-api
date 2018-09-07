@@ -25,8 +25,7 @@ Public Class Post
     Public Enum PostFlags As Int64
         OPEN = 0
         DELETED = 1
-        ACCEPTED = 2
-        COMPLETED = 4
+        COMPLETED = 2
     End Enum
 
     Private m_CreatedByUser As User

@@ -15,6 +15,7 @@ Public Class Chat
     Public Property ChatParty2UserID As Guid?
     Public Property Flags As Int64?
 
+    <JsonIgnore>
     <NotMapped>
     Public ReadOnly Property Post() As Post
         Get
@@ -29,6 +30,7 @@ Public Class Chat
         End Get
     End Property
 
+    <JsonIgnore>
     <NotMapped>
     Public ReadOnly Property ChatParty1User() As User
         Get
@@ -43,6 +45,7 @@ Public Class Chat
         End Get
     End Property
 
+    <JsonIgnore>
     <NotMapped>
     Public ReadOnly Property ChatParty2User() As User
         Get
