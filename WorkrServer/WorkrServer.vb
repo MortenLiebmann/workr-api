@@ -19,7 +19,7 @@ Public Class WorkrServer
             {"postbids", New Table(Of PostBid)(DB.PostBids)}
         }
 
-        Controller = New HttpController({"http://127.0.0.1:9877/", "http://172.20.10.3:9877/"}, map)
+        Controller = New HttpController({"http://127.0.0.1:9877/", "http://skurk.info:9877/"}, map)
         Controller.StartListening()
     End Sub
 

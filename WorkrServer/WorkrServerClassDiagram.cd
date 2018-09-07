@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="WorkrServer.Chat">
+    <Position X="10.75" Y="4.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAQAAAgAEAAAAAAEAACAAIAAAAjgAIBQAAAAI=</HashCode>
+      <FileName>Entities\Chat.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WorkrServer.Entity">
+    <Position X="27" Y="0.5" Width="3" />
+    <NestedTypes>
+      <Class Name="WorkrServer.Entity.OnFileUploadException" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Entities\Entity.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="WorkrServer.Entity.IdNotFoundException" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Entities\Entity.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="WorkrServer.Entity.FileUploadNotAllowedException" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Entities\Entity.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="WorkrServer.Entity.FileNotFoundException" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Entities\Entity.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="WorkrServer.Entity.ForeignKeyFialationException" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Entities\Entity.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="WorkrServer.Entity.MalformedJsonException" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Entities\Entity.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAQQgAAAAAgAAAAIAAAAAAAAAAAAAAjAAIBQAAAAA=</HashCode>
+      <FileName>Entities\Entity.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WorkrServer.Message">
+    <Position X="28.75" Y="4.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAgAAAAAAAAAAAAAAAAAgAjgAIDUIAAAQ=</HashCode>
+      <FileName>Entities\Message.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WorkrServer.Post">
+    <Position X="39.75" Y="4.75" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="WorkrServer.Post.PostFlags">
+        <TypeIdentifier>
+          <NewMemberFileName>Entities\Post.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAABAACAAAggFAAgAAAAAAAAABwAABCjggIBQAAECA=</HashCode>
+      <FileName>Entities\Post.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WorkrServer.PostBid">
+    <Position X="14.25" Y="4.75" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="WorkrServer.PostBid.PostBidFlags">
+        <TypeIdentifier>
+          <NewMemberFileName>Entities\PostBid.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAQAAgAEAAAAAAAAACAAAAABAjggIDQAAAAA=</HashCode>
+      <FileName>Entities\PostBid.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WorkrServer.PostImage">
+    <Position X="21.25" Y="4.75" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAgAEAAAAAAAAACAAAAAAAjAAIBQAAAAA=</HashCode>
+      <FileName>Entities\PostImage.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WorkrServer.PostTag">
+    <Position X="32.25" Y="4.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAABQgAAAAAgAAAAAAAAAQAAAAAAAAAjgAIBQAAAAA=</HashCode>
+      <FileName>Entities\PostTag.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WorkrServer.PostTagReference">
+    <Position X="43.25" Y="4.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAEAAAAAEAAAAAAAAAACjAAIBQAAAAA=</HashCode>
+      <FileName>Entities\PostTagReference.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WorkrServer.Rating">
+    <Position X="17.75" Y="4.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAABBAAAAAAAgAkAAAAAAAgACAAAAAAAjoAIDQAAAAA=</HashCode>
+      <FileName>Entities\Rating.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WorkrServer.User">
+    <Position X="25.25" Y="4.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AADABQgAAGAAgAAAAAAAAAQAAAAAAAACjgAIJQAAAAA=</HashCode>
+      <FileName>Entities\User.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WorkrServer.UserImage">
+    <Position X="35.75" Y="4.75" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAgAAABAAAAAgAAAAAAAAAjAAIBQAAAAA=</HashCode>
+      <FileName>Entities\UserImage.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
