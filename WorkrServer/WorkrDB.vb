@@ -6,7 +6,6 @@ Public Class WorkrDB
 
     Public Sub New()
         MyBase.New("name=PGSQL")
-        'Me.Database.Log = New Action(Of String)(Sub(e) Debug.WriteLine(e))
     End Sub
 
     Protected Overrides Sub OnModelCreating(modelBuilder As DbModelBuilder)

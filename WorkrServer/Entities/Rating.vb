@@ -33,7 +33,6 @@ Public Class Rating
         End Get
     End Property
 
-    <JsonIgnore>
     <NotMapped>
     Public ReadOnly Property RatedByUser() As User
         Get

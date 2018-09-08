@@ -33,16 +33,17 @@ Public Class HttpController
     End Sub
 
     Private Sub Listen()
-        Try
-            Dim context As HttpListenerContext
-            Dim request As HttpListenerRequest
-            Dim response As HttpListenerResponse = Nothing
-            Dim path As String() = {}
-            Dim data As String = Nothing
-            Dim file As MemoryStream = Nothing
-            Dim responseData As Object
 
-            While True
+        Dim context As HttpListenerContext
+        Dim request As HttpListenerRequest
+        Dim response As HttpListenerResponse = Nothing
+        Dim path As String() = {}
+        Dim data As String = Nothing
+        Dim file As MemoryStream = Nothing
+        Dim responseData As Object
+
+        While True
+            Try
                 While Listener.IsListening
                     Try
                         path = {}
@@ -57,7 +58,7 @@ Public Class HttpController
                         If request.ContentLength64 > 5000000 Then Throw New ContentSizeLimitExceededException
                         If path.Length < 1 Then Throw New NoResourceGivenException
                         ProcessInput(request.ContentEncoding, request.InputStream, request.ContentType, data, file)
-                        responseData = NavigateMap(context, path, data, file)
+                        responseData = NavigateResourceMap(context, path, data, file)
                         RaiseEvent OnRequest(CreateOnRequestString(request.HttpMethod, request.RemoteEndPoint.Address.ToString, request.Url.AbsoluteUri, CStr(request.ContentType), data))
                         If responseData.GetType = GetType(MemoryStream) Then
                             SendResponse(response, DirectCast(responseData, MemoryStream))
@@ -68,14 +69,14 @@ Public Class HttpController
                         HandleRequestException(response, ex, path)
                     End Try
                 End While
-                Thread.Sleep(3000)
-                Listener.Start()
-            End While
-        Catch ex As Exception
-        End Try
+            Catch ex As Exception
+            End Try
+            Thread.Sleep(3000)
+            Listener.Start()
+        End While
     End Sub
 
-    Private Function NavigateMap(ByRef context As HttpListenerContext, path As String(), data As String, file As MemoryStream) As Object
+    Private Function NavigateResourceMap(ByRef context As HttpListenerContext, path As String(), data As String, file As MemoryStream) As Object
         Dim response = Nothing
         Try
             Select Case context.Request.HttpMethod
