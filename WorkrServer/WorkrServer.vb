@@ -6,20 +6,21 @@ Public Class WorkrServer
     Private WithEvents Controller As HttpController
 
     Public Sub Start()
+
         Dim map As New Dictionary(Of String, Object) From {
-            {"users", New Table(Of User)(DB.Users)},
-            {"userimages", New Table(Of UserImage)(DB.UserImages)},
-            {"posts", New Table(Of Post)(DB.Posts)},
-            {"postimages", New Table(Of PostImage)(DB.PostImages)},
-            {"chats", New Table(Of Chat)(DB.Chats)},
-            {"messages", New Table(Of Message)(DB.Messages)},
-            {"ratings", New Table(Of Rating)(DB.Ratings)},
-            {"posttags", New Table(Of PostTag)(DB.PostTags)},
-            {"posttagreferences", New Table(Of PostTagReference)(DB.PostTagReferences)},
-            {"postbids", New Table(Of PostBid)(DB.PostBids)}
+            {"users", New Resource(Of User)(DB.Users)},
+            {"userimages", New Resource(Of UserImage)(DB.UserImages)},
+            {"posts", New Resource(Of Post)(DB.Posts)},
+            {"postimages", New Resource(Of PostImage)(DB.PostImages)},
+            {"chats", New Resource(Of Chat)(DB.Chats)},
+            {"messages", New Resource(Of Message)(DB.Messages)},
+            {"ratings", New Resource(Of Rating)(DB.Ratings)},
+            {"posttags", New Resource(Of PostTag)(DB.PostTags)},
+            {"posttagreferences", New Resource(Of PostTagReference)(DB.PostTagReferences)},
+            {"postbids", New Resource(Of PostBid)(DB.PostBids)}
         }
 
-        Controller = New HttpController({"http://127.0.0.1:9877/", "http://10.0.0.37:9877/", "http://skurk.info:9877/"}, map)
+        Controller = New HttpController({"http://127.0.0.1:9877/", "http://192.168.1.88:9877/"}, map)
         Controller.StartListening()
     End Sub
 
@@ -28,3 +29,5 @@ Public Class WorkrServer
         Console.WriteLine("--------------------------------------------------------------------------")
     End Sub
 End Class
+
+

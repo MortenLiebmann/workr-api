@@ -12,14 +12,14 @@ Public Class HttpController
     Private Listener As HttpListener
     Private ListenThread As Thread
 
-    Public Sub New(ByVal baseUrl As String, ByRef Map As Dictionary(Of String, Object))
-        Helper.ResourceMap = Map
+    Public Sub New(ByVal baseUrl As String, ByRef map As Dictionary(Of String, Object))
+        Helper.Map = map
         Listener = New HttpListener()
         Listener.Prefixes.Add(baseUrl)
     End Sub
 
-    Public Sub New(ByVal baseURLs As String(), ByRef Map As Dictionary(Of String, Object))
-        Helper.ResourceMap = Map
+    Public Sub New(ByVal baseURLs As String(), ByRef map As Dictionary(Of String, Object))
+        Helper.Map = map
         Listener = New HttpListener()
         For Each url As String In baseURLs
             Listener.Prefixes.Add(url)
@@ -33,7 +33,6 @@ Public Class HttpController
     End Sub
 
     Private Sub Listen()
-
         Dim context As HttpListenerContext
         Dim request As HttpListenerRequest
         Dim response As HttpListenerResponse = Nothing
@@ -58,7 +57,7 @@ Public Class HttpController
                         If request.ContentLength64 > 5000000 Then Throw New ContentSizeLimitExceededException
                         If path.Length < 1 Then Throw New NoResourceGivenException
                         ProcessInput(request.ContentEncoding, request.InputStream, request.ContentType, data, file)
-                        responseData = NavigateResourceMap(context, path, data, file)
+                        responseData = NavigateMap(context, path, data, file)
                         RaiseEvent OnRequest(CreateOnRequestString(request.HttpMethod, request.RemoteEndPoint.Address.ToString, request.Url.AbsoluteUri, CStr(request.ContentType), data))
                         If responseData.GetType = GetType(MemoryStream) Then
                             SendResponse(response, DirectCast(responseData, MemoryStream))
@@ -76,7 +75,7 @@ Public Class HttpController
         End While
     End Sub
 
-    Private Function NavigateResourceMap(ByRef context As HttpListenerContext, path As String(), data As String, file As MemoryStream) As Object
+    Private Function NavigateMap(ByRef context As HttpListenerContext, path As String(), data As String, file As MemoryStream) As Object
         Dim response = Nothing
         Try
             Select Case context.Request.HttpMethod
@@ -84,24 +83,24 @@ Public Class HttpController
                     If path(0).ToLower = "auth" Then response = AuthUser : Exit Select
                     If context.Request.Url.Query = "?file" OrElse
                         GetContentType(context.Request.ContentType).StartsWith("image/") Then
-                        If path.Length < 3 Then Return ResourceMap(path(0)).GetFile(path(1))
-                        Return ResourceMap(path(0)).GetFile(path(1), path(2))
+                        If path.Length < 3 Then Return Map(path(0)).GetFile(path(1))
+                        Return Map(path(0)).GetFile(path(1), path(2))
                     End If
-                    If path.Length > 1 Then response = ResourceMap(path(0)).GetByID(path(1)) : Exit Select
-                    response = ResourceMap(path(0)).GetAll()
+                    If path.Length > 1 Then response = Map(path(0)).GetByID(path(1)) : Exit Select
+                    response = Map(path(0)).GetAll()
                 Case "POST"
-                    If path.Length > 1 Then response = ResourceMap(path(0)).GetByID(path(1)) : Exit Select
-                    response = ResourceMap(path(0)).Search(data)
+                    If path.Length > 1 Then response = Map(path(0)).GetByID(path(1)) : Exit Select
+                    response = Map(path(0)).Search(data)
                 Case "PUT"
                     If path(0).ToLower = "register" Then response = Register(data, context.Request.Headers("Password")) : Exit Select
-                    If file IsNot Nothing Then response = ResourceMap(path(0)).PutFile(file, path(1)) : Exit Select
-                    response = ResourceMap(path(0)).Put(data)
+                    If file IsNot Nothing Then response = Map(path(0)).PutFile(file, path(1)) : Exit Select
+                    response = Map(path(0)).Put(data)
                 Case "DELETE"
-                    response = ResourceMap(path(0)).Delete(path(1))
+                    response = Map(path(0)).Delete(path(1))
                 Case "PATCH"
-                    response = ResourceMap(path(0)).Patch(path(1), data)
+                    response = Map(path(0)).Patch(path(1), data)
                 Case "VIEW"
-                    response = ResourceMap(path(0)).GetFile(path(1), path(2)) : Return response
+                    response = Map(path(0)).GetFile(path(1), path(2)) : Return response
             End Select
         Catch ex As IndexOutOfRangeException
             Throw New MalformedUrlException

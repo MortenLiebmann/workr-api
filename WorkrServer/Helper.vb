@@ -14,7 +14,6 @@ Imports WorkrServer
 ''' </summary>
 Module Helper
     Private m_DB As New WorkrDB
-    Private m_ResourceMap As New Dictionary(Of String, Object)
     Private m_JSONSettings As New JsonSerializerSettings() With {.MissingMemberHandling = MissingMemberHandling.Ignore,
         .DateFormatString = "yyyy-MM-ddTHH:mm:ssZ"}
 
@@ -22,14 +21,7 @@ Module Helper
     ''' Dictionary of Table objects and a string key. The key is used in the URL of HTTP requests.
     ''' </summary>
     ''' <returns></returns>
-    Public Property ResourceMap As Dictionary(Of String, Object)
-        Get
-            Return m_ResourceMap
-        End Get
-        Set(value As Dictionary(Of String, Object))
-            m_ResourceMap = value
-        End Set
-    End Property
+    Public Property Map As Dictionary(Of String, Object)
 
     Public Property JSONSettings As JsonSerializerSettings
         Get
@@ -40,13 +32,10 @@ Module Helper
         End Set
     End Property
 
-    Public Property DB As WorkrDB
+    Public ReadOnly Property DB As WorkrDB
         Get
             Return m_DB
         End Get
-        Set(value As WorkrDB)
-            m_DB = value
-        End Set
     End Property
 
     Private Property FTPCredentials As New NetworkCredential("workr-api", "workr123")

@@ -7,7 +7,7 @@ Imports Newtonsoft.Json.Linq
 Imports WorkrServer
 Imports WorkrServer.Entity
 
-Public Class Table(Of T As Entity)
+Public Class Resource(Of T As Entity)
     Public ReadOnly Property DbSet As DbSet(Of T)
 
     Public Sub New(ByRef dbset As DbSet(Of T))
