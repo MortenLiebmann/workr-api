@@ -83,7 +83,7 @@ Module Helper
 
         For i As Integer = 1 To folders.Length
             Try
-                ftpRequest = CreateFtpRequest("ftp://skurk.info/home/" & String.Join("/", folders.Take(i)), WebRequestMethods.Ftp.MakeDirectory)
+                ftpRequest = CreateFtpRequest(String.Join("/", folders.Take(i)), WebRequestMethods.Ftp.MakeDirectory)
                 ftpRequest.GetResponse()
             Catch ex As Exception
             End Try

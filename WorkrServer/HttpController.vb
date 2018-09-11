@@ -1,10 +1,8 @@
-﻿Imports System.Data.Entity
-Imports System.IO
+﻿Imports System.IO
 Imports System.Net
 Imports System.Text
 Imports System.Threading
 Imports Newtonsoft.Json
-Imports Newtonsoft.Json.Linq
 Imports WorkrServer.Entity
 
 Public Class HttpController
