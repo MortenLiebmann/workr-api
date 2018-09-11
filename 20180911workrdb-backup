@@ -1,0 +1,155 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 10.5
+-- Dumped by pg_dump version 10.5
+
+-- Started on 2018-09-11 15:59:18
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 2924 (class 0 OID 17045)
+-- Dependencies: 199
+-- Data for Name: chats; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.chats ("ID", "PostID", "CreatedDate", "ChatParty1UserID", "ChatParty2UserID", "Flags") VALUES ('603211c9-1580-4550-9ee8-3eb4de7ec19b', 'ad80a345-23a8-4c0a-9d83-33d7efd6035f', '2018-09-11 11:41:11.626284', '3d62277b-c6d5-490b-8428-4357a33f50b0', '920449c3-94fc-4bde-87a6-608d678e2470', 0);
+
+
+--
+-- TOC entry 2926 (class 0 OID 17080)
+-- Dependencies: 201
+-- Data for Name: messages; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.messages ("ID", "ChatID", "SentByUserID", "CreatedDate", "UpdatedDate", "Text", "Flags") VALUES ('d95efbdb-1508-4943-b123-bc870ec2944e', '603211c9-1580-4550-9ee8-3eb4de7ec19b', '3d62277b-c6d5-490b-8428-4357a33f50b0', '2018-09-11 11:41:11.678508', NULL, 'Hej Rune.', 0);
+INSERT INTO public.messages ("ID", "ChatID", "SentByUserID", "CreatedDate", "UpdatedDate", "Text", "Flags") VALUES ('32a0713e-c241-49f2-8fcb-19be7600ebf7', '603211c9-1580-4550-9ee8-3eb4de7ec19b', '3d62277b-c6d5-490b-8428-4357a33f50b0', '2018-09-11 11:41:46.16129', NULL, 'Tak for dit tilbud. Jeg synes det lyder rigtigt godt.
+
+Hvornår ville du kunne klare opgaven?', 0);
+INSERT INTO public.messages ("ID", "ChatID", "SentByUserID", "CreatedDate", "UpdatedDate", "Text", "Flags") VALUES ('1a939a1c-5dd0-4939-b09d-4d1f9bbe1c8f', '603211c9-1580-4550-9ee8-3eb4de7ec19b', '920449c3-94fc-4bde-87a6-608d678e2470', '2018-09-11 11:46:05.929584', NULL, 'Jeg kan komme på søndag hvis det passer dig?', 0);
+INSERT INTO public.messages ("ID", "ChatID", "SentByUserID", "CreatedDate", "UpdatedDate", "Text", "Flags") VALUES ('a75946ac-412e-4af2-a5f2-4597336ba2ee', '603211c9-1580-4550-9ee8-3eb4de7ec19b', '3d62277b-c6d5-490b-8428-4357a33f50b0', '2018-09-11 11:46:24.127803', NULL, 'Det er helt fint :)
+
+Så har vi en aftale, jeg accepterer dit bud.', 0);
+
+
+--
+-- TOC entry 2930 (class 0 OID 17153)
+-- Dependencies: 205
+-- Data for Name: postbids; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.postbids ("ID", "PostID", "CreatedDate", "CreatedByUserID", "Text", "Price", "Flags") VALUES ('2894ec5e-26f6-4047-bc04-f245d131e9a5', 'ad80a345-23a8-4c0a-9d83-33d7efd6035f', '2018-09-11 11:35:05.211288', '920449c3-94fc-4bde-87a6-608d678e2470', 'Der er nok omkring 2 timers arbejde involveret, jeg tager en timepris på 250 DKK.', '500,00 kr.', 4);
+
+
+--
+-- TOC entry 2925 (class 0 OID 17069)
+-- Dependencies: 200
+-- Data for Name: postimages; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.postimages ("ID", "PostID") VALUES ('6e6c46f7-94ac-4c7d-ae27-17a5a79e0de2', 'ad80a345-23a8-4c0a-9d83-33d7efd6035f');
+INSERT INTO public.postimages ("ID", "PostID") VALUES ('83aaae92-6a41-4d05-99ec-9f5dfec9099e', 'ad80a345-23a8-4c0a-9d83-33d7efd6035f');
+INSERT INTO public.postimages ("ID", "PostID") VALUES ('58f89a43-cf85-4c89-abd2-d1b6ff2994cd', 'ad80a345-23a8-4c0a-9d83-33d7efd6035f');
+INSERT INTO public.postimages ("ID", "PostID") VALUES ('391772fe-0e35-473a-a454-342791aafb34', 'bf09117d-7e5f-48eb-8cfc-aed032456ea4');
+
+
+--
+-- TOC entry 2923 (class 0 OID 17030)
+-- Dependencies: 198
+-- Data for Name: posts; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.posts ("ID", "CreatedByUserID", "CreatedDate", "Title", "Description", "Address", "JobEndDate", "Flags") VALUES ('ad80a345-23a8-4c0a-9d83-33d7efd6035f', '3d62277b-c6d5-490b-8428-4357a33f50b0', '2018-09-11 10:30:01.592297', 'Havearbejde - Klipning af plæne', 'Jeg er dårligt gående og har brug for hjælp til at klippe min plæne.
+Haven er omkring 150 kvm stor.
+
+Har selv plæneklipper.', 'Havevej 27, 2620 Albertslund', '2018-09-27 00:00:00', 0);
+INSERT INTO public.posts ("ID", "CreatedByUserID", "CreatedDate", "Title", "Description", "Address", "JobEndDate", "Flags") VALUES ('bf09117d-7e5f-48eb-8cfc-aed032456ea4', '920449c3-94fc-4bde-87a6-608d678e2470', '2018-09-11 11:27:14.371152', 'Hul i taget, brug for hjælp til reperation', 'Jeg har fået et hul i mit tag og har brug for hjælp til at få det fikset inden vinteren.
+
+Se billeder for mere information', 'Tagvej 10, 2635 Ishøj', '2018-09-28 00:00:00', 0);
+
+
+--
+-- TOC entry 2929 (class 0 OID 17137)
+-- Dependencies: 204
+-- Data for Name: posttagreferences; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.posttagreferences ("ID", "PostID", "PostTagID") VALUES ('288cdb20-32d1-49d2-b2e7-23b9d151c1df', 'ad80a345-23a8-4c0a-9d83-33d7efd6035f', 'c888ca74-81c8-442c-8f39-62fc74765e0a');
+INSERT INTO public.posttagreferences ("ID", "PostID", "PostTagID") VALUES ('62ed1180-ec8e-4911-8d63-52ad72a6b217', 'ad80a345-23a8-4c0a-9d83-33d7efd6035f', '4a70ecae-2fff-4de9-9d99-c522cb81929f');
+INSERT INTO public.posttagreferences ("ID", "PostID", "PostTagID") VALUES ('a1ff62bb-e47b-42b3-a9ac-d27a4abb6028', 'ad80a345-23a8-4c0a-9d83-33d7efd6035f', 'd6456807-b8b2-4f3a-bb45-d76e92ebf35b');
+INSERT INTO public.posttagreferences ("ID", "PostID", "PostTagID") VALUES ('35120a41-7838-46a6-a15e-58c4c52034d2', 'bf09117d-7e5f-48eb-8cfc-aed032456ea4', '44f90351-ccac-4938-a9da-c62146dc3ebd');
+INSERT INTO public.posttagreferences ("ID", "PostID", "PostTagID") VALUES ('b694ab7e-60be-48a4-8bec-19e81634a14e', 'bf09117d-7e5f-48eb-8cfc-aed032456ea4', '41343785-63c4-473c-8a0b-08124a4a103e');
+
+
+--
+-- TOC entry 2928 (class 0 OID 17127)
+-- Dependencies: 203
+-- Data for Name: posttags; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.posttags ("ID", "Name", "CreatedDate", "Flags") VALUES ('4a70ecae-2fff-4de9-9d99-c522cb81929f', 'Havearbejde', '2018-09-11 10:30:01.592297', 0);
+INSERT INTO public.posttags ("ID", "Name", "CreatedDate", "Flags") VALUES ('c888ca74-81c8-442c-8f39-62fc74765e0a', 'Plæne', '2018-09-11 10:30:01.592297', 0);
+INSERT INTO public.posttags ("ID", "Name", "CreatedDate", "Flags") VALUES ('d6456807-b8b2-4f3a-bb45-d76e92ebf35b', 'Plæneklipning', '2018-09-11 10:30:01.592297', 0);
+INSERT INTO public.posttags ("ID", "Name", "CreatedDate", "Flags") VALUES ('41343785-63c4-473c-8a0b-08124a4a103e', 'Tagarbejde', '2018-09-11 11:27:14.371152', 0);
+INSERT INTO public.posttags ("ID", "Name", "CreatedDate", "Flags") VALUES ('44f90351-ccac-4938-a9da-c62146dc3ebd', 'Tag', '2018-09-11 11:27:14.371152', 0);
+
+
+--
+-- TOC entry 2927 (class 0 OID 17101)
+-- Dependencies: 202
+-- Data for Name: ratings; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.ratings ("ID", "UserID", "RatedByUserID", "PostID", "CreatedDate", "Score", "Text", "Flags") VALUES ('856b79fa-c6a2-487d-bc92-8a4bf039df7e', '920449c3-94fc-4bde-87a6-608d678e2470', '3d62277b-c6d5-490b-8428-4357a33f50b0', 'ad80a345-23a8-4c0a-9d83-33d7efd6035f', '2018-09-11 09:48:13', 5, 'Utrolig god service.
+Arbejdet tog lidt længere tid en forventet grundet problemer med plæneklipper, ville ikke tage ekstra betaling for det. ', 0);
+
+
+--
+-- TOC entry 2931 (class 0 OID 17202)
+-- Dependencies: 206
+-- Data for Name: userimages; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.userimages ("ID", "UserID") VALUES ('f5183c75-16ac-4202-96bc-0861345d7961', 'f9c0a53f-34cd-4b26-babe-ea17c44a0adf');
+INSERT INTO public.userimages ("ID", "UserID") VALUES ('adf4ac4d-8d54-4a24-8047-b6901e881c8a', '780e6743-854d-4377-9624-3c7552bd2b04');
+INSERT INTO public.userimages ("ID", "UserID") VALUES ('59d48376-c2a8-4d05-bb4d-9b8582f7ab8f', '3d62277b-c6d5-490b-8428-4357a33f50b0');
+INSERT INTO public.userimages ("ID", "UserID") VALUES ('39317089-95cf-45d4-9f36-4f8daadf4847', '920449c3-94fc-4bde-87a6-608d678e2470');
+
+
+--
+-- TOC entry 2922 (class 0 OID 17017)
+-- Dependencies: 197
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.users ("ID", "CreatedDate", "Name", "Email", "PasswordHash", "Salt", "Address", "Business", "Phone", "Company", "Flags") VALUES ('dacb8a99-1049-4274-9b1b-dbab3d813165', '2018-08-30 10:16:04.850079', 'Mike Hawk', 'MikeHawk69@gmail.com', 'b4cff4c84e3e9475cc82dd01bcd3ba9c4519fe4d40e893309925fd83dc77be1f', '6661488', '123 Fakestreet', 'Plumbing', '12345678', 'Hawk Plumbing', 0);
+INSERT INTO public.users ("ID", "CreatedDate", "Name", "Email", "PasswordHash", "Salt", "Address", "Business", "Phone", "Company", "Flags") VALUES ('1d8c37c1-e528-4c46-a1e5-38310d1258ad', '2018-08-31 14:17:46.741605', 'Dick Steel', 'DickSteel69@gmail.com', 'cea46e0e704f40629ba32f206a795977539fdcc4ea17d73bd4f76ef3eefad9aa', 'SzLIiKKW2DkdL8j2Zi0NSjNMtZfuuHmV', 'Homeless', 'Flaske samler', '09090909', NULL, 0);
+INSERT INTO public.users ("ID", "CreatedDate", "Name", "Email", "PasswordHash", "Salt", "Address", "Business", "Phone", "Company", "Flags") VALUES ('ea3bf972-1ab9-4518-b2b4-b0eadfa99780', '2018-08-31 22:19:19.437433', 'Morten Andersen', 'morten_jackass@mail.com', '9417809c5ef6094899aa8113a8c2186bfff0bae7dd4127cae4ac512041c750cc', 'Ik1yRxdQtlEhydklvFH2BIriGKwtCtOB', NULL, NULL, NULL, NULL, 0);
+INSERT INTO public.users ("ID", "CreatedDate", "Name", "Email", "PasswordHash", "Salt", "Address", "Business", "Phone", "Company", "Flags") VALUES ('71f27d79-c684-4325-9823-6a43fa666de7', '2018-08-31 22:20:27.016188', 'Morten Andersen', 'morten_jackass1@mail.com', 'fc39d73605e3fcfd5c8876b7d181c4e1aba288a4bbde0059a7bc28c117eaa666', '6LaQTFLTraXxDXInTgdRTHUjeprDzj17', NULL, NULL, NULL, NULL, 0);
+INSERT INTO public.users ("ID", "CreatedDate", "Name", "Email", "PasswordHash", "Salt", "Address", "Business", "Phone", "Company", "Flags") VALUES ('392f43c6-f100-408c-8a4a-17d77e2a23dc', '2018-08-31 22:22:02.71762', 'Morten Newbmann', 'morten_newb@gmail.com', '9e4c02c3b43eeb4ed5e0b0a658a1120d981523d588142e053f7fccfc53a7063a', 'dB9/l9vrDpbKTDsIy2rxUZlxfllzwBOc', NULL, NULL, NULL, NULL, 0);
+INSERT INTO public.users ("ID", "CreatedDate", "Name", "Email", "PasswordHash", "Salt", "Address", "Business", "Phone", "Company", "Flags") VALUES ('fb74ddda-129d-4d7c-abd0-23d25424f088', '2018-08-31 22:22:32.100016', 'Morten Newbmann', 'morten_new2b@gmail.com', 'db012317a9402c51d6cac0224370676751790efe265c8c5e22405d388228a252', 'bw+fUhLzkW7V/6ZSVFVOKDTxGVAa4iWQ', NULL, NULL, NULL, NULL, 0);
+INSERT INTO public.users ("ID", "CreatedDate", "Name", "Email", "PasswordHash", "Salt", "Address", "Business", "Phone", "Company", "Flags") VALUES ('8aedc171-fd06-442b-94be-29b2483b4b94', '2018-08-31 22:27:20.885076', 'Morten Newbmann', 'morten_newbz@gmai.com', 'bc0ef325f056f56e7ddb2d8fbac64e40a99c3b9268d1775715b0bddd36454462', 'SB+xJyvs+gmXmEXBBdptdIASFZntbz38', NULL, NULL, NULL, NULL, 0);
+INSERT INTO public.users ("ID", "CreatedDate", "Name", "Email", "PasswordHash", "Salt", "Address", "Business", "Phone", "Company", "Flags") VALUES ('89fbcd0f-ad29-4a26-85dc-7c3f864c2ee0', '2018-09-01 12:54:53.87489', 'Morten Newbmann', 'mortennewb@gmail.com', 'aec990eecea41f3ebef7e962347a29f2b48635b49d44b3efbe510ae1f15310b4', '2TUwEwYWEVtWHJl/katjSF5Ik6pfSe/F', NULL, NULL, NULL, NULL, 0);
+INSERT INTO public.users ("ID", "CreatedDate", "Name", "Email", "PasswordHash", "Salt", "Address", "Business", "Phone", "Company", "Flags") VALUES ('f9c0a53f-34cd-4b26-babe-ea17c44a0adf', '2018-09-03 08:38:05.855779', 'Rune Pikfjæs', 'rune@gmail.com', '8bee0128b4f2f1b574cbcc1acbf99c044e0d7f234fe89bdc928ef649307b7b2b', 'prSQFFa4+iv30SYivdMIw9iVx6yQKloA', NULL, NULL, NULL, NULL, 0);
+INSERT INTO public.users ("ID", "CreatedDate", "Name", "Email", "PasswordHash", "Salt", "Address", "Business", "Phone", "Company", "Flags") VALUES ('8df541a4-1c97-449c-a563-26bf135128af', '2018-09-03 10:19:08.208304', 'New user', 'new@gmail.com', 'c3ee316ccd089beecc4d581e2d7209b129863dbe9d04a3f6535c52b31c5171de', 'niME3OXh8okBeq2qvvwYFxznr1FioK6R', NULL, NULL, NULL, NULL, 0);
+INSERT INTO public.users ("ID", "CreatedDate", "Name", "Email", "PasswordHash", "Salt", "Address", "Business", "Phone", "Company", "Flags") VALUES ('780e6743-854d-4377-9624-3c7552bd2b04', '2018-09-03 10:20:33.919685', 'new user', 'user@gmail.com', 'c6554886b7a440f4a37002cdcd87a95864207775157e194bffe30efe46016917', 'Oe8Uvw35kaH+69Ehv6i8t75DTbgX3e9p', NULL, NULL, NULL, NULL, 0);
+INSERT INTO public.users ("ID", "CreatedDate", "Name", "Email", "PasswordHash", "Salt", "Address", "Business", "Phone", "Company", "Flags") VALUES ('3d62277b-c6d5-490b-8428-4357a33f50b0', '2018-09-11 10:14:06.006854', 'Anders Andersen', 'andersen@gmail.com', '01d9db63bb026fe7a347ca1d43ff11b62ca11a0a3306453b114d9e85d2145106', 'jFJR8lD0DgOxFx7gggGIfHyjMH6Ry/sF', NULL, NULL, NULL, NULL, 0);
+INSERT INTO public.users ("ID", "CreatedDate", "Name", "Email", "PasswordHash", "Salt", "Address", "Business", "Phone", "Company", "Flags") VALUES ('920449c3-94fc-4bde-87a6-608d678e2470', '2018-09-11 11:19:29.500115', 'Rune Runesen', 'runesen@gmail.com', '712dc0dc345c74df141ffe61491f85ef3089de17b57394bf78a2a0e90538615b', '+9VAw10MOH/iqJefIU2/Qi9ffHB4a1qE', NULL, NULL, NULL, NULL, 0);
+
+
+-- Completed on 2018-09-11 15:59:18
+
+--
+-- PostgreSQL database dump complete
+--
+
