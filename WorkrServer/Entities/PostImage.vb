@@ -46,9 +46,9 @@ Public Class PostImage
 
     Public Overrides Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
         If AuthUser Is Nothing Then Throw New NotAuthorizedException
-        'fix
-        'If Not AuthUser.ID = Post.CreatedByUserID Then Throw New NotAuthorizedException("Can not add images to a post you didn't create.")
         If params Is Nothing Then Throw New Exception("params is nothing")
+        If Me.PostID Is Nothing Then Me.PostID = params.associatedEntityID
+        If Not AuthUser.ID = Post.CreatedByUserID Then Throw New NotAuthorizedException("Can not add images to a post you didn't create.")
         Return CreateFileAssociatedPostImage(params.associatedEntityID)
     End Function
 

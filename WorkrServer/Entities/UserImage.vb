@@ -69,8 +69,9 @@ Public Class UserImage
 
     Public Overrides Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
         If AuthUser Is Nothing Then Throw New NotAuthorizedException
-        If Not AuthUser.ID = UserID Then Throw New NotAuthorizedException("Can not upload userimage for a user you are not logged in as.")
         If params Is Nothing Then Throw New Exception("params is nothing")
+        If Me.UserID Is Nothing Then Me.UserID = params.associatedEntityID
+        If Not AuthUser.ID = UserID Then Throw New NotAuthorizedException("Can not upload userimage for a user you are not logged in as.")
         Return CreateFileAssociatedUserImage(params.associatedEntityID)
     End Function
 
