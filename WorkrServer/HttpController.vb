@@ -5,6 +5,9 @@ Imports System.Threading
 Imports Newtonsoft.Json
 Imports WorkrServer.Entity
 
+''' <summary>
+''' Handles incomming HTTP request
+''' </summary>
 Public Class HttpController
     Public Event OnRequest(ByVal msg As String)
     Private Listener As HttpListener
@@ -24,12 +27,20 @@ Public Class HttpController
         Next
     End Sub
 
+    ''' <summary>
+    ''' Starts the listening of the HttpController
+    ''' </summary>
     Public Sub StartListening()
         Listener.Start()
         ListenThread = New Thread(AddressOf Listen)
         ListenThread.Start()
     End Sub
 
+    ''' <summary>
+    ''' Listens for incomming requests and proccesses them
+    ''' Runs on it's own thread.
+    ''' Contains an infinate loop as to keep listening for more request once it has handled one.
+    ''' </summary>
     Private Sub Listen()
         Dim context As HttpListenerContext
         Dim request As HttpListenerRequest
@@ -73,6 +84,14 @@ Public Class HttpController
         End While
     End Sub
 
+    ''' <summary>
+    ''' Navigates the incomming API call the appropriate resource.
+    ''' </summary>
+    ''' <param name="context">The context of the HTTP request</param>
+    ''' <param name="path">the request URL segments</param>
+    ''' <param name="data">the request body data</param>
+    ''' <param name="file">the request multipart formatted file</param>
+    ''' <returns></returns>
     Private Function NavigateMap(ByRef context As HttpListenerContext, path As String(), data As String, file As MemoryStream) As Object
         Dim response = Nothing
         Try
@@ -107,6 +126,11 @@ Public Class HttpController
         Return JsonConvert.SerializeObject(response, JSONSettings)
     End Function
 
+    ''' <summary>
+    ''' Returns the result of the API call over HTTP
+    ''' </summary>
+    ''' <param name="response"></param>
+    ''' <param name="data"></param>
     Private Overloads Sub SendResponse(ByRef response As HttpListenerResponse, data As String)
         Try
             Dim responseBytes As Byte() = Encoding.UTF8.GetBytes(data)
@@ -117,7 +141,11 @@ Public Class HttpController
         Catch ex As Exception
         End Try
     End Sub
-
+    ''' <summary>
+    ''' Returns the resulting image of the API call over HTTP
+    ''' </summary>
+    ''' <param name="response"></param>
+    ''' <param name="data"></param>
     Private Overloads Sub SendResponse(ByRef response As HttpListenerResponse, data As MemoryStream)
         Dim dataStream As MemoryStream = data
         dataStream.Position = 0
@@ -128,15 +156,35 @@ Public Class HttpController
         response.Close()
     End Sub
 
+    ''' <summary>
+    ''' Returns an error message if an error has occured
+    ''' </summary>
+    ''' <param name="errorCode"></param>
+    ''' <param name="errorMessage"></param>
+    ''' <returns></returns>
     Private Function ErrorResponse(errorCode As Integer, errorMessage As String) As String
         Return String.Format("{{ ""ErrorCode"" : {0}, ""ErrorMessage"" : ""{1}"" }}", errorCode, errorMessage)
     End Function
 
+    ''' <summary>
+    ''' Gets the content-type of an HTTP request
+    ''' </summary>
+    ''' <param name="contentType"></param>
+    ''' <returns></returns>
     Private Function GetContentType(contentType As String) As String
         If contentType Is Nothing Then Return ""
         Return contentType.Split(";")(0)
     End Function
 
+    ''' <summary>
+    ''' Builds the data string used for the OnRequest event that is used to log request information
+    ''' </summary>
+    ''' <param name="method"></param>
+    ''' <param name="origin"></param>
+    ''' <param name="url"></param>
+    ''' <param name="contenttype"></param>
+    ''' <param name="data"></param>
+    ''' <returns></returns>
     Private Function CreateOnRequestString(method As String, origin As String, url As String, contenttype As String, data As String) As String
         Return String.Format("REQUEST TIME" & vbTab & "{0}" & vbCrLf &
                              "ORIGIN" & vbTab & vbTab & "{1}" & vbCrLf &
@@ -151,6 +199,12 @@ Public Class HttpController
                              data)
     End Function
 
+    ''' <summary>
+    ''' Handels errors and sets the appropiate error code and message
+    ''' </summary>
+    ''' <param name="response"></param>
+    ''' <param name="ex"></param>
+    ''' <param name="path"></param>
     Private Sub HandleRequestException(ByRef response As HttpListenerResponse, ex As Exception, path As String())
         Select Case ex.GetType
             Case GetType(NotAuthorizedException)
@@ -201,6 +255,7 @@ Public Class HttpController
         End Select
     End Sub
 
+    'HttpController exceptions
     Public Class ContentSizeLimitExceededException
         Inherits Exception
 
@@ -231,25 +286,3 @@ Public Class HttpController
         End Property
     End Class
 End Class
-
-
-
-'$.ajax({
-'    url: "http://127.0.0.1:9877/lol",
-'    type: "POST",
-'    data: "{id : 1, name : 'rune'}",
-'    contentType: "application/json",
-'    success: Function (data) {
-'		Console.log(data);
-'    }
-'});
-
-'$.ajax({
-'    url: "http://127.0.0.1:9877/room/search",
-'    type: "POST",
-'    data: "{size : 50, view : 1}",
-'    contentType: "application/json",
-'    success: Function (data) {
-'		Console.log(data);
-'    }
-'});

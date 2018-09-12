@@ -1,13 +1,9 @@
 ﻿Imports System.Data.Entity
 Imports System.IO
 Imports System.Net
-Imports System.Net.Http
-Imports System.Net.Sockets
 Imports System.Reflection
-Imports System.Runtime.CompilerServices
 Imports System.Text
 Imports Newtonsoft.Json
-Imports WorkrServer
 
 ''' <summary>
 ''' Static helper class.
@@ -23,6 +19,10 @@ Module Helper
     ''' <returns></returns>
     Public Property Map As Dictionary(Of String, Object)
 
+    ''' <summary>
+    ''' Json serialzation settings
+    ''' </summary>
+    ''' <returns></returns>
     Public Property JSONSettings As JsonSerializerSettings
         Get
             Return m_JSONSettings
@@ -32,16 +32,27 @@ Module Helper
         End Set
     End Property
 
+    ''' <summary>
+    ''' The connection to WORKR database
+    ''' </summary>
+    ''' <returns></returns>
     Public ReadOnly Property DB As WorkrDB
         Get
             Return m_DB
         End Get
     End Property
 
-    Private Property FTPCredentials As New NetworkCredential("workr-api", "workr123")
+    'The login information for the FTP file storage
+    Private Property FTPCredentials As New NetworkCredential("workr-api", "jJks3jKæbD")
 
+    ''' <summary>
+    ''' Creates a FTP request
+    ''' </summary>
+    ''' <param name="path"></param>
+    ''' <param name="ftpMethod"></param>
+    ''' <returns>FtpWebRequest insance</returns>
     Public Function CreateFtpRequest(path As String, ftpMethod As String) As FtpWebRequest
-        Dim _ftp As FtpWebRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & path.Replace("\", "/"))
+        Dim _ftp As FtpWebRequest = FtpWebRequest.Create("ftp://workr.com/home/" & path.Replace("\", "/"))
         With _ftp
             .EnableSsl = False
             .Credentials = FTPCredentials
@@ -53,7 +64,11 @@ Module Helper
         Return _ftp
     End Function
 
-
+    ''' <summary>
+    ''' Downloads a file from the FTP file storage
+    ''' </summary>
+    ''' <param name="path"></param>
+    ''' <returns></returns>
     Public Function FTPDownload(path As String) As MemoryStream
         Dim output As New MemoryStream
         Dim ftpRequest As FtpWebRequest = CreateFtpRequest(path, WebRequestMethods.Ftp.DownloadFile)
@@ -72,7 +87,12 @@ Module Helper
         Return output
     End Function
 
-
+    ''' <summary>
+    ''' Uploads a file to the FTP file storage
+    ''' </summary>
+    ''' <param name="folders"></param>
+    ''' <param name="filename"></param>
+    ''' <param name="file"></param>
     Public Sub FTPUpload(folders As String(), filename As String, file As MemoryStream)
         Dim ftpRequest As FtpWebRequest = Nothing
         Dim ftpResponse As FtpWebResponse = Nothing
@@ -92,6 +112,11 @@ Module Helper
         webRequest.UploadData("ftp://skurk.info/home/" & String.Join("/", folders) & "/" & filename, "STOR", file.ToArray)
     End Sub
 
+    ''' <summary>
+    ''' Downloads the first file in a folder on the FTP file storage
+    ''' </summary>
+    ''' <param name="dirPath"></param>
+    ''' <returns></returns>
     Public Function FTPDownloadFirstFile(dirPath As String) As MemoryStream
         Dim ftpRequest As FtpWebRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & dirPath.Replace("\", "/"))
         Dim output As New MemoryStream
@@ -138,48 +163,14 @@ Module Helper
         Return output
     End Function
 
-    'Public Function FTPUpload(folders As String(), filename As String) As String()
-    '    Dim ftpDirectorys As New List(Of String)
-    '    Dim ftpRequest As FtpWebRequest = FtpWebRequest.Create("ftp://skurk.info/home/")
-
-    '    With ftpRequest
-    '        .EnableSsl = False
-    '        .Credentials = New NetworkCredential("workr-api", "workr123")
-    '        .KeepAlive = False
-    '        .UseBinary = True
-    '        .UsePassive = True
-    '        .Method = WebRequestMethods.Ftp.ListDirectory
-    '    End With
-    '    Dim ftpResponse As FtpWebResponse = CType(ftpRequest.GetResponse, FtpWebResponse)
-    '    Dim ftpResponseStream As New StreamReader(ftpResponse.GetResponseStream)
-
-    '    Dim folderExists As Boolean = False
-    '    For Each folder In folders
-    '        While Not ftpResponseStream.EndOfStream
-    '            If folder = ftpResponseStream.ReadLine Then
-    '                folderExists = True
-    '            End If
-    '        End While
-    '    Next
-
-
-
-    '    Using FTPResponse As FtpWebResponse = CType(ftpRequest.GetResponse, FtpWebResponse)
-    '        Using responseStream As New StreamReader(FTPResponse.GetResponseStream)
-
-    '            Dim line = responseStream.ReadLine()
-
-    '            Do Until line Is Nothing
-    '                lines.Add(line)
-    '                line = responseStream.ReadLine()
-    '            Loop
-    '        End Using
-    '        FTPResponse.Close()
-    '    End Using
-    '    Return lines.ToArray
-    'End Function
-
-
+    ''' <summary>
+    ''' Using in entity searching
+    ''' Compares each property of two entitys.
+    ''' </summary>
+    ''' <param name="jsonEntity"></param>
+    ''' <param name="dbEntity"></param>
+    ''' <param name="prop"></param>
+    ''' <returns></returns>
     Public Function CompareEntityProperty(jsonEntity As Entity, dbEntity As Entity, prop As PropertyInfo) As Boolean
         If prop.GetValue(jsonEntity) Is Nothing Then Return True
         If prop.Name = "HttpMethod" Then Return True
@@ -221,43 +212,15 @@ Module Helper
 
         Return True
     End Function
-    Public Function IsSubsetOf(ByVal subset As Guid?(), ByVal superset As Guid?()) As Boolean
-        If superset Is Nothing Then Return False
-        Dim supersetList As List(Of Guid?) = superset.ToList
-        Dim subsetList As List(Of Guid?) = subset.ToList
-        For Each subItem In subsetList
-            Dim found As Boolean = False
-            For Each supItem In supersetList
-                'If IsArray(supItem) Then
-                '    If IsSubsetOf(subItem, supItem) Then found = True : supersetList.Remove(supItem) : Exit For
-                'Else
-                If subItem = supItem Then found = True : supersetList.Remove(supItem) : Exit For
-                'End If
-            Next
-            If Not found Then Return False
-        Next
 
-        Return True
-    End Function
-
-    Public Function IsSubsetOf(ByVal subset As PostTag(), ByVal superset As PostTag()) As Boolean
-        If superset Is Nothing Then Return False
-        Dim supersetList As List(Of PostTag) = superset.ToList
-        Dim subsetList As List(Of PostTag) = subset.ToList
-        For Each subItem In subsetList
-            Dim found As Boolean = False
-            For Each supItem In supersetList
-                'If IsArray(supItem) Then
-                '    If IsSubsetOf(subItem, supItem) Then found = True : supersetList.Remove(supItem) : Exit For
-                'Else
-                If subItem.Name = supItem.Name Then found = True : supersetList.Remove(supItem) : Exit For
-                'End If
-            Next
-            If Not found Then Return False
-        Next
-
-        Return True
-    End Function
+    ''' <summary>
+    ''' Reads the HTTP body information of an API call
+    ''' </summary>
+    ''' <param name="enc"></param>
+    ''' <param name="input"></param>
+    ''' <param name="contentType"></param>
+    ''' <param name="outStringDate"></param>
+    ''' <param name="outFile"></param>
     Public Sub ProcessInput(enc As Encoding, input As Stream, contentType As String, Optional ByRef outStringDate As String = "", Optional ByRef outFile As MemoryStream = Nothing)
         Dim boundary As String = GetBoundary(contentType)
         If boundary = "" Then
@@ -328,6 +291,7 @@ Module Helper
         End While
     End Sub
 
+    'Used for multipart image uploads
     Public Function GetBoundary(contentType As String) As String
         Try
             If CStr(contentType).StartsWith("multipart/form-data") Then

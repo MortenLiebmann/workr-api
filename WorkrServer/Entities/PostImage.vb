@@ -1,16 +1,27 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
 Imports Newtonsoft.Json
-Imports WorkrServer
 
+''' <summary>
+''' The PostImage entity class
+''' This class is mapped to the "postimages" table in the database
+''' Contains the database table "postimages" fields as propterties, marked with the attribute "Key"
+''' Properties marked with the attribute "NotMapped" are mapped to a field in this entitys assosiated database table
+''' Properties marked with the attribute "JsonIgnore" are not serialized or deserialized
+''' </summary>
 <Table("postimages")>
 Public Class PostImage
     Inherits Entity
 
+    'These are the table columns
     <Key>
     Public Overrides Property ID As Guid?
     Public Property PostID As Guid?
 
+    ''' <summary>
+    ''' Fetches the full Post entity using the "PostID" property
+    ''' </summary>
+    ''' <returns>A Post Entity</returns>
     <NotMapped>
     <JsonIgnore>
     Public ReadOnly Property Post() As Post
@@ -38,12 +49,21 @@ Public Class PostImage
         End Get
     End Property
 
+    ''' <summary>
+    ''' PostImage specific code for Put operations
+    ''' </summary>
+    ''' <param name="params"></param>
     Public Overrides Sub OnPut(Optional params As Object = Nothing)
         If AuthUser Is Nothing Then Throw New NotAuthorizedException
         If Not AuthUser.ID = Post.CreatedByUserID Then Throw New NotAuthorizedException("Can not add images to a post you didn't create.")
         If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid
     End Sub
 
+    ''' <summary>
+    ''' Create a PostImage entity when an image is uploaded
+    ''' </summary>
+    ''' <param name="params"></param>
+    ''' <returns></returns>
     Public Overrides Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
         If AuthUser Is Nothing Then Throw New NotAuthorizedException
         If params Is Nothing Then Throw New Exception("params is nothing")
@@ -52,6 +72,11 @@ Public Class PostImage
         Return CreateFileAssociatedPostImage(params.associatedEntityID)
     End Function
 
+    ''' <summary>
+    ''' Create a PostImage entity when an image is uploaded
+    ''' </summary>
+    ''' <param name="postID"></param>
+    ''' <returns></returns>
     Private Function CreateFileAssociatedPostImage(postID As Guid) As PostImage
         Return New PostImage With {
             .ID = Guid.NewGuid,

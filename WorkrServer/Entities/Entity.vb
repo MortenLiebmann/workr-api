@@ -3,9 +3,16 @@ Imports System.Reflection
 Imports Newtonsoft.Json
 Imports WorkrServer
 
+''' <summary>
+''' The base class that all entitys inherit from.
+''' </summary>
 Public MustInherit Class Entity
     Public MustOverride Property ID As Guid?
 
+    ''' <summary>
+    ''' The tablename that the entity is assosiated with.
+    ''' </summary>
+    ''' <returns></returns>
     <NotMapped>
     <JsonIgnore>
     Public MustOverride ReadOnly Property TableName As String
@@ -14,14 +21,38 @@ Public MustInherit Class Entity
     <JsonIgnore>
     Public MustOverride ReadOnly Property FileUploadAllowed As Boolean
 
+    ''' <summary>
+    ''' The HTPP method that an entity operation might use.
+    ''' </summary>
+    ''' <returns></returns>
     <NotMapped>
     Public Property HttpMethod As String = ""
 
+    ''' <summary>
+    ''' A subroutine that entitys must override and can be used for entity specific code that should be executed during a Put operation
+    ''' </summary>
+    ''' <param name="params">Can be used for entity specific parameters</param>
     Public MustOverride Sub OnPut(Optional params As Object = Nothing)
+    ''' <summary>
+    ''' A subroutine that entitys must override and can be used for entity specific code that should be executed during a Patch operation
+    ''' </summary>
+    ''' <param name="params">Can be used for entity specific parameters</param>
     Public MustOverride Function OnPatch(Optional params As Object = Nothing) As Boolean
+    ''' <summary>
+    ''' A subroutine that entitys must override and can be used for entity specific code that should be executed during a file upload
+    ''' </summary>
+    ''' <param name="params">Can be used for entity specific parameters</param>
     Public MustOverride Function OnFileUpload(Optional params As Object = Nothing) As Object
+    ''' <summary>
+    ''' A subroutine that entitys must override and is used in to create a file associated with a different entity
+    ''' </summary>
+    ''' <param name="params">Can be used for entity specific parameters</param>
     Public MustOverride Function CreateFileAssociatedEntity(Optional params As Object = Nothing) As Object
 
+    ''' <summary>
+    ''' Tells Newtonsoft.JSON to not serialise the HttpMethod property
+    ''' </summary>
+    ''' <returns></returns>
     Public Function ShouldSerializeHttpMethod() As Boolean
         Return False
     End Function
@@ -34,6 +65,7 @@ Public MustInherit Class Entity
         Return Not e1.ID = e2.ID
     End Operator
 
+    'Enity exceptions
     Public Class OnFileUploadException
         Inherits Exception
 

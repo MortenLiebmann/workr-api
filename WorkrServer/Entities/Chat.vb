@@ -1,12 +1,19 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
 Imports Newtonsoft.Json
-Imports WorkrServer
 
+''' <summary>
+''' The Chat entity class
+''' This class is mapped to the "chats" table in the database
+''' Contains the database table "chats" fields as propterties, marked with the attribute "Key"
+''' Properties marked with the attribute "NotMapped" are mapped to a field in this entitys assosiated database table
+''' Properties marked with the attribute "JsonIgnore" are not serialized or deserialized
+''' </summary>
 <Table("chats")>
 Public Class Chat
     Inherits Entity
 
+    'These are the table columns
     <Key>
     Public Overrides Property ID As Guid?
     Public Property PostID As Guid?
@@ -15,6 +22,10 @@ Public Class Chat
     Public Property ChatParty2UserID As Guid?
     Public Property Flags As Int64?
 
+    ''' <summary>
+    ''' Fetches the full Post entity using the "PostID" property
+    ''' </summary>
+    ''' <returns>a Post entity</returns>
     <JsonIgnore>
     <NotMapped>
     Public ReadOnly Property Post() As Post
@@ -30,6 +41,10 @@ Public Class Chat
         End Get
     End Property
 
+    ''' <summary>
+    ''' Fetches the full User entity using the "ChatParty1UserID" property
+    ''' </summary>
+    ''' <returns>A User entity</returns>
     <JsonIgnore>
     <NotMapped>
     Public ReadOnly Property ChatParty1User() As User
@@ -45,6 +60,10 @@ Public Class Chat
         End Get
     End Property
 
+    ''' <summary>
+    ''' Fetches the full User entity using the "ChatParty2UserID" property
+    ''' </summary>
+    ''' <returns>A User Entity</returns>
     <JsonIgnore>
     <NotMapped>
     Public ReadOnly Property ChatParty2User() As User
@@ -68,6 +87,10 @@ Public Class Chat
         End Get
     End Property
 
+    ''' <summary>
+    ''' Chat specific code for Put operations
+    ''' </summary>
+    ''' <param name="params"></param>
     Public Overrides Sub OnPut(Optional params As Object = Nothing)
         If AuthUser Is Nothing Then Throw New NotAuthorizedException
         If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid

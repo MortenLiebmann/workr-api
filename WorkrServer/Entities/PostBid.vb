@@ -3,9 +3,18 @@ Imports System.ComponentModel.DataAnnotations.Schema
 Imports System.Reflection
 Imports Newtonsoft.Json
 
+''' <summary>
+''' The PostBid entity class
+''' This class is mapped to the "postbids" table in the database
+''' Contains the database table "postbids" fields as propterties, marked with the attribute "Key"
+''' Properties marked with the attribute "NotMapped" are mapped to a field in this entitys assosiated database table
+''' Properties marked with the attribute "JsonIgnore" are not serialized or deserialized
+''' </summary>
 <Table("postbids")>
 Public Class PostBid
     Inherits Entity
+
+    'These are the table columns
     <Key>
     Public Overrides Property ID As Guid?
     Public Property PostID As Guid?
@@ -15,6 +24,7 @@ Public Class PostBid
     Public Property Price As Decimal
     Public Property Flags As Int64?
 
+    'Enumaration defining the meaning of the bit flags in the "Flags" Int64 property
     <Flags>
     Public Enum PostBidFlags As Int64
         POSTED = 0
@@ -24,6 +34,10 @@ Public Class PostBid
         COMPLETED = 8
     End Enum
 
+    ''' <summary>
+    ''' Fetches the full User entity using the "CreatedByUserID" property
+    ''' </summary>
+    ''' <returns></returns>
     <NotMapped>
     Public ReadOnly Property CreatedByUser As User
         Get
@@ -38,6 +52,10 @@ Public Class PostBid
         End Get
     End Property
 
+    ''' <summary>
+    ''' Fetches the full Post entity using the "PostID" property
+    ''' </summary>
+    ''' <returns>A Post Entity</returns>
     <NotMapped>
     <JsonIgnore>
     Public ReadOnly Property Post() As Post
@@ -53,7 +71,6 @@ Public Class PostBid
         End Get
     End Property
 
-
     Public Overrides ReadOnly Property TableName As String
         Get
             Return "postbids"
@@ -66,12 +83,20 @@ Public Class PostBid
         End Get
     End Property
 
+    ''' <summary>
+    ''' PostBid specific code for Put operations
+    ''' </summary>
+    ''' <param name="params"></param>
     Public Overrides Sub OnPut(Optional params As Object = Nothing)
         If AuthUser Is Nothing Then Throw New NotAuthorizedException
         If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid
         CreatedByUserID = AuthUser.ID
     End Sub
 
+    ''' <summary>
+    ''' PostBid specific code for Patch operations
+    ''' </summary>
+    ''' <param name="params"></param>
     Public Overrides Function OnPatch(Optional params As Object = Nothing) As Boolean
         If AuthUser Is Nothing Then Throw New NotAuthorizedException
         If AuthUser.ID = Me.Post.CreatedByUserID Then

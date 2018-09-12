@@ -1,18 +1,30 @@
 ﻿Imports System.Security.Cryptography
 Imports System.Text
 Imports Newtonsoft.Json
-Imports WorkrServer
 
+''' <summary>
+''' This static class handles user authentication, registration, and password hashing.
+''' </summary>
 Public Module Authenticator
     Private m_Hasher As SHA256 = SHA256.Create
     Private m_AuthUser As User = Nothing
 
+    ''' <summary>
+    ''' Holds the User entity of an authenticated request sender
+    ''' Will be null if the sender of the request is not authenticated
+    ''' </summary>
+    ''' <returns></returns>
     Public ReadOnly Property AuthUser As User
         Get
             Return m_AuthUser
         End Get
     End Property
 
+    ''' <summary>
+    ''' Authenticates a user using the HTTP "Authorization" header
+    ''' </summary>
+    ''' <param name="authHeaderBase64">the HTTP "Authorization" header value in base64</param>
+    ''' <returns>True if authentication was successful</returns>
     Public Function Authenticate(authHeaderBase64 As String) As Boolean
         Try
             m_AuthUser = Nothing
@@ -35,6 +47,12 @@ Public Module Authenticator
         Return False
     End Function
 
+    ''' <summary>
+    ''' Registers a new user
+    ''' </summary>
+    ''' <param name="jsonUser">the JSON formatted user to register</param>
+    ''' <param name="password">the plain/text password of the user to register</param>
+    ''' <returns>The newly registerd User entity</returns>
     Public Function Register(jsonUser As String, password As String) As User
         If password.Length < 8 And Not password.Contains(":") Then Throw New PasswordRequirementException
         Dim newUser As New User
@@ -57,15 +75,29 @@ Public Module Authenticator
         End Try
     End Function
 
+    ''' <summary>
+    ''' Hashes the input data using the SHA256 hashing algorithm
+    ''' </summary>
+    ''' <param name="data">the string data to be hashed</param>
+    ''' <returns>The output hash as hexidecimal</returns>
     Private Function GetHashAsHex(ByVal data As Byte()) As String
         Return BitConverter.ToString(m_Hasher.ComputeHash(data)).Replace("-", "").ToLower
     End Function
 
+    ''' <summary>
+    ''' Hashes the input data using the SHA256 hashing algorithm
+    ''' </summary>
+    ''' <param name="data">the byte array data to be hashed</param>
+    ''' <returns>The output hash as hexidecimal</returns>
     Private Function GetHashAsHex(ByVal data As String) As String
         Dim dataBytes As Byte() = Encoding.UTF8.GetBytes(data)
         Return BitConverter.ToString(m_Hasher.ComputeHash(dataBytes)).Replace("-", "").ToLower
     End Function
 
+    ''' <summary>
+    ''' cryptographically securely generates a random 32 base64 character string
+    ''' </summary>
+    ''' <returns>The random salt</returns>
     Private Function GenerateSalt() As String
         Dim rand As New RNGCryptoServiceProvider()
         Dim saltBytes As Byte() = New Byte(23) {} '32 base64 chars
@@ -73,6 +105,7 @@ Public Module Authenticator
         Return Convert.ToBase64String(saltBytes)
     End Function
 
+    'Authenticator exceptions
     Public Class NotAuthorizedException
         Inherits Exception
 

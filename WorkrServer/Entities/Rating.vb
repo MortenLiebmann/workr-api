@@ -1,13 +1,19 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
-Imports System.Data.Entity
 Imports Newtonsoft.Json
-Imports WorkrServer
 
+''' <summary>
+''' The Rating entity class
+''' This class is mapped to the "ratings" table in the database
+''' Contains the database table "ratings" fields as propterties, marked with the attribute "Key"
+''' Properties marked with the attribute "NotMapped" are mapped to a field in this entitys assosiated database table
+''' Properties marked with the attribute "JsonIgnore" are not serialized or deserialized
+''' </summary>
 <Table("ratings")>
 Public Class Rating
     Inherits Entity
 
+    'These are the table columns
     <Key>
     Public Overrides Property ID As Guid?
     Public Property UserID As Guid?
@@ -18,6 +24,10 @@ Public Class Rating
     Public Property Text As String
     Public Property Flags As Int64?
 
+    ''' <summary>
+    ''' Fetches the full User entity using the "UserID" property
+    ''' </summary>
+    ''' <returns>A User entity</returns>
     <JsonIgnore>
     <NotMapped>
     Public ReadOnly Property User() As User
@@ -33,6 +43,10 @@ Public Class Rating
         End Get
     End Property
 
+    ''' <summary>
+    ''' Fetches the full User entity using the "RatedByUserID" property
+    ''' </summary>
+    ''' <returns>A User entity</returns>
     <NotMapped>
     Public ReadOnly Property RatedByUser() As User
         Get
@@ -43,6 +57,10 @@ Public Class Rating
         End Get
     End Property
 
+    ''' <summary>
+    ''' Fetches the full Post entity using the "PostID" property
+    ''' </summary>
+    ''' <returns>A Post Entity</returns>
     <JsonIgnore>
     <NotMapped>
     Public ReadOnly Property Post() As Post
@@ -66,6 +84,10 @@ Public Class Rating
         End Get
     End Property
 
+    ''' <summary>
+    ''' Rating specific code for Put operations
+    ''' </summary>
+    ''' <param name="params"></param>
     Public Overrides Sub OnPut(Optional params As Object = Nothing)
         If AuthUser Is Nothing Then Throw New NotAuthorizedException
         If Not AuthUser.ID = Post.CreatedByUserID Then Throw New NotAuthorizedException("Can not rate work done on a post you did not create.")

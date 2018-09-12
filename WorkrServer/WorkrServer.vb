@@ -1,15 +1,15 @@
 ﻿''' <summary>
-''' WorkrServer hoved classe. Dette er starten på serveren.
-''' I denne start klasse bliver resoursse korten defineret, et HttpController bliver instansieret og startet.
+''' WorkrServer main class. This is the where the server starts
+''' The resource map is defined in this class, and a HttpController instance is created and started.
 ''' </summary>
 Public Class WorkrServer
     Private WithEvents Controller As HttpController
 
     ''' <summary>
-    ''' Starter serveren.
+    ''' Starts the server
     ''' </summary>
     Public Sub Start()
-        'Resoursse kort defination
+        'Resource map definition
         Dim map As New Dictionary(Of String, Object) From {
             {"users", New Resource(Of User)(DB.Users)},
             {"userimages", New Resource(Of UserImage)(DB.UserImages)},
@@ -23,15 +23,16 @@ Public Class WorkrServer
             {"postbids", New Resource(Of PostBid)(DB.PostBids)}
         }
 
-        'HttpControlleren bliver startet
-        Controller = New HttpController({"http://127.0.0.1:9877/", "http://192.168.1.88:9877/"}, map)
+        'HttpControlleren is startet
+        Controller = New HttpController({"http://127.0.0.1:9877/", "http://10.0.0.37:9877/", "http://skurk.info:9877/"}, map)
         Controller.StartListening()
     End Sub
 
     ''' <summary>
     ''' Lytter på et OnRequest event og skriver API kald data ud i konsolen.
+    ''' Listens the HttpController.OnRequest event and prints the data in the console. 
     ''' </summary>
-    ''' <param name="data"></param>
+    ''' <param name="data">the request data</param>
     Private Sub OnRequest(ByVal data As String) Handles Controller.OnRequest
         Console.WriteLine(data)
         Console.WriteLine("--------------------------------------------------------------------------")

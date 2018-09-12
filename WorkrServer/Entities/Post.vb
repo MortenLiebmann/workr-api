@@ -1,16 +1,18 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
-Imports System.Data.Entity
-Imports System.Net.Http
-Imports System.Reflection
-Imports Newtonsoft.Json
-Imports Newtonsoft.Json.Linq
-Imports WorkrServer
 
+''' <summary>
+''' The Post entity class
+''' This class is mapped to the "posts" table in the database
+''' Contains the database table "posts" fields as propterties, marked with the attribute "Key"
+''' Properties marked with the attribute "NotMapped" are mapped to a field in this entitys assosiated database table
+''' Properties marked with the attribute "JsonIgnore" are not serialized or deserialized
+''' </summary>
 <Table("posts")>
 Public Class Post
     Inherits Entity
 
+    'These are the table columns
     <Key>
     Public Overrides Property ID As Guid?
     Public Property CreatedByUserID As Guid?
@@ -21,6 +23,7 @@ Public Class Post
     Public Property JobEndDate As DateTime?
     Public Property Flags As Int64?
 
+    'Enumaration defining the meaning of the bit flags in the "Flags" Int64 property
     <Flags>
     Public Enum PostFlags As Int64
         OPEN = 0
@@ -31,6 +34,10 @@ Public Class Post
     Private m_CreatedByUser As User
     Private m_Tags As PostTag()
 
+    ''' <summary>
+    ''' Fetches the full User entity using the "CreatedByUserID" property
+    ''' </summary>
+    ''' <returns>A User entity</returns>
     <NotMapped>
     Public Property CreatedByUser As User
         Get
@@ -49,6 +56,10 @@ Public Class Post
         End Set
     End Property
 
+    ''' <summary>
+    ''' Fetches an array of PostImageIDs that belong to this posts using its "ID" property
+    ''' </summary>
+    ''' <returns>An array of GUID</returns>
     <NotMapped>
     Public ReadOnly Property PostImageIDs As Guid?()
         Get
@@ -58,6 +69,10 @@ Public Class Post
         End Get
     End Property
 
+    ''' <summary>
+    ''' Fetches an array of PostTag entitys that belong to this posts using its "ID" property
+    ''' </summary>
+    ''' <returns>An array </returns>
     <NotMapped>
     Public Property PostTags As PostTag()
         Get
@@ -71,6 +86,7 @@ Public Class Post
         Set(value As PostTag())
             Select Case HttpMethod
                 Case "PUT", "PATCH"
+                    'Automatically creates PostTag entitys on "PUT" and "PATCH" operations
                     CreatePostTagEntitys(value)
                     Exit Property
                 Case Else
@@ -80,6 +96,10 @@ Public Class Post
         End Set
     End Property
 
+    ''' <summary>
+    ''' Fetches an array of PostBid entitys that belong to this posts using its "ID" property
+    ''' </summary>
+    ''' <returns></returns>
     <NotMapped>
     Public ReadOnly Property PostBids As PostBid()
         Get
@@ -94,6 +114,10 @@ Public Class Post
         End Get
     End Property
 
+    ''' <summary>
+    ''' Creates new PostTags that are given when a new Post is created with Tags attached
+    ''' </summary>
+    ''' <param name="postTags">The PostTags to create</param>
     Private Sub CreatePostTagEntitys(postTags As PostTag())
         If Me.ID Is Nothing OrElse Me.ID = Guid.Empty Then Me.ID = Guid.NewGuid
         Dim myPostTags As New List(Of PostTag)
@@ -117,6 +141,10 @@ Public Class Post
         CreatePostTagReferenceEntitys(myPostTags.ToArray)
     End Sub
 
+    ''' <summary>
+    ''' Creates PostTagReferences connection this post to its Tags
+    ''' </summary>
+    ''' <param name="postTags">The PostTags to connect to this Post</param>
     Private Sub CreatePostTagReferenceEntitys(postTags As PostTag())
         For Each tag As PostTag In postTags
             Dim dbEntity As PostTagReference = Nothing
@@ -139,6 +167,10 @@ Public Class Post
     Public Overrides ReadOnly Property FileUploadAllowed As Boolean = False
     Public Overrides ReadOnly Property TableName As String = "posts"
 
+    ''' <summary>
+    ''' Post specific code for Put operations
+    ''' </summary>
+    ''' <param name="params"></param>
     Public Overrides Sub OnPut(Optional params As Object = Nothing)
         If AuthUser Is Nothing Then Throw New NotAuthorizedException
         If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid

@@ -1,17 +1,27 @@
 ﻿Imports System.ComponentModel.DataAnnotations
 Imports System.ComponentModel.DataAnnotations.Schema
-Imports Newtonsoft.Json
-Imports WorkrServer
 
+''' <summary>
+''' The PostTagReference entity class
+''' This class is mapped to the "posttagreferences" table in the database
+''' Contains the database table "posttagreferences" fields as propterties, marked with the attribute "Key"
+''' Properties marked with the attribute "NotMapped" are mapped to a field in this entitys assosiated database table
+''' Properties marked with the attribute "JsonIgnore" are not serialized or deserialized
+''' </summary>
 <Table("posttagreferences")>
 Public Class PostTagReference
     Inherits Entity
 
+    'These are the table columns
     <Key>
     Public Overrides Property ID As Guid?
     Public Property PostTagID As Guid?
     Public Property PostID As Guid?
 
+    ''' <summary>
+    ''' Fetches the full PostTag entity using the "PostTagID" property
+    ''' </summary>
+    ''' <returns>A PostTag Entity</returns>
     <NotMapped>
     Public ReadOnly Property PostTag() As PostTag
         Get
@@ -34,6 +44,10 @@ Public Class PostTagReference
         End Get
     End Property
 
+    ''' <summary>
+    ''' PostTagReference specific code for Put operations
+    ''' </summary>
+    ''' <param name="params"></param>
     Public Overrides Sub OnPut(Optional params As Object = Nothing)
         If AuthUser Is Nothing Then Throw New NotAuthorizedException
         If ID Is Nothing OrElse ID = Guid.Empty Then ID = Guid.NewGuid
