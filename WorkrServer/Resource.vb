@@ -49,7 +49,7 @@ Public Class Resource(Of T As Entity)
         Dim dbEntity As T = Nothing
         Try
             jsonEntity = JsonConvert.DeserializeObject(Of T)(json, JSONSettings)
-            jsonEntity.OnPut()
+            jsonEntity.OnPut(jsonEntity)
             dbEntity = DbSet.Add(jsonEntity)
             DB.SaveChanges()
             Return (From e As T In DbSet.AsNoTracking
