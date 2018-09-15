@@ -43,7 +43,7 @@ Module Helper
     End Property
 
     'The login information for the FTP file storage
-    Private Property FTPCredentials As New NetworkCredential("workr-api", "jJks3jKæbD")
+    Private Property FTPCredentials As New NetworkCredential("workr-api", "workr123")
 
     ''' <summary>
     ''' Creates a FTP request
@@ -52,7 +52,7 @@ Module Helper
     ''' <param name="ftpMethod"></param>
     ''' <returns>FtpWebRequest insance</returns>
     Public Function CreateFtpRequest(path As String, ftpMethod As String) As FtpWebRequest
-        Dim _ftp As FtpWebRequest = FtpWebRequest.Create("ftp://workr.com/home/" & path.Replace("\", "/"))
+        Dim _ftp As FtpWebRequest = FtpWebRequest.Create("ftp://rune-nas/home/" & path.Replace("\", "/"))
         With _ftp
             .EnableSsl = False
             .Credentials = FTPCredentials
@@ -118,32 +118,34 @@ Module Helper
     ''' <param name="dirPath"></param>
     ''' <returns></returns>
     Public Function FTPDownloadFirstFile(dirPath As String) As MemoryStream
-        Dim ftpRequest As FtpWebRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & dirPath.Replace("\", "/"))
+        'Dim ftpRequest As FtpWebRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & dirPath.Replace("\", "/"))
         Dim output As New MemoryStream
         Dim filename As String
-        With ftpRequest
-            .EnableSsl = False
-            .Credentials = FTPCredentials
-            .KeepAlive = False
-            .UseBinary = True
-            .UsePassive = True
-            .Method = WebRequestMethods.Ftp.ListDirectory
-        End With
+        'With ftpRequest
+        '    .EnableSsl = False
+        '    .Credentials = FTPCredentials
+        '    .KeepAlive = False
+        '    .UseBinary = True
+        '    .UsePassive = True
+        '    .Method = WebRequestMethods.Ftp.ListDirectory
+        'End With
+        Dim ftpRequest As FtpWebRequest = CreateFtpRequest(dirPath.Replace("\", "/"), WebRequestMethods.Ftp.ListDirectory)
 
         Dim ftpResponse As FtpWebResponse = CType(ftpRequest.GetResponse, FtpWebResponse)
         Dim ftpResponseStream As New StreamReader(ftpResponse.GetResponseStream)
 
         filename = ftpResponseStream.ReadLine.Split("/")(1)
-        ftpRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & dirPath & "/" & filename)
-        With ftpRequest
-            .EnableSsl = False
-            .Credentials = FTPCredentials
-            .KeepAlive = False
-            .UseBinary = True
-            .UsePassive = True
-            .Method = WebRequestMethods.Ftp.ListDirectory
-        End With
-        ftpRequest.Method = WebRequestMethods.Ftp.DownloadFile
+        ftpRequest = CreateFtpRequest(dirPath.Replace("\", "/") & "/" & filename, WebRequestMethods.Ftp.DownloadFile)
+        'ftpRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & dirPath & "/" & filename)
+        'With ftpRequest
+        '    .EnableSsl = False
+        '    .Credentials = FTPCredentials
+        '    .KeepAlive = False
+        '    .UseBinary = True
+        '    .UsePassive = True
+        '    .Method = WebRequestMethods.Ftp.ListDirectory
+        'End With
+        'ftpRequest.Method = WebRequestMethods.Ftp.DownloadFile
         ftpResponse = CType(ftpRequest.GetResponse, FtpWebResponse)
         Dim s As Stream = ftpResponse.GetResponseStream
 
