@@ -118,48 +118,26 @@ Module Helper
     ''' <param name="dirPath"></param>
     ''' <returns></returns>
     Public Function FTPDownloadFirstFile(dirPath As String) As MemoryStream
-        'Dim ftpRequest As FtpWebRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & dirPath.Replace("\", "/"))
         Dim output As New MemoryStream
         Dim filename As String
-        'With ftpRequest
-        '    .EnableSsl = False
-        '    .Credentials = FTPCredentials
-        '    .KeepAlive = False
-        '    .UseBinary = True
-        '    .UsePassive = True
-        '    .Method = WebRequestMethods.Ftp.ListDirectory
-        'End With
         Dim ftpRequest As FtpWebRequest = CreateFtpRequest(dirPath.Replace("\", "/"), WebRequestMethods.Ftp.ListDirectory)
-
         Dim ftpResponse As FtpWebResponse = CType(ftpRequest.GetResponse, FtpWebResponse)
-        Dim ftpResponseStream As New StreamReader(ftpResponse.GetResponseStream)
+        Dim ftpResponseStreamReader As New StreamReader(ftpResponse.GetResponseStream)
 
-        filename = ftpResponseStream.ReadLine.Split("/")(1)
+        filename = ftpResponseStreamReader.ReadLine.Split("/")(1)
         ftpRequest = CreateFtpRequest(dirPath.Replace("\", "/") & "/" & filename, WebRequestMethods.Ftp.DownloadFile)
-        'ftpRequest = FtpWebRequest.Create("ftp://skurk.info/home/" & dirPath & "/" & filename)
-        'With ftpRequest
-        '    .EnableSsl = False
-        '    .Credentials = FTPCredentials
-        '    .KeepAlive = False
-        '    .UseBinary = True
-        '    .UsePassive = True
-        '    .Method = WebRequestMethods.Ftp.ListDirectory
-        'End With
-        'ftpRequest.Method = WebRequestMethods.Ftp.DownloadFile
         ftpResponse = CType(ftpRequest.GetResponse, FtpWebResponse)
-        Dim s As Stream = ftpResponse.GetResponseStream
-
-        Using s
-
+        Dim ftpResponseStream As Stream = ftpResponse.GetResponseStream
+        Using ftpResponseStream
             Dim buffer(2047) As Byte
             Dim read As Integer = 0
             Do
-                read = s.Read(buffer, 0, buffer.Length)
+                read = ftpResponseStream.Read(buffer, 0, buffer.Length)
                 output.Write(buffer, 0, read)
             Loop Until read = 0
         End Using
+        ftpResponseStreamReader.Close()
         ftpResponseStream.Close()
-        s.Close()
         ftpResponse.Close()
 
         Return output

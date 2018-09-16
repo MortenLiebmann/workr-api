@@ -23,7 +23,7 @@ Public Class WorkrServer
             {"postbids", New Resource(Of PostBid)(DB.PostBids)}
         }
 
-        'HttpControlleren is startet
+        'HttpController is startet
         Controller = New HttpController({"http://127.0.0.1:9877/", "http://10.0.0.37:9877/", "http://skurk.info:9877/"}, map)
         Controller.StartListening()
     End Sub

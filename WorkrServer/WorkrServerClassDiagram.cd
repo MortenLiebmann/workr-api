@@ -130,5 +130,12 @@
       <FileName>Entities\UserImage.vb</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="WorkrServer.Resource(Of T)">
+    <Position X="4.5" Y="1.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAACAAAgAIAAAIAAAAAEIQAAAAhAEgAAiAAg=</HashCode>
+      <FileName>Resource.vb</FileName>
+    </TypeIdentifier>
+  </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>
